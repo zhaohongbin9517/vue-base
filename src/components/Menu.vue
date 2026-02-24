@@ -10,7 +10,7 @@
         <el-sub-menu index="1">
           <template #title>
             <el-icon><Setting /></el-icon>
-            <span>导航一</span>
+            <span>计划配置</span>
           </template>
           <el-menu-item-group>
             <template #title><span>分组一</span></template>
