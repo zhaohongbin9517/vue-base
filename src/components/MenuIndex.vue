@@ -38,6 +38,7 @@
 
 <script>
 import { Menu as IconMenu, Setting } from '@element-plus/icons-vue'
+import BlankConfig from './BlankConfig.vue'
 import PlanConfig from './PlanConfig.vue'
 import ResultConfig from './ResultConfig.vue'
 import MeterConfig from './MeterConfig.vue'
@@ -47,14 +48,15 @@ export default {
   components: {
     IconMenu,
     Setting,
+    BlankConfig,
     PlanConfig,
     ResultConfig,
     MeterConfig
   },
   data() {
     return {
-      activeMenu: 'plan',
-      currentComponent: 'PlanConfig'
+      activeMenu: '',
+      currentComponent: 'BlankConfig'
     }
   },
   methods: {
@@ -77,6 +79,8 @@ export default {
         case 'meter':
           this.currentComponent = 'MeterConfig'
           break
+        default:
+          this.currentComponent = 'BlankConfig'
       }
     }
   }
