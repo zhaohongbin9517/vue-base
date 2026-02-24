@@ -1,14 +1,14 @@
 <template>
-  <NavMenu />
+  <MenuIndex />
 </template>
 
 <script>
-import NavMenu from './components/Menu.vue'
+import MenuIndex from './components/MenuIndex.vue'
 
 export default {
   name: 'App',
   components: {
-    NavMenu
+    MenuIndex
   }
 }
 </script>
