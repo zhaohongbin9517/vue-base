@@ -4,7 +4,7 @@
     <el-container class="layout-container">
       <el-aside width="200px" class="aside">
         <el-menu
-          default-active="1"
+          :default-active="activeMenu"
           class="el-menu-vertical"
           @open="handleOpen"
           @close="handleClose"
@@ -15,24 +15,21 @@
               <el-icon><setting /></el-icon>
               <span>通用配置</span>
             </template>
-            <el-menu-item index="1-1" @click="handleMenuClick('计划配置')">计划配置</el-menu-item>
-            <el-menu-item index="1-2" @click="handleMenuClick('结果配置')">结果配置</el-menu-item>
+            <el-menu-item index="plan">计划配置</el-menu-item>
+            <el-menu-item index="result">结果配置</el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="2">
             <template #title>
               <el-icon><icon-menu /></el-icon>
               <span>计量配置</span>
             </template>
-            <el-menu-item index="2-1" @click="handleMenuClick('计量配置')">计量配置</el-menu-item>
+            <el-menu-item index="meter">计量配置</el-menu-item>
           </el-sub-menu>
         </el-menu>
       </el-aside>
       <el-container>
         <el-main class="main">
-          <div class="content-area">
-            <h2>{{ currentMenu }}</h2>
-            <p>这是 {{ currentMenu }} 的内容区域</p>
-          </div>
+          <component :is="currentComponent" />
         </el-main>
       </el-container>
     </el-container>
@@ -41,23 +38,23 @@
 
 <script>
 import { Menu as IconMenu, Setting } from '@element-plus/icons-vue'
+import PlanConfig from './PlanConfig.vue'
+import ResultConfig from './ResultConfig.vue'
+import MeterConfig from './MeterConfig.vue'
 
 export default {
   name: 'MenuIndex',
   components: {
     IconMenu,
-    Setting
+    Setting,
+    PlanConfig,
+    ResultConfig,
+    MeterConfig
   },
   data() {
     return {
-      currentMenu: '计划配置',
-      // tableData: [
-      //   {
-      //     date: '2016-05-02',
-      //     name: '王小虎',
-      //     address: '上海市普陀区金沙江路 1518 弄',
-      //   }
-      // ]
+      activeMenu: 'plan',
+      currentComponent: 'PlanConfig'
     }
   },
   methods: {
@@ -69,10 +66,18 @@ export default {
     },
     handleSelect(index, indexPath) {
       console.log('选中菜单:', index, indexPath)
-    },
-    handleMenuClick(menuName) {
-      console.log('点击菜单:', menuName)
-      this.currentMenu = menuName
+      this.activeMenu = index
+      switch (index) {
+        case 'plan':
+          this.currentComponent = 'PlanConfig'
+          break
+        case 'result':
+          this.currentComponent = 'ResultConfig'
+          break
+        case 'meter':
+          this.currentComponent = 'MeterConfig'
+          break
+      }
     }
   }
 }
@@ -112,21 +117,5 @@ export default {
 .main {
   background-color: #f0f2f5;
   padding: 20px;
-}
-
-.content-area {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 4px;
-  min-height: 300px;
-}
-
-.content-area h2 {
-  margin-bottom: 16px;
-  color: #303133;
-}
-
-.content-area p {
-  color: #606266;
 }
 </style>
