@@ -212,7 +212,7 @@
 </template>
 
 <script>
-import { Delete, Setting, Collection, Document, OfficeBuilding, Connection, Calendar, DocumentCopy, ArrowDown, Warning, QuestionFilled } from '@element-plus/icons-vue'
+import { Delete, Plus, Check, Setting, Collection, Document, OfficeBuilding, Connection, Calendar, DocumentCopy, ArrowDown, Warning, QuestionFilled } from '@element-plus/icons-vue'
 import { getAllTableName, getTableColumn, getTmmsConfig, updateTmmsConfigPlan } from '@/api/config'
 
 export default {
@@ -230,6 +230,12 @@ export default {
     Warning,
     QuestionFilled
   },
+  setup() {
+    return {
+      Plus,
+      Check
+    }
+  },
   data() {
     return {
       form: {
@@ -241,7 +247,7 @@ export default {
         { station_id: '', mainfold_num: '', date: 'now_day' }
       ],
       optionalItems: [
-        { dbField: '', excelHeader: '', dataType: 'int', step: '', minValue: '', maxValue: '' }
+        { dbField: '', excelHeader: '', dataType: 'int', step: null, minValue: null, maxValue: null }
       ],
       tableColumnOptions: []
     }
@@ -255,9 +261,9 @@ export default {
         dbField: '',
         excelHeader: '',
         dataType: 'int',
-        step: '',
-        minValue: '',
-        maxValue: ''
+        step: null,
+        minValue: null,
+        maxValue: null
       })
     },
     removeItem(index) {
@@ -397,9 +403,9 @@ export default {
                 dbField: field,
                 excelHeader: col.title_name || '',
                 dataType: col.value_type || 'string',
-                step: col.check?.step?.toString() || '',
-                minValue: col.check?.range?.[0]?.toString() || '',
-                maxValue: col.check?.range?.[1]?.toString() || ''
+                step: col.check?.step ?? null,
+                minValue: col.check?.range?.[0] ?? null,
+                maxValue: col.check?.range?.[1] ?? null
               }
             })
           }
@@ -433,8 +439,8 @@ export default {
       this.$forceUpdate()
     },
     isRangeInvalid(row) {
-      if (row.minValue === '' || row.minValue === null || row.minValue === undefined) return false
-      if (row.maxValue === '' || row.maxValue === null || row.maxValue === undefined) return false
+      if (row.minValue === null || row.minValue === undefined) return false
+      if (row.maxValue === null || row.maxValue === undefined) return false
       return parseFloat(row.minValue) > parseFloat(row.maxValue)
     }
   }
