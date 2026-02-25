@@ -201,6 +201,14 @@ export default {
     },
     //重置
     resetItem(){
+
+      this.form= {tableName: '' },
+      this.tableOptions= [],
+      this.isTableNameInvalid= false,
+
+      this.optionalItems= [ ],
+      this.tableColumnOptions= [{column_name:''}]
+
       this.fetchTableOptions()
     },
     //导出列选项是否存在于对应的关系库列中

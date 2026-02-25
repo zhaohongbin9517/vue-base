@@ -268,6 +268,15 @@ export default {
   methods: {
     //重置
     resetItem(){
+      this.form= { tableName: '' },
+      this.tableOptions= [],
+      this.isTableNameInvalid= false,
+      this.basicItems= [  { station_id: '', mainfold_num: '', date: 'now_day' } ],
+      this.optionalItems= [
+        // { dbField: '', excelHeader: '', dataType: 'int', step: null, minValue: null, maxValue: null }
+      ],
+      this.tableColumnOptions= [{column_name:''}],
+
       this.fetchTableOptions()
     },
     //添加导入项
