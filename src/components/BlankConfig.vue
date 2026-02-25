@@ -1,3 +1,4 @@
+/* 空白配置组件 */
 <template>
   <div class="blank-config">
     <el-empty description="这里什么也没有">

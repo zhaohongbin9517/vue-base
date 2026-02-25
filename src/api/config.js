@@ -1,0 +1,53 @@
+/**
+ * 计量配置相关接口
+ * 对应 api.md 中的配置相关接口
+ */
+import { get, post } from './request'
+
+/**
+ * 获取计量通用配置
+ * @returns {Promise<Object>} 配置数据
+ */
+export function getTmmsConfig() {
+  return get('/tmms_config/get_tmms_config')
+}
+
+/**
+ * 获取表列名
+ * @param {string} tableName - 表名
+ * @param {string} type - 类型
+ * @returns {Promise<Array>} 列名列表
+ */
+export function getTableColumn(tableName, type) {
+  return get('/tmms_config/get_table_column', { table_name: tableName, type })
+}
+
+/**
+ * 获取所有表名
+ * @returns {Promise<Array>} 表名列表
+ */
+export function getAllTableName() {
+  return get('/tmms_config/get_all_table_name')
+}
+
+/**
+ * 保存计划相关配置
+ * @param {Object} data - 配置数据
+ * @param {string} data.plan_table_name - 计划表名
+ * @param {Object} data.xlsx_column_name - Excel列配置
+ * @returns {Promise}
+ */
+export function updateTmmsConfigPlan(data) {
+  return post('/tmms_config/update_tmms_config_plan', data)
+}
+
+/**
+ * 保存结果相关配置
+ * @param {Object} data - 配置数据
+ * @param {string} data.result_data_table_name - 结果数据表名
+ * @param {Object} data.measure_result_title_name - 结果标题配置
+ * @returns {Promise}
+ */
+export function updateTmmsConfigResult(data) {
+  return post('/tmms_config/update_tmms_config_result', data)
+}
