@@ -34,8 +34,10 @@
           />
         </el-select>
         <el-tag v-if="isTableNameInvalid" type="danger" class="error-tag" effect="plain">
-          <el-icon><warning /></el-icon>
-          该表名不在列表中
+          <span class="tag-content">
+            <el-icon><warning /></el-icon>
+            <span>该表名不在列表中</span>
+          </span>
         </el-tag>
       </div>
     </el-card>
@@ -247,9 +249,9 @@ export default {
         { station_id: '', mainfold_num: '', date: 'now_day' }
       ],
       optionalItems: [
-        { dbField: '', excelHeader: '', dataType: 'int', step: null, minValue: null, maxValue: null }
+        // { dbField: '', excelHeader: '', dataType: 'int', step: null, minValue: null, maxValue: null }
       ],
-      tableColumnOptions: []
+      tableColumnOptions: [{column_name:''}]
     }
   },
   mounted() {
@@ -532,6 +534,13 @@ export default {
 
 .error-tag {
   width: fit-content;
+}
+
+.tag-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
 }
 
 .sub-section {
