@@ -65,6 +65,8 @@ export default {
 <style scoped>
 .result-config {
   padding: 20px;
+  min-height: 85vh;
+  max-height: 85vh;
 }
 
 .result-config h2 {

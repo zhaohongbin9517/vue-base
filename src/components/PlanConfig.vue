@@ -1,45 +1,91 @@
 <template>
   <div class="plan-config">
-    <h2>计划配置</h2>
-
-    <!-- 计划表名配置 -->
-    <div class="section">
-      <div class="section-title">计划表名配置：</div>
-      <div class="select-wrapper">
-        <el-select v-model="form.tableName" placeholder="请选择" class="table-select"
-          :class="{ 'is-error': isTableNameInvalid }" filterable clearable @change="handleTableNameChange">
-          <el-option v-for="item in tableOptions" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-        <span v-if="isTableNameInvalid" class="error-text">该表名不在列表中</span>
-      </div>
+    <div class="page-header">
+      <h2 class="page-title">
+        <el-icon class="title-icon"><setting /></el-icon>
+        计划配置
+      </h2>
+      <p class="page-desc">配置计划导入的数据表结构和字段映射关系</p>
     </div>
 
+    <!-- 计划表名配置 -->
+    <el-card class="config-card" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <el-icon class="header-icon"><collection /></el-icon>
+          <span>计划表名配置</span>
+        </div>
+      </template>
+      <div class="select-wrapper">
+        <el-select
+          v-model="form.tableName"
+          placeholder="请选择数据表"
+          class="table-select"
+          :class="{ 'is-error': isTableNameInvalid }"
+          filterable
+          clearable
+          @change="handleTableNameChange"
+        >
+          <el-option
+            v-for="item in tableOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+        <el-tag v-if="isTableNameInvalid" type="danger" class="error-tag" effect="plain">
+          <el-icon><warning /></el-icon>
+          该表名不在列表中
+        </el-tag>
+      </div>
+    </el-card>
+
     <!-- 计划导入项配置 -->
-    <div class="section">
-      <div class="section-title">计划导入项配置：</div>
+    <el-card class="config-card" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <el-icon class="header-icon"><document /></el-icon>
+          <span>计划导入项配置</span>
+        </div>
+      </template>
 
       <!-- 基础导入项 -->
       <div class="sub-section">
         <div class="sub-title">
-          <span class="required-label">基础导入项</span>
-          <span class="required-mark">(必填*)：</span>
+          <el-tag type="primary" effect="dark" size="small">必填</el-tag>
+          <span class="sub-title-text">基础导入项</span>
+          <el-tooltip content="这些是导入Excel时必须包含的基础字段" placement="top">
+            <el-icon class="help-icon"><question-filled /></el-icon>
+          </el-tooltip>
         </div>
-        <el-table :data="basicItems" border class="config-table">
-          <el-table-column prop="station_id" label="计量站id(Excel表头)" width="400">
+        <el-table :data="basicItems" border class="config-table" stripe>
+          <el-table-column prop="station_id" label="计量站ID (Excel表头)" min-width="200">
             <template #default="{ row }">
-              <el-input v-model="row.station_id" placeholder="表头名" />
+              <el-input v-model="row.station_id" placeholder="请输入Excel表头名称">
+                <template #prefix>
+                  <el-icon><office-building /></el-icon>
+                </template>
+              </el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="mainfold_num" label="管汇号(Excel表头)" width="400">
+          <el-table-column prop="mainfold_num" label="管汇号 (Excel表头)" min-width="200">
             <template #default="{ row }">
-              <el-input v-model="row.mainfold_num" placeholder="表头名" />
+              <el-input v-model="row.mainfold_num" placeholder="请输入Excel表头名称">
+                <template #prefix>
+                  <el-icon><connection /></el-icon>
+                </template>
+              </el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="date" label="日期" width="410">
+          <el-table-column prop="date" label="日期类型" width="200">
             <template #default="{ row }">
-              <el-select v-model="row.date" placeholder="请选择">
-                <el-option label="当日" value="now_day" />
-                <el-option label="sheet名称(xxxx-xx-xx)" value="sheet_name" />
+              <el-select v-model="row.date" placeholder="请选择日期类型">
+                <el-option label="当日" value="now_day">
+                  <el-icon><calendar /></el-icon> 当日
+                </el-option>
+                <el-option label="Sheet名称 (xxxx-xx-xx)" value="sheet_name">
+                  <el-icon><document-copy /></el-icon> Sheet名称
+                </el-option>
               </el-select>
             </template>
           </el-table-column>
@@ -48,106 +94,141 @@
 
       <!-- 可选导入项 -->
       <div class="sub-section">
-        <div class="sub-title optional">可选导入项：</div>
-        <el-table :data="optionalItems" border class="config-table">
-          <el-table-column prop="dbField" label="关系库列" width="300">
-            <template #default="{ row, $index }">
-              <el-select v-model="row.dbField" placeholder="请输入或选择列名" filterable allow-create default-first-option
+        <div class="sub-title">
+          <el-tag type="info" effect="dark" size="small">可选</el-tag>
+          <span class="sub-title-text">可选导入项</span>
+          <el-tooltip content="这些是可选的额外字段，可根据需要添加" placement="top">
+            <el-icon class="help-icon"><question-filled /></el-icon>
+          </el-tooltip>
+        </div>
+        <el-table :data="optionalItems" border class="config-table" stripe>
+          <el-table-column prop="dbField" label="关系库列" min-width="180">
+            <template #default="{ row }">
+              <el-select
+                v-model="row.dbField"
+                placeholder="请输入或选择列名"
+                filterable
+                allow-create
+                default-first-option
                 class="db-field-select"
                 :class="{ 'is-error': isDbFieldInvalid(row.dbField) }"
-                @change="handleDbFieldChange($index)">
-                <el-option v-for="col in tableColumnOptions" :key="col.column_name" :label="col.column_name"
-                  :value="col.column_name" />
+                @change="handleDbFieldChange"
+              >
+                <el-option
+                  v-for="col in tableColumnOptions"
+                  :key="col.column_name"
+                  :label="col.column_name"
+                  :value="col.column_name"
+                />
                 <template #prefix>
-                  <el-button link type="primary" @click="loadTableColumns">
-                    <el-icon>
-                      <menu />
-                    </el-icon>
+                  <el-button link type="primary" @click="loadTableColumns" :disabled="!form.tableName">
+                    <el-icon><arrow-down /></el-icon>
                   </el-button>
                 </template>
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column prop="excelHeader" label="EXCEL表头" width="300">
+          <el-table-column prop="excelHeader" label="EXCEL表头" min-width="180">
             <template #default="{ row }">
-              <el-input v-model="row.excelHeader" placeholder="表头名" />
+              <el-input v-model="row.excelHeader" placeholder="请输入Excel表头名称">
+                <template #prefix>
+                  <el-icon><document /></el-icon>
+                </template>
+              </el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="dataType" label="数据类型" width="120">
+          <el-table-column prop="dataType" label="数据类型" width="160">
             <template #default="{ row }">
               <el-select v-model="row.dataType" placeholder="请选择">
-                <el-option label="int" value="int" />
-                <el-option label="string" value="string" />
+                <el-option label="整数 (int)" value="int">
+                  <el-tag type="success" size="small">int</el-tag>
+                </el-option>
+                <el-option label="字符串 (string)" value="string">
+                  <el-tag type="info" size="small">string</el-tag>
+                </el-option>
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column prop="checkCondition" label="检查条件">
+          <el-table-column prop="checkCondition" label="检查条件" min-width="320">
             <template #default="{ row }">
               <div class="check-condition">
-                <span>步长：</span>
-                <el-input-number v-model="row.step" placeholder="步长" class="small-input" :min="0" :precision="0" :controls="false" />
-                <span class="label-gap">区间：</span>
-                <el-input-number
-                  v-model="row.minValue"
-                  placeholder="最小值"
-                  class="small-input"
-                  :min="0"
-                  :precision="0"
-                  :controls="false"
-                  :class="{ 'is-error': isRangeInvalid(row) }"
-                />
-                <span>-</span>
-                <el-input-number
-                  v-model="row.maxValue"
-                  placeholder="最大值"
-                  class="small-input"
-                  :min="0"
-                  :precision="0"
-                  :controls="false"
-                  :class="{ 'is-error': isRangeInvalid(row) }"
-                />
+                <div class="check-item">
+                  <span class="check-label">步长</span>
+                  <el-input-number
+                    v-model="row.step"
+                    placeholder="步长"
+                    class="small-input"
+                    :min="0"
+                    :precision="0"
+                    :controls="false"
+                  />
+                </div>
+                <div class="check-item range-item">
+                  <span class="check-label">区间</span>
+                  <el-input-number
+                    v-model="row.minValue"
+                    placeholder="最小"
+                    class="small-input"
+                    :min="0"
+                    :precision="0"
+                    :controls="false"
+                    :class="{ 'is-error': isRangeInvalid(row) }"
+                  />
+                  <span class="range-separator">~</span>
+                  <el-input-number
+                    v-model="row.maxValue"
+                    placeholder="最大"
+                    class="small-input"
+                    :min="0"
+                    :precision="0"
+                    :controls="false"
+                    :class="{ 'is-error': isRangeInvalid(row) }"
+                  />
+                </div>
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="80" align="center">
+          <el-table-column label="操作" width="80" align="center" fixed="right">
             <template #default="{ $index }">
-              <el-button type="danger" size="small" @click="removeItem($index)">
-                <el-icon>
-                  <delete />
-                </el-icon>
+              <el-button type="danger" size="small" circle @click="removeItem($index)">
+                <el-icon><delete /></el-icon>
               </el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
-    </div>
+    </el-card>
 
     <!-- 按钮区域 -->
     <div class="button-area">
-      <el-button type="info" @click="addItem">
-        <el-icon>
-          <plus />
-        </el-icon> 添加导入项
+      <el-button type="primary" plain @click="addItem" :icon="Plus">
+        添加导入项
       </el-button>
-      <el-button type="primary" @click="onSubmit">保存</el-button>
+      <el-button type="success" @click="onSubmit" :icon="Check">
+        保存配置
+      </el-button>
     </div>
   </div>
 </template>
 
 <script>
-import { Plus, Delete } from '@element-plus/icons-vue'
-import { 
-  getAllTableName
-  , getTableColumn
-  , getTmmsConfig
-  , updateTmmsConfigPlan 
-} from '@/api/config'
+import { Delete, Setting, Collection, Document, OfficeBuilding, Connection, Calendar, DocumentCopy, ArrowDown, Warning, QuestionFilled } from '@element-plus/icons-vue'
+import { getAllTableName, getTableColumn, getTmmsConfig, updateTmmsConfigPlan } from '@/api/config'
 
 export default {
   name: 'PlanConfig',
   components: {
-    Plus,
-    Delete
+    Delete,
+    Setting,
+    Collection,
+    Document,
+    OfficeBuilding,
+    Connection,
+    Calendar,
+    DocumentCopy,
+    ArrowDown,
+    Warning,
+    QuestionFilled
   },
   data() {
     return {
@@ -196,7 +277,7 @@ export default {
           if (item.mainfold_num) {
             xlsxColumnName['mainfold_num'] = {
               title_name: item.mainfold_num,
-              value_type: 'int'
+              value_type: 'string'
             }
           }
           if (item.date) {
@@ -213,13 +294,11 @@ export default {
               value_type: item.dataType
             }
 
-            // 检查是否有 check 相关参数
             const hasStep = item.step !== '' && item.step !== null && item.step !== undefined
             const hasMin = item.minValue !== '' && item.minValue !== null && item.minValue !== undefined
             const hasMax = item.maxValue !== '' && item.maxValue !== null && item.maxValue !== undefined
 
             if (hasStep || hasMin || hasMax) {
-              // 验证是否为数字
               const stepNum = hasStep ? parseFloat(item.step) : NaN
               const minNum = hasMin ? parseFloat(item.minValue) : NaN
               const maxNum = hasMax ? parseFloat(item.maxValue) : NaN
@@ -237,13 +316,11 @@ export default {
                 return
               }
 
-              // 检查 minValue 是否大于 maxValue
               if (hasMin && hasMax && minNum > maxNum) {
                 this.$message.error(`字段 "${item.dbField}" 的最小值不能大于最大值`)
                 return
               }
 
-              // 构建 check 对象
               colConfig.check = {}
               if (hasStep) {
                 colConfig.check.step = stepNum
@@ -258,11 +335,11 @@ export default {
             xlsxColumnName[item.dbField] = colConfig
           }
         }
+
         const data = {
           plan_table_name: this.form.tableName,
           xlsx_column_name: xlsxColumnName
         }
-        console.log(data)
         await updateTmmsConfigPlan(data)
         this.$message.success('保存成功')
       } catch (error) {
@@ -337,7 +414,6 @@ export default {
       this.loadTableColumns()
     },
     async loadTableColumns() {
-      // 加载表列名
       if (!this.isTableNameInvalid) {
         if (!this.form.tableName) return
         try {
@@ -354,7 +430,6 @@ export default {
       return !this.tableColumnOptions.some(col => col.column_name === dbField)
     },
     handleDbFieldChange() {
-      // 值变化时触发验证
       this.$forceUpdate()
     },
     isRangeInvalid(row) {
@@ -362,36 +437,82 @@ export default {
       if (row.maxValue === '' || row.maxValue === null || row.maxValue === undefined) return false
       return parseFloat(row.minValue) > parseFloat(row.maxValue)
     }
-
   }
 }
 </script>
 
 <style scoped>
 .plan-config {
-  padding: 20px;
+  padding: 24px;
+  background: #f5f7fa;
+  min-height: 85vh;
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
-.plan-config h2 {
-  margin-bottom: 20px;
-  color: #303133;
-  border-bottom: 2px solid #409eff;
-  padding-bottom: 10px;
+.plan-config::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
-.section {
+.plan-config {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.page-header {
   margin-bottom: 24px;
+  text-align: center;
 }
 
-.section-title {
+.page-title {
+  font-size: 22px;
+  color: #303133;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.title-icon {
+  font-size: 26px;
   color: #409eff;
+}
+
+.page-desc {
+  color: #909399;
   font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 12px;
+  margin: 0;
+}
+
+.config-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.header-icon {
+  font-size: 20px;
+  color: #409eff;
+}
+
+.select-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .table-select {
-  width: 300px;
+  width: 400px;
 }
 
 .table-select.is-error :deep(.el-input__wrapper) {
@@ -403,70 +524,50 @@ export default {
   color: #f56c6c !important;
 }
 
-.table-select.is-error :deep(.el-select__placeholder) {
-  color: #f56c6c !important;
-}
-
-.select-wrapper {
-  display: flex;
-  flex-direction: column;
-}
-
-.error-text {
-  color: #f56c6c;
-  font-size: 12px;
-  margin-top: 6px;
+.error-tag {
+  width: fit-content;
 }
 
 .sub-section {
-  margin-bottom: 20px;
+  margin-bottom: 32px;
+}
+
+.sub-section:last-child {
+  margin-bottom: 0;
 }
 
 .sub-title {
-  margin-bottom: 12px;
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #dcdfe6;
 }
 
-.required-label {
-  color: #409eff;
+.sub-title-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #606266;
 }
 
-.required-mark {
-  color: #f56c6c;
-}
-
-.optional {
-  color: #409eff;
+.help-icon {
+  color: #909399;
+  cursor: help;
 }
 
 .config-table {
   width: 100%;
 }
 
-.check-condition {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
+.config-table :deep(.el-table__header th) {
+  background: #f5f7fa;
+  font-weight: 600;
+  color: #606266;
 }
 
-.check-condition span {
-  color: #909399;
-  font-size: 13px;
-}
-
-.small-input {
-  width: 80px;
-}
-
-.label-gap {
-  margin-left: 8px;
-}
-
-.button-area {
-  margin-top: 20px;
-  display: flex;
-  gap: 12px;
+.db-field-select {
+  width: 100%;
 }
 
 .db-field-select.is-error :deep(.el-input__wrapper) {
@@ -478,11 +579,55 @@ export default {
   color: #f56c6c !important;
 }
 
+.check-condition {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.check-label {
+  font-size: 12px;
+  color: #909399;
+  white-space: nowrap;
+}
+
+.range-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.range-separator {
+  color: #909399;
+  font-size: 14px;
+}
+
+.small-input {
+  width: 70px;
+}
+
 .small-input.is-error :deep(.el-input__wrapper) {
   box-shadow: 0 0 0 1px #f56c6c inset;
 }
 
 .small-input.is-error :deep(.el-input__inner) {
   color: #f56c6c !important;
+}
+
+.button-area {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
 }
 </style>

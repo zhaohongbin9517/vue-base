@@ -76,6 +76,8 @@ export default {
 <style scoped>
 .meter-config {
   padding: 20px;
+  min-height: 85vh;
+  max-height: 85vh;
 }
 
 .meter-config h2 {
