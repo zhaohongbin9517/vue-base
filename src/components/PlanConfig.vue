@@ -190,7 +190,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="80" align="center" fixed="right">
+          <el-table-column label="操作" width="160" align="center" fixed="right">
             <template #default="{ $index }">
               <el-button type="danger" size="small" circle @click="removeItem($index)">
                 <el-icon><delete /></el-icon>
@@ -206,6 +206,9 @@
       <el-button type="primary" plain @click="addItem" :icon="Plus">
         添加导入项
       </el-button>
+      <el-button type="primary" plain @click="resetItem" :icon="RefreshLeft">
+        重置
+      </el-button>
       <el-button type="success" @click="onSubmit" :icon="Check">
         保存配置
       </el-button>
@@ -214,7 +217,11 @@
 </template>
 
 <script>
-import { Delete, Plus, Check, Setting, Collection, Document, OfficeBuilding, Connection, Calendar, DocumentCopy, ArrowDown, Warning, QuestionFilled } from '@element-plus/icons-vue'
+import { 
+  Delete, Plus, Check, Setting, Collection, Document, OfficeBuilding,
+   Connection, Calendar, DocumentCopy, ArrowDown, Warning, QuestionFilled ,
+   RefreshLeft
+  } from '@element-plus/icons-vue'
 import { getAllTableName, getTableColumn, getTmmsConfig, updateTmmsConfigPlan } from '@/api/config'
 
 export default {
@@ -235,7 +242,8 @@ export default {
   setup() {
     return {
       Plus,
-      Check
+      Check,
+      RefreshLeft
     }
   },
   data() {
@@ -258,6 +266,11 @@ export default {
     this.fetchTableOptions()
   },
   methods: {
+    //重置
+    resetItem(){
+      this.fetchTableOptions()
+    },
+    //添加导入项
     addItem() {
       this.optionalItems.push({
         dbField: '',
@@ -268,9 +281,11 @@ export default {
         maxValue: null
       })
     },
+    //移除导入项
     removeItem(index) {
       this.optionalItems.splice(index, 1)
     },
+    //保存
     async onSubmit() {
       try {
         const xlsxColumnName = {}
@@ -355,6 +370,7 @@ export default {
         this.$message.error('保存失败')
       }
     },
+    //获取所有表名
     async fetchTableOptions() {
       try {
         const data = await getAllTableName()
@@ -369,6 +385,7 @@ export default {
         this.$message.error('获取表名列表失败')
       }
     },
+    //加载计划配置数据
     async fetchTmmsConfig() {
       try {
         const config = await getTmmsConfig()
@@ -416,16 +433,18 @@ export default {
         console.error('获取配置失败:', error)
       }
     },
+    //计划表名变更
     handleTableNameChange(value) {
       const exists = this.tableOptions.some(item => item.value === value)
       this.isTableNameInvalid = !exists
       this.loadTableColumns()
     },
+    //加载计划表列
     async loadTableColumns() {
       if (!this.isTableNameInvalid) {
         if (!this.form.tableName) return
         try {
-          const data = await getTableColumn(this.form.tableName, 'plan')
+          const data = await getTableColumn(this.form.tableName, 'plan_table_name')
           this.tableColumnOptions = data
         } catch (error) {
           console.error('获取表列名失败:', error)
@@ -433,13 +452,16 @@ export default {
         }
       }
     },
+    //检查数据库字段是否存在
     isDbFieldInvalid(dbField) {
       if (!dbField || this.tableColumnOptions.length === 0) return false
       return !this.tableColumnOptions.some(col => col.column_name === dbField)
     },
+    //数据库字段变更
     handleDbFieldChange() {
       this.$forceUpdate()
     },
+    //检查范围是否有效  
     isRangeInvalid(row) {
       if (row.minValue === null || row.minValue === undefined) return false
       if (row.maxValue === null || row.maxValue === undefined) return false

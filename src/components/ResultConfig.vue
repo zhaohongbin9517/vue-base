@@ -99,10 +99,10 @@
           
           <el-table-column label="操作" width="180" align="center" fixed="right">
             <template #default="{ $index }">
-              <el-button type="primary" size="small" circle @click="removeItem($index)">
+              <el-button type="primary" size="small" circle @click="optionalItemsTop($index)">
                 <el-icon><top /></el-icon>
               </el-button>
-              <el-button type="primary" size="small" circle @click="removeItem($index)">
+              <el-button type="primary" size="small" circle @click="optionalItemsBottom($index)">
                 <el-icon><bottom /></el-icon>
               </el-button>
               <el-button type="danger" size="small" circle @click="removeItem($index)">
@@ -117,7 +117,10 @@
     <!-- 按钮区域 -->
     <div class="button-area">
       <el-button type="primary" plain @click="addItem" :icon="Plus">
-        添加导入项
+        添加导出项
+      </el-button>
+      <el-button type="primary" plain @click="resetItem" :icon="RefreshLeft">
+        重置
       </el-button>
       <el-button type="success" @click="onSubmit">
         <el-icon><check /></el-icon>
@@ -128,10 +131,11 @@
 </template>
 
 <script>
-import {Bottom, Top, Delete, Setting, Collection, Document, ArrowDown, Plus, Warning, QuestionFilled, Check } from '@element-plus/icons-vue'
-import { getAllTableName, getTableColumn, getTmmsConfig
-  // , updateTmmsConfigResult 
-} from '@/api/config'
+import {
+  Bottom, Top, Delete, Setting, Collection, Document, 
+  ArrowDown, Plus, Warning, QuestionFilled, Check,RefreshLeft
+ } from '@element-plus/icons-vue'
+import { getAllTableName, getTableColumn, getTmmsConfig, updateTmmsConfigResult } from '@/api/config'
 
 export default {
   name: 'ResultConfig',
@@ -149,7 +153,8 @@ export default {
   },
   setup() {
     return {
-      Plus
+      Plus,
+      RefreshLeft
     }
   },
   data() {
@@ -171,29 +176,53 @@ export default {
     this.fetchTableOptions()
   },
   methods: {
+    //移除
     removeItem(index) {
-      this.tableColumnOptions.splice(index, 1)
+      this.optionalItems.splice(index, 1)
     },
+    //上移
+    optionalItemsTop(index) {
+      if (index === 0) return
+      const item = this.optionalItems.splice(index, 1)[0]
+      this.optionalItems.splice(index - 1, 0, item)
+    },
+    //下移
+    optionalItemsBottom(index) {
+      if (index === this.optionalItems.length - 1) return
+      const item = this.optionalItems.splice(index, 1)[0]
+      this.optionalItems.splice(index + 1, 0, item)
+    },
+    //添加
     addItem() {
       this.optionalItems.push({
         dbField: '',
         excelHeader: ''
       })
     },
+    //重置
+    resetItem(){
+      this.fetchTableOptions()
+    },
+    //导出列选项是否存在于对应的关系库列中
     isDbFieldInvalid(dbField) {
       if (!dbField || this.tableColumnOptions.length === 0) return false
       return !this.tableColumnOptions.some(col => col.column_name === dbField)
     },
+    //导出列变更
     handleDbFieldChange() {
       this.$forceUpdate()
     },
+    //保存
     async onSubmit() {
       try {
         const data = {
           result_data_table_name: this.form.tableName,
-          measure_result_title_name: this.optionalItems
+          measure_result_title_name: this.optionalItems.reduce((acc, item) => {
+            acc[item.dbField] = item.excelHeader
+            return acc
+          }, {})
         }
-        // await updateTmmsConfigResult(data)
+        await updateTmmsConfigResult(data)
         console.log(data)
         this.$message.success('保存成功')
       } catch (error) {
@@ -201,6 +230,7 @@ export default {
         this.$message.error('保存失败')
       }
     },
+    //初始化获取全部表名
     async fetchTableOptions() {
       try {
         const data = await getAllTableName()
@@ -214,6 +244,7 @@ export default {
         this.$message.error('获取表名列表失败')
       }
     },
+    //初始化结果配置数据
     async fetchTmmsConfig() {
       try {
         const config = await getTmmsConfig()
@@ -249,16 +280,18 @@ export default {
         console.error('获取配置失败:', error)
       }
     },
+    //结果表名变更
     handleTableNameChange(value) {
       const exists = this.tableOptions.some(item => item.value === value)
       this.isTableNameInvalid = !exists
       this.loadTableColumns()
     },
+    //加载关系库列
     async loadTableColumns() {
       if (!this.isTableNameInvalid) {
         if (!this.form.tableName) return
         try {
-          const data = await getTableColumn(this.form.tableName, 'result')
+          const data = await getTableColumn(this.form.tableName, 'result_data_table_name')
           this.tableColumnOptions = data
         } catch (error) {
           console.error('获取表列名失败:', error)
