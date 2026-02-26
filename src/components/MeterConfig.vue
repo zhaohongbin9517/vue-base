@@ -161,6 +161,16 @@
       @save-config="saveConfig"
     />
 
+    <!-- 出结果判断 -->
+    <MeterConfigCheckResultSetting 
+      v-model:resultCheck="resultCheck"
+      :title="'出结果判断'"
+      :tips="''"
+      :name="'checkResultSetting'"
+      :paramOptions="paramOptions"
+      @save-config="saveConfig"
+    />
+
   </div>
 </template>
 
@@ -172,6 +182,7 @@ import MeterConfigMeterTongDaoSetting from './MeterConfigMeterTongDaoSetting.vue
 import MeterConfigPlanSetting from './MeterConfigPlanSetting.vue'
 import MeterConfigInitDeviceSetting from './MeterConfigInitDeviceSetting.vue'
 import MeterConfigResultSetting from './MeterConfigResultSetting.vue'
+import MeterConfigCheckResultSetting from './MeterConfigCheckResultSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -185,7 +196,8 @@ export default {
     MeterConfigMeterTongDaoSetting,
     MeterConfigPlanSetting,
     MeterConfigInitDeviceSetting,
-    MeterConfigResultSetting
+    MeterConfigResultSetting,
+    MeterConfigCheckResultSetting
   },
   setup() {
     return {
@@ -234,6 +246,13 @@ export default {
       resultTableInfo: {
         resultGroups: [
           { name: '', save_type: 'tong_dao', table: '', column: [{ dbColumnField: '', params: [] }] }
+        ]
+      },
+      //出结果判断
+      resultCheck: {
+        relation: 'and',
+        checks: [
+          { param: '', expression:''}
         ]
       },
 
