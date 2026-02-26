@@ -225,6 +225,7 @@ export default {
       console.log(this.deviceStatusConfig),
       console.log(this.wnChannelNumber),
       console.log(this.wmChannelNumber),
+      console.log(this.planTableInfo)
 
       this.$message.success('保存配置成功')
     },

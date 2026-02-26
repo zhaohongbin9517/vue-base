@@ -43,59 +43,61 @@
         <template #label>
           <span>数据字段映射：</span>
         </template>
-        <div class="mapping-header">
-          <el-button type="primary" size="small" @click="addMapping">
-            <el-icon><plus /></el-icon>
-            新增数据字段映射
-          </el-button>
-        </div>
-        <div class="table-container">
-          <el-table :data="localPlanTableInfo.column" border class="config-table" stripe>
-            <el-table-column label="设置" min-width="200">
-              <template #default="{ row }">
-                <el-select v-model="row.set" @change="updatePlanTableInfo" placeholder="请选择参数">
-                  <el-option 
-                    v-for="option in paramOptions" 
-                    :key="option.value" 
-                    :label="option.label" 
-                    :value="option.value" 
-                  />
-                </el-select>
-              </template>
-            </el-table-column>
-            <el-table-column label="检查" min-width="200">
-              <template #default="{ row }">
-                <el-select v-model="row.check" @change="updatePlanTableInfo" placeholder="请选择参数">
-                  <el-option 
-                    v-for="option in paramOptions" 
-                    :key="option.value" 
-                    :label="option.label" 
-                    :value="option.value" 
-                  />
-                </el-select>
-              </template>
-            </el-table-column>
-            <el-table-column label="字段" min-width="200">
-              <template #default="{ row }">
-                <el-select v-model="row.column" @change="updatePlanTableInfo" placeholder="请选择字段">
-                  <el-option 
-                    v-for="option in planTableColumnOptions" 
-                    :key="option.column_name" 
-                    :label="option.column_name" 
-                    :value="option.column_name" 
-                  />
-                </el-select>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="100" align="center" fixed="right">
-              <template #default="{ $index }">
-                <el-button type="danger" size="small" circle @click="removeMapping($index)">
-                  <el-icon><delete /></el-icon>
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
+        <el-container>
+          <el-header height="40px" class="mapping-header">
+            <el-button type="primary" size="small" @click="addMapping">
+              <el-icon><plus /></el-icon>
+              新增映射
+            </el-button>
+          </el-header>
+          <el-main class="table-container">
+            <el-table :data="localPlanTableInfo.column" border class="config-table" stripe>
+              <el-table-column label="设置" min-width="200">
+                <template #default="{ row }">
+                  <el-select v-model="row.set" @change="updatePlanTableInfo" placeholder="请选择参数">
+                    <el-option 
+                      v-for="option in paramOptions" 
+                      :key="option.value" 
+                      :label="option.label" 
+                      :value="option.value" 
+                    />
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column label="检查" min-width="200">
+                <template #default="{ row }">
+                  <el-select v-model="row.check" @change="updatePlanTableInfo" placeholder="请选择参数">
+                    <el-option 
+                      v-for="option in paramOptions" 
+                      :key="option.value" 
+                      :label="option.label" 
+                      :value="option.value" 
+                    />
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column label="字段" min-width="200">
+                <template #default="{ row }">
+                  <el-select v-model="row.column" @change="updatePlanTableInfo" placeholder="请选择字段">
+                    <el-option 
+                      v-for="option in planTableColumnOptions" 
+                      :key="option.column_name" 
+                      :label="option.column_name" 
+                      :value="option.column_name" 
+                    />
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="100" align="center" fixed="right">
+                <template #default="{ $index }">
+                  <el-button type="danger" size="small" circle @click="removeMapping($index)">
+                    <el-icon><delete /></el-icon>
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-main>
+        </el-container>
       </el-form-item>
     </el-form>
   </el-card>
