@@ -148,6 +148,17 @@
       @remove-parameter="removeParameter"
       @save-config="saveConfig"
     />
+
+    <!--
+      计量结果配置 ：绑定数据resultTableInfo  按钮：添加结果组  按钮：保存配置
+      每个计量结果配置项包含以下字段：
+      name: 配置项名称
+      save_type: 保存方式，支持按通道保存和按井保存 tong_dao:通道保存，well:井保存
+      table: 结果关系库表名
+      column: 结果字段配置列表，每个元素包含dbColumnField（数据库字段名）和params（参数列表） 按钮：添加column元素
+        dbColumnField: 下拉框  数据源：resultTableColumnOptions
+        params：多选下拉框  数据源：paramOptions
+    -->
    
 
   </div>
@@ -215,8 +226,18 @@ export default {
       },
       //初始化设备数据设置
       initDeviceMappings: [
-        { set: '', check: '', value: '' }
+        { set: '', check: '', value: 0 }
       ],
+      //计量结果配置
+      resultTableInfo:[{
+        name:'',  
+        save_type:'',  
+        table:'',      
+        tong_dao_column:'',
+        column:[
+          {dbColumnField:'',params:['param1','param2']}
+        ]
+      }],
 
       //参数选择
       paramOptions: [
