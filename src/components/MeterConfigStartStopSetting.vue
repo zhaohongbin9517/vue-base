@@ -43,7 +43,7 @@
 import { Tools, Plus, Delete } from '@element-plus/icons-vue'
 
 export default {
-  name: 'MeterConfigCode',
+  name: 'MeterConfigStartStopSetting',
   components: {
     Tools,
     Plus,

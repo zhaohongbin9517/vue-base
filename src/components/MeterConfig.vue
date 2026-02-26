@@ -37,7 +37,7 @@
     </el-card>
 
     <!-- 启动设备参数设置 -->
-    <MeterConfigCode 
+    <MeterConfigStartStopSetting 
       :parameters="startParameters"
       :title="'启动设备参数设置'"
       :tips="'(同名参数只保留一个值)'"
@@ -47,7 +47,7 @@
       @remove-parameter="removeParameter"
     />
     <!-- 启动检查参数设置 -->
-    <MeterConfigCode 
+    <MeterConfigStartStopSetting 
       :parameters="checkStartParameters"
       :title="'启动检查参数设置'"
       :tips="'(同名参数保留多个值)'"
@@ -58,7 +58,7 @@
     />
 
     <!-- 停止设备参数设置 -->
-    <MeterConfigCode 
+    <MeterConfigStartStopSetting 
       :parameters="stopParameters"
       :title="'停止设备参数设置'"
       :tips="'(同名参数只保留一个值)'"
@@ -68,7 +68,7 @@
       @remove-parameter="removeParameter"
     />
     <!-- 停止检查参数设置 -->
-    <MeterConfigCode 
+    <MeterConfigStartStopSetting 
       :parameters="checkStopParameters"
       :title="'停止检查参数设置'"
       :tips="'(同名参数保留多个值)'"
@@ -84,7 +84,7 @@
 
 <script>
 import { Setting, Collection, Plus, Check } from '@element-plus/icons-vue'
-import MeterConfigCode from './MeterConfigCode.vue'
+import MeterConfigStartStopSetting from './MeterConfigStartStopSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -93,7 +93,7 @@ export default {
     Collection,
     Plus,
     Check,
-    MeterConfigCode
+    MeterConfigStartStopSetting
   },
   setup() {
     return {
