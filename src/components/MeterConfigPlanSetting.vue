@@ -4,7 +4,10 @@
       <div class="card-header">
         <el-icon class="header-icon"><tools /></el-icon>
         <span>{{ title }}<span class="tips-text">{{ tips }}</span></span>
-      
+        <el-button type="success" size="small" @click="saveConfig" class="save-param-btn">
+          <el-icon><check /></el-icon>
+          保存配置
+        </el-button>
       </div>
     </template>
 
@@ -104,14 +107,15 @@
 </template>
 
 <script>
-import { Tools,Plus, Delete } from '@element-plus/icons-vue'
+import { Tools,Plus, Delete, Check } from '@element-plus/icons-vue'
 
 export default {
   name: 'MeterConfigPlanSetting',
   components: {
     Tools,
     Plus,
-    Delete
+    Delete,
+    Check
   },
   props: {
     title: {
@@ -184,6 +188,9 @@ export default {
     removeMapping(index) {
       this.localPlanTableInfo.column.splice(index, 1)
       this.updatePlanTableInfo()
+    },
+    saveConfig() {
+      this.$emit('save-config')
     }
   }
 }
@@ -238,6 +245,10 @@ export default {
   border: 1px solid #ebeef5;
   border-radius: 4px;
   overflow: hidden;
+}
+
+.save-param-btn {
+  margin-left: auto;
 }
 
 .config-table {

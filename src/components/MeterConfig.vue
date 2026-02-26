@@ -45,6 +45,7 @@
       :param-options="paramOptions"
       @add-parameter="addParameter"
       @remove-parameter="removeParameter"
+      @save-config="saveConfig"
     />
     <!-- 启动检查参数设置 -->
     <MeterConfigStartStopSetting 
@@ -55,6 +56,7 @@
       :param-options="paramOptions"
       @add-parameter="addParameter"
       @remove-parameter="removeParameter"
+      @save-config="saveConfig"
     />
 
     <!-- 停止设备参数设置 -->
@@ -66,6 +68,7 @@
       :param-options="paramOptions"
       @add-parameter="addParameter"
       @remove-parameter="removeParameter"
+      @save-config="saveConfig"
     />
     <!-- 停止检查参数设置 -->
     <MeterConfigStartStopSetting 
@@ -76,6 +79,7 @@
       :param-options="paramOptions"
       @add-parameter="addParameter"
       @remove-parameter="removeParameter"
+      @save-config="saveConfig"
     />
 
     <!-- 
@@ -89,8 +93,9 @@
       :param-options="paramOptions"
       @update:paramName="updateDeviceStatusParamName"
       @update:statusClassification="updateStatusClassification"
-      @add-enum="addEnum"
-      @remove-enum="removeEnum"
+      @add-enum="addParameter"
+      @remove-enum="removeParameter"
+      @save-config="saveConfig"
     />
 
     <!--
@@ -107,6 +112,7 @@
       :name="'wnChannelNumber'"
       :param-options="paramOptions"
       @update:channelNumber="updateChannelNumber"
+      @save-config="saveConfig"
     />
 
     <MeterConfigMeterTongDaoSetting 
@@ -116,6 +122,7 @@
       :name="'wmChannelNumber'"
       :param-options="paramOptions"
       @update:channelNumber="updateChannelNumber"
+      @save-config="saveConfig"
     />
 
     <!-- 计划数据配置 -->
@@ -127,6 +134,19 @@
       :tableOptions="tableOptions"
       :planTableColumnOptions="planTableColumnOptions"
       :paramOptions="paramOptions"
+      @save-config="saveConfig"
+    />
+
+    <!-- 初始化设备数据设置 -->
+    <MeterConfigInitDeviceSetting 
+      :mappings="initDeviceMappings"
+      :title="'初始化设备数据设置'"
+      :tips="''"
+      :name="'initDeviceSetting'"
+      :paramOptions="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+      @save-config="saveConfig"
     />
    
 
@@ -139,6 +159,7 @@ import MeterConfigStartStopSetting from './MeterConfigStartStopSetting.vue'
 import MeterConfigDeviceStatusSetting from './MeterConfigDeviceStatusSetting.vue'
 import MeterConfigMeterTongDaoSetting from './MeterConfigMeterTongDaoSetting.vue'
 import MeterConfigPlanSetting from './MeterConfigPlanSetting.vue'
+import MeterConfigInitDeviceSetting from './MeterConfigInitDeviceSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -150,7 +171,8 @@ export default {
     MeterConfigStartStopSetting,
     MeterConfigDeviceStatusSetting,
     MeterConfigMeterTongDaoSetting,
-    MeterConfigPlanSetting
+    MeterConfigPlanSetting,
+    MeterConfigInitDeviceSetting
   },
   setup() {
     return {
@@ -191,6 +213,10 @@ export default {
           {set:'',check:'',column:''}
         ]
       },
+      //初始化设备数据设置
+      initDeviceMappings: [
+        { set: '', check: '', value: '' }
+      ],
 
       //参数选择
       paramOptions: [
@@ -246,6 +272,12 @@ export default {
         case "checkStopCode":
           this.checkStopParameters.push({ paramName: '', paramValue: 0 })
           break
+        case "initDeviceSetting":
+          this.initDeviceMappings.push({ set: '', check: '', value: 0 })
+          break
+        case "deviceStatusCode":
+          this.deviceStatusConfig.enums.push({ value: 0, status: '' })
+          break
       }
     },
 
@@ -264,6 +296,12 @@ export default {
         case "checkStopCode":
           this.checkStopParameters.splice(index, 1)
           break
+        case "initDeviceSetting":
+          this.initDeviceMappings.splice(index, 1)
+          break
+        case "deviceStatusCode":
+          this.deviceStatusConfig.enums.splice(index, 1)
+          break
       }
     },
 
@@ -275,18 +313,6 @@ export default {
       const { type, value } = data
       if(type === 'run_status' || type === 'stop_status'){
         this.deviceStatusConfig.statusEnumClassification[type] = value
-      }
-    },
-    addEnum(name){
-      console.log(name)
-      if(name === "deviceStatusCode"){
-        this.deviceStatusConfig.enums.push({ value: 0, status: '' })
-      }
-    },
-    removeEnum(name, index){
-      console.log(name, index)
-      if(name === "deviceStatusCode"){
-        this.deviceStatusConfig.enums.splice(index, 1)
       }
     },
 

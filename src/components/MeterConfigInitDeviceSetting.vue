@@ -6,42 +6,55 @@
         <span>{{ title }}<span class="tips-text">{{ tips }}</span></span>
         <el-button type="primary" size="small" @click="addParameter" class="add-param-btn">
           <el-icon><plus /></el-icon>
-          新增参数
+          新增映射
         </el-button>
-        <el-button type="success" size="small" @click="saveConfig">
+        <el-button type="success" size="small" @click="saveConfig" class="save-param-btn">
           <el-icon><check /></el-icon>
           保存配置
         </el-button>
       </div>
     </template>
-    <el-table :data="parameters" border class="config-table" stripe>
-      <el-table-column prop="paramName" label="参数选择" min-width="200">
+    <el-table :data="mappings" border class="config-table" stripe>
+      <el-table-column label="设置字段" min-width="200">
         <template #default="{ row }">
-          <el-select v-model="row.paramName" placeholder="请选择参数">
-              <el-option 
-                v-for="option in paramOptions" 
-                :key="option.value" 
-                :label="option.label" 
-                :value="option.value" 
-              />
-            </el-select>
+          <el-select v-model="row.set" placeholder="请选择参数">
+            <el-option 
+              v-for="option in paramOptions" 
+              :key="option.value" 
+              :label="option.label" 
+              :value="option.value" 
+            />
+          </el-select>
         </template>
       </el-table-column>
-      <el-table-column prop="paramValue" label="参数值" min-width="200">
+      <el-table-column label="检查字段" min-width="200">
+        <template #default="{ row }">
+          <el-select v-model="row.check" placeholder="请选择参数">
+            <el-option 
+              v-for="option in paramOptions" 
+              :key="option.value" 
+              :label="option.label" 
+              :value="option.value" 
+            />
+          </el-select>
+        </template>
+      </el-table-column>
+      <el-table-column label="值字段" min-width="200">
         <template #default="{ row }">
           <el-input-number 
-            v-model="row.paramValue" 
-            placeholder="请输入参数值" 
+            v-model="row.value" 
+            placeholder="请输入值字段" 
             :min="0" 
             controls-position="right"
+            style="width: 100%"
           />
         </template>
       </el-table-column>
       <el-table-column label="操作" width="100" align="center" fixed="right">
         <template #default="{ $index }">
           <el-button type="danger" size="small" circle @click="removeParameter($index)">
-            <el-icon><delete /></el-icon>
-          </el-button>
+                    <el-icon><delete /></el-icon>
+                  </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -52,7 +65,7 @@
 import { Tools, Plus, Delete, Check } from '@element-plus/icons-vue'
 
 export default {
-  name: 'MeterConfigStartStopSetting',
+  name: 'MeterConfigInitDeviceSetting',
   components: {
     Tools,
     Plus,
@@ -60,13 +73,13 @@ export default {
     Check
   },
   props: {
-    parameters: {
+    mappings: {
       type: Array,
       default: () => []
     },
     title: {
       type: String,
-      default: '启动设备参数设置'
+      default: '初始化设备数据设置'
     },
     tips: {
       type: String,
@@ -76,19 +89,15 @@ export default {
       type: String,
       default: ''
     },
-
     paramOptions: {
       type: Array,
-      default: () => [
-        // { label: '参数1', value: 'param1' },
-        // { label: '参数2', value: 'param2' },
-        // { label: '参数3', value: 'param3' }
-      ]
+      default: () => []
     }
   },
   setup() {
     return {
-      Plus
+      Plus,
+      Delete
     }
   },
   methods: {
@@ -135,6 +144,10 @@ export default {
   margin-left: auto;
 }
 
+.save-param-btn {
+  margin-left: auto;
+}
+
 .config-table {
   width: 100%;
 }
@@ -149,7 +162,7 @@ export default {
   padding: 8px 12px;
 }
 
-.config-table :deep(.el-input-number) {
+.config-table :deep(.el-select) {
   width: 100%;
 }
 
@@ -158,10 +171,6 @@ export default {
 }
 
 .config-table :deep(.el-input__wrapper) {
-  width: 100%;
-}
-
-.config-table :deep(.el-select) {
   width: 100%;
 }
 </style>

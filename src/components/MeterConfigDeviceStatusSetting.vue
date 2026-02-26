@@ -4,9 +4,9 @@
       <div class="card-header">
         <el-icon class="header-icon"><tools /></el-icon>
         <span>{{ title }}<span class="tips-text">{{ tips }}</span></span>
-        <el-button type="primary" size="small" @click="addEnum" class="add-param-btn">
-          <el-icon><plus /></el-icon>
-          新增枚举
+        <el-button type="success" size="small" @click="saveConfig" class="save-param-btn">
+          <el-icon><check /></el-icon>
+          保存配置
         </el-button>
       </div>
     </template>
@@ -27,6 +27,13 @@
       </el-form>
     </div>
     
+    <el-button type="primary" size="small" @click="addEnum" class="add-param-btn">
+      <el-icon><plus /></el-icon>
+      新增枚举
+    </el-button>
+
+    <p class="tips-text"> &nbsp; </p>
+
     <!-- 枚举列表 -->
     <el-table :data="enums" border class="config-table" stripe>
       <el-table-column prop="value" label="值" min-width="150">
@@ -99,14 +106,15 @@
 </template>
 
 <script>
-import { Tools, Plus, Delete } from '@element-plus/icons-vue'
+import { Tools, Plus, Delete, Check } from '@element-plus/icons-vue'
 
 export default {
   name: 'MeterConfigDeviceStatusSetting',
   components: {
     Tools,
     Plus,
-    Delete
+    Delete,
+    Check
   },
   props: {
     config: {
@@ -222,6 +230,9 @@ export default {
     },
     removeEnum(index) {
       this.$emit('remove-enum', this.name, index)
+    },
+    saveConfig() {
+      this.$emit('save-config')
     }
   }
 }
@@ -286,6 +297,10 @@ export default {
 }
 
 .add-param-btn {
+  margin-left: auto;
+}
+
+.save-param-btn {
   margin-left: auto;
 }
 

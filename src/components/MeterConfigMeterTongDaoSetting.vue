@@ -4,6 +4,10 @@
       <div class="card-header">
         <el-icon class="header-icon"><tools /></el-icon>
         <span>{{ title }}<span class="tips-text">{{ tips }}</span></span>
+        <el-button type="success" size="small" @click="saveConfig" class="save-param-btn">
+          <el-icon><check /></el-icon>
+          保存配置
+        </el-button>
       </div>
     </template>
     
@@ -54,13 +58,14 @@
 </template>
 
 <script>
-import { Tools, InfoFilled } from '@element-plus/icons-vue'
+import { Tools, InfoFilled, Check } from '@element-plus/icons-vue'
 
 export default {
   name: 'MeterConfigMeterTongDaoSetting',
   components: {
     Tools,
-    InfoFilled
+    InfoFilled,
+    Check
   },
   props: {
     channelNumber: {
@@ -133,6 +138,9 @@ export default {
     },
     emitChange() {
       this.$emit('update:channelNumber', this.name, this.templateInput)
+    },
+    saveConfig() {
+      this.$emit('save-config')
     }
   }
 }
@@ -212,6 +220,10 @@ export default {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.save-param-btn {
+  margin-left: auto;
 }
 
 .placeholder-label {
