@@ -78,6 +78,16 @@
       @remove-parameter="removeParameter"
     />
 
+    <!-- 设备状态枚举配置 -->
+    <MeterConfigDeviceStatusSetting 
+      :config="deviceStatusConfig"
+      :title="'设备状态枚举配置'"
+      :name="'deviceStatusCode'"
+      :param-options="paramOptions"
+      @update:paramName="updateDeviceStatusParamName"
+      @add-enum="addEnum"
+      @remove-enum="removeEnum"
+    />
 
   </div>
 </template>
@@ -85,6 +95,7 @@
 <script>
 import { Setting, Collection, Plus, Check } from '@element-plus/icons-vue'
 import MeterConfigStartStopSetting from './MeterConfigStartStopSetting.vue'
+import MeterConfigDeviceStatusSetting from './MeterConfigDeviceStatusSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -93,7 +104,8 @@ export default {
     Collection,
     Plus,
     Check,
-    MeterConfigStartStopSetting
+    MeterConfigStartStopSetting,
+    MeterConfigDeviceStatusSetting
   },
   setup() {
     return {
@@ -109,6 +121,10 @@ export default {
       checkStartParameters: [{ paramName: '', paramValue: '' }],
       stopParameters: [{ paramName: '', paramValue: '' }],
       checkStopParameters: [{ paramName: '', paramValue: '' }],
+      deviceStatusConfig: {
+        paramName: '',
+        enums: [{ value: '', status: '' }]
+      },
 
       paramOptions: [
         { label: '参数1', value: 'param1' },
@@ -126,10 +142,12 @@ export default {
       console.log(this.checkStartParameters),
       console.log(this.stopParameters),
       console.log(this.checkStopParameters),
+      console.log(this.deviceStatusEnums),
 
       this.$message.success('保存配置成功')
     },
 
+    //启动参数设置 启动检查参数设置、停止设备参数设置、停止检查参数设置 增加删除
     addParameter(name){
       console.log(name)
       switch(name){
@@ -163,6 +181,23 @@ export default {
         case "checkStopCode":
           this.checkStopParameters.splice(index, 1)
           break
+      }
+    },
+
+    //状态枚举增加删除
+    updateDeviceStatusParamName(value){
+      this.deviceStatusConfig.paramName = value
+    },
+    addEnum(name){
+      console.log(name)
+      if(name === "deviceStatusCode"){
+        this.deviceStatusConfig.enums.push({ value: '', status: '' })
+      }
+    },
+    removeEnum(name, index){
+      console.log(name, index)
+      if(name === "deviceStatusCode"){
+        this.deviceStatusConfig.enums.splice(index, 1)
       }
     },
 
