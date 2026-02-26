@@ -1,76 +1,248 @@
 <template>
   <div class="meter-config">
-    <!-- 
-    头部,计量配置
-    参照PlanConfig.vue中page-header
-     -->
+    <div class="page-header">
+      <h2 class="page-title">
+        <el-icon class="title-icon"><setting /></el-icon>
+        计量配置
+      </h2>
+      <p class="page-desc">配置计量设备参数和启动设备参数设置</p>
+    </div>
 
-    <!--
-    配置基础：
-      配置选择：下拉框  站选择：下拉框 按钮：新增配置 按钮：保存配置 
-    -->
+    <!-- 配置基础 -->
+    <el-card class="config-card" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <el-icon class="header-icon"><collection /></el-icon>
+          <span>配置基础</span>
+        </div>
+      </template>
+      <div class="base-config">
+        <el-select v-model="configType" placeholder="请选择配置" class="config-select">
+          <el-option label="配置1" value="config1" />
+          <el-option label="配置2" value="config2" />
+        </el-select>
+        <el-select v-model="stationId" placeholder="请选择站" class="station-select">
+          <el-option label="站1" value="station1" />
+          <el-option label="站2" value="station2" />
+        </el-select>
+        <el-button type="primary" @click="addConfig">
+          <el-icon><plus /></el-icon>
+          新增配置
+        </el-button>
+        <el-button type="success" @click="saveConfig">
+          <el-icon><check /></el-icon>
+          保存配置
+        </el-button>
+      </div>
+    </el-card>
 
-    <!--
-    计量配置第一部分：启动设备参数设置 按钮：新增参数
-      参数选择：下拉框  参数值：输入框  按钮：删除
-    -->
+    <!-- 启动设备参数设置 -->
+    <MeterConfigCode 
+      :parameters="startParameters"
+      :title="'启动设备参数设置'"
+      :tips="'(同名参数只保留一个值)'"
+      :name="'startCode'"
+      :param-options="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+    />
+    <!-- 启动检查参数设置 -->
+    <MeterConfigCode 
+      :parameters="checkStartParameters"
+      :title="'启动检查参数设置'"
+      :tips="'(同名参数保留多个值)'"
+      :name="'checkStartCode'"
+      :param-options="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+    />
+
+    <!-- 停止设备参数设置 -->
+    <MeterConfigCode 
+      :parameters="stopParameters"
+      :title="'停止设备参数设置'"
+      :tips="'(同名参数只保留一个值)'"
+      :name="'stopCode'"
+      :param-options="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+    />
+    <!-- 停止检查参数设置 -->
+    <MeterConfigCode 
+      :parameters="checkStopParameters"
+      :title="'停止检查参数设置'"
+      :tips="'(同名参数保留多个值)'"
+      :name="'checkStopCode'"
+      :param-options="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+    />
+
 
   </div>
 </template>
 
 <script>
+import { Setting, Collection, Plus, Check } from '@element-plus/icons-vue'
+import MeterConfigCode from './MeterConfigCode.vue'
+
 export default {
   name: 'MeterConfig',
+  components: {
+    Setting,
+    Collection,
+    Plus,
+    Check,
+    MeterConfigCode
+  },
+  setup() {
+    return {
+      Plus,
+      Check
+    }
+  },
   data() {
     return {
-      form: {
-        meterName: '',
-        meterUnit: '',
-        precision: 2,
-        maxValue: 100,
-        minValue: 0,
-        calibration: '1.0',
-        enabled: true
-      }
+      configType: '',
+      stationId: '',
+      startParameters: [{ paramName: '', paramValue: '' }],
+      checkStartParameters: [{ paramName: '', paramValue: '' }],
+      stopParameters: [{ paramName: '', paramValue: '' }],
+      checkStopParameters: [{ paramName: '', paramValue: '' }],
+
+      paramOptions: [
+        { label: '参数1', value: 'param1' },
+        { label: '参数2', value: 'param2' }
+      ]
     }
   },
   methods: {
-    onSubmit() {
-      console.log('提交计量配置:', this.form)
-      this.$message.success('计量配置保存成功')
+    addConfig() {
+      this.$message.info('新增配置')
     },
-    onReset() {
-      this.form = {
-        meterName: '',
-        meterUnit: '',
-        precision: 2,
-        maxValue: 100,
-        minValue: 0,
-        calibration: '1.0',
-        enabled: true
+    saveConfig() {
+
+      console.log(this.startParameters),
+      console.log(this.checkStartParameters),
+      console.log(this.stopParameters),
+      console.log(this.checkStopParameters),
+
+      this.$message.success('保存配置成功')
+    },
+
+    addParameter(name){
+      console.log(name)
+      switch(name){
+        case "startCode":
+          this.startParameters.push({ paramName: '', paramValue: '' })
+          break
+        case "checkStartCode":
+          this.checkStartParameters.push({ paramName: '', paramValue: '' })
+          break
+        case "stopCode":
+          this.stopParameters.push({ paramName: '', paramValue: '' })
+          break
+        case "checkStopCode":
+          this.checkStopParameters.push({ paramName: '', paramValue: '' })
+          break
       }
-      this.$message.info('表单已重置')
-    }
+    },
+
+    removeParameter(name, index){
+      console.log(name, index)
+      switch(name){
+        case "startCode":
+          this.startParameters.splice(index, 1)
+          break
+        case "checkStartCode":
+          this.checkStartParameters.splice(index, 1)
+          break
+        case "stopCode":
+          this.stopParameters.splice(index, 1)
+          break
+        case "checkStopCode":
+          this.checkStopParameters.splice(index, 1)
+          break
+      }
+    },
+
   }
 }
 </script>
 
 <style scoped>
 .meter-config {
-  padding: 20px;
+  padding: 24px;
+  background: #f5f7fa;
   min-height: 85vh;
   max-height: 85vh;
+  overflow-y: auto;
 }
 
-.meter-config h2 {
-  margin-bottom: 20px;
+.meter-config::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.meter-config {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.page-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 22px;
   color: #303133;
-  border-bottom: 2px solid #e6a23c;
-  padding-bottom: 10px;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-.config-form {
-  max-width: 600px;
-  margin-top: 20px;
+.title-icon {
+  font-size: 26px;
+  color: #409eff;
+}
+
+.page-desc {
+  color: #909399;
+  font-size: 14px;
+  margin: 0;
+}
+
+.config-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.header-icon {
+  font-size: 20px;
+  color: #409eff;
+}
+
+.base-config {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.config-select,
+.station-select {
+  width: 200px;
 }
 </style>
