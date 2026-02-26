@@ -55,7 +55,7 @@
     <!-- 启停状态枚举分类 -->
     <div class="status-classification-section">
       <h4 class="section-title">
-        <el-icon class="title-icon"><classify /></el-icon>
+        <el-icon class="title-icon"><tools /></el-icon>
         枚举分类：
       </h4>
       <div class="classification-content">
@@ -99,15 +99,14 @@
 </template>
 
 <script>
-import { Tools, Plus, Delete, Classify } from '@element-plus/icons-vue'
+import { Tools, Plus, Delete } from '@element-plus/icons-vue'
 
 export default {
   name: 'MeterConfigDeviceStatusSetting',
   components: {
     Tools,
     Plus,
-    Delete,
-    Classify
+    Delete
   },
   props: {
     config: {

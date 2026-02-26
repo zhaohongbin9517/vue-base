@@ -118,6 +118,18 @@
       @update:channelNumber="updateChannelNumber"
     />
 
+    <!-- 计划数据配置 -->
+    <MeterConfigPlanSetting 
+      :title="'计划数据配置'"
+      :tips="'(下发计划配置信息)'"
+      :name="'planSetinfo'"
+      v-model:planTableInfo="planTableInfo"
+      :tableOptions="tableOptions"
+      :planTableColumnOptions="planTableColumnOptions"
+      :paramOptions="paramOptions"
+    />
+   
+
   </div>
 </template>
 
@@ -126,6 +138,7 @@ import { Setting, Collection, Plus, Check } from '@element-plus/icons-vue'
 import MeterConfigStartStopSetting from './MeterConfigStartStopSetting.vue'
 import MeterConfigDeviceStatusSetting from './MeterConfigDeviceStatusSetting.vue'
 import MeterConfigMeterTongDaoSetting from './MeterConfigMeterTongDaoSetting.vue'
+import MeterConfigPlanSetting from './MeterConfigPlanSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -136,7 +149,8 @@ export default {
     Check,
     MeterConfigStartStopSetting,
     MeterConfigDeviceStatusSetting,
-    MeterConfigMeterTongDaoSetting
+    MeterConfigMeterTongDaoSetting,
+    MeterConfigPlanSetting
   },
   setup() {
     return {
@@ -149,17 +163,17 @@ export default {
       configType: '',
       stationId: '',
       //启动设备参数设置
-      startParameters: [{ paramName: '', paramValue: '' }],
+      startParameters: [{ paramName: '', paramValue: 0 }],
       //启动检查参数设置
-      checkStartParameters: [{ paramName: '', paramValue: '' }],
+      checkStartParameters: [{ paramName: '', paramValue: 0 }],
       //停止设备参数设置
-      stopParameters: [{ paramName: '', paramValue: '' }],
+      stopParameters: [{ paramName: '', paramValue: 0 }],
       //停止检查参数设置  
-      checkStopParameters: [{ paramName: '', paramValue: '' }],
+      checkStopParameters: [{ paramName: '', paramValue: 0 }],
       //设备状态枚举
       deviceStatusConfig: {
         paramName: '',
-        enums: [{ value: '', status: '' }],
+        enums: [{ value: 0, status: '' }],
         statusEnumClassification: {
           run_status: [],
           stop_status: []
@@ -168,13 +182,34 @@ export default {
       //通道号设置
       wnChannelNumber: '',
       wmChannelNumber: '',
-
+      //计划数据
+      planTableInfo:{
+        tableName:'',
+        sql:'',
+        tong_dao_column:'',
+        column:[
+          {set:'',check:'',column:''}
+        ]
+      },
 
       //参数选择
       paramOptions: [
         { label: '参数1', value: 'param1' },
         { label: '参数2', value: 'param2' }
-      ]
+      ],
+      //数据表名
+      tableOptions: [
+        { label: '表1', value: 'table1' },
+        { label: '表2', value: 'table2' }
+      ],
+      //计划表字段映射
+      planTableColumnOptions: [
+        {column_name:''}
+      ],
+      //结果表字段映射
+      resultTableColumnOptions: [
+        {column_name:''}
+      ],
     }
   },
   methods: {
@@ -199,16 +234,16 @@ export default {
       console.log(name)
       switch(name){
         case "startCode":
-          this.startParameters.push({ paramName: '', paramValue: '' })
+          this.startParameters.push({ paramName: '', paramValue: 0 })
           break
         case "checkStartCode":
-          this.checkStartParameters.push({ paramName: '', paramValue: '' })
+          this.checkStartParameters.push({ paramName: '', paramValue: 0 })
           break
         case "stopCode":
-          this.stopParameters.push({ paramName: '', paramValue: '' })
+          this.stopParameters.push({ paramName: '', paramValue: 0 })
           break
         case "checkStopCode":
-          this.checkStopParameters.push({ paramName: '', paramValue: '' })
+          this.checkStopParameters.push({ paramName: '', paramValue: 0 })
           break
       }
     },
@@ -244,7 +279,7 @@ export default {
     addEnum(name){
       console.log(name)
       if(name === "deviceStatusCode"){
-        this.deviceStatusConfig.enums.push({ value: '', status: '' })
+        this.deviceStatusConfig.enums.push({ value: 0, status: '' })
       }
     },
     removeEnum(name, index){
