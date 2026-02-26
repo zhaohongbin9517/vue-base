@@ -85,9 +85,14 @@
       :name="'deviceStatusCode'"
       :param-options="paramOptions"
       @update:paramName="updateDeviceStatusParamName"
+      @update:statusClassification="updateStatusClassification"
       @add-enum="addEnum"
       @remove-enum="removeEnum"
     />
+
+    <!--
+      启停状态枚举
+    -->
 
   </div>
 </template>
@@ -117,15 +122,26 @@ export default {
     return {
       configType: '',
       stationId: '',
+      //启动设备参数设置
       startParameters: [{ paramName: '', paramValue: '' }],
+      //启动检查参数设置
       checkStartParameters: [{ paramName: '', paramValue: '' }],
+      //停止设备参数设置
       stopParameters: [{ paramName: '', paramValue: '' }],
+      //停止检查参数设置  
       checkStopParameters: [{ paramName: '', paramValue: '' }],
+      //设备状态枚举
       deviceStatusConfig: {
         paramName: '',
-        enums: [{ value: '', status: '' }]
+        enums: [{ value: '', status: '' }],
+        statusEnumClassification: {
+          run_status: [],
+          stop_status: []
+        }
       },
 
+
+      //参数选择
       paramOptions: [
         { label: '参数1', value: 'param1' },
         { label: '参数2', value: 'param2' }
@@ -187,6 +203,12 @@ export default {
     //状态枚举增加删除
     updateDeviceStatusParamName(value){
       this.deviceStatusConfig.paramName = value
+    },
+    updateStatusClassification(data){
+      const { type, value } = data
+      if(type === 'run_status' || type === 'stop_status'){
+        this.deviceStatusConfig.statusEnumClassification[type] = value
+      }
     },
     addEnum(name){
       console.log(name)

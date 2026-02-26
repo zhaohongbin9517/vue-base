@@ -25,7 +25,12 @@
       </el-table-column>
       <el-table-column prop="paramValue" label="参数值" min-width="200">
         <template #default="{ row }">
-          <el-input v-model="row.paramValue" placeholder="请输入参数值" />
+          <el-input-number 
+            v-model="row.paramValue" 
+            placeholder="请输入参数值" 
+            :min="0" 
+            controls-position="right"
+          />
         </template>
       </el-table-column>
       <el-table-column label="操作" width="100" align="center" fixed="right">
@@ -130,5 +135,25 @@ export default {
   background: #f5f7fa;
   font-weight: 600;
   color: #606266;
+}
+
+.config-table :deep(.el-table__cell) {
+  padding: 8px 12px;
+}
+
+.config-table :deep(.el-input-number) {
+  width: 100%;
+}
+
+.config-table :deep(.el-input) {
+  width: 100%;
+}
+
+.config-table :deep(.el-input__wrapper) {
+  width: 100%;
+}
+
+.config-table :deep(.el-select) {
+  width: 100%;
 }
 </style>
