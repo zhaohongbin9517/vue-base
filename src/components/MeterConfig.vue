@@ -149,17 +149,17 @@
       @save-config="saveConfig"
     />
 
-    <!--
-      计量结果配置 ：绑定数据resultTableInfo  按钮：添加结果组  按钮：保存配置
-      每个计量结果配置项包含以下字段：
-      name: 配置项名称
-      save_type: 保存方式，支持按通道保存和按井保存 tong_dao:通道保存，well:井保存
-      table: 结果关系库表名
-      column: 结果字段配置列表，每个元素包含dbColumnField（数据库字段名）和params（参数列表） 按钮：添加column元素
-        dbColumnField: 下拉框  数据源：resultTableColumnOptions
-        params：多选下拉框  数据源：paramOptions
-    -->
-   
+    <!-- 计量结果配置 -->
+    <MeterConfigResultSetting 
+      v-model:resultTableInfo="resultTableInfo"
+      :title="'计量结果配置'"
+      :tips="''"
+      :name="'resultSetting'"
+      :tableOptions="tableOptions"
+      :resultTableColumnOptions="resultTableColumnOptions"
+      :paramOptions="paramOptions"
+      @save-config="saveConfig"
+    />
 
   </div>
 </template>
@@ -171,6 +171,7 @@ import MeterConfigDeviceStatusSetting from './MeterConfigDeviceStatusSetting.vue
 import MeterConfigMeterTongDaoSetting from './MeterConfigMeterTongDaoSetting.vue'
 import MeterConfigPlanSetting from './MeterConfigPlanSetting.vue'
 import MeterConfigInitDeviceSetting from './MeterConfigInitDeviceSetting.vue'
+import MeterConfigResultSetting from './MeterConfigResultSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -183,7 +184,8 @@ export default {
     MeterConfigDeviceStatusSetting,
     MeterConfigMeterTongDaoSetting,
     MeterConfigPlanSetting,
-    MeterConfigInitDeviceSetting
+    MeterConfigInitDeviceSetting,
+    MeterConfigResultSetting
   },
   setup() {
     return {
@@ -229,15 +231,11 @@ export default {
         { set: '', check: '', value: 0 }
       ],
       //计量结果配置
-      resultTableInfo:[{
-        name:'',  
-        save_type:'',  
-        table:'',      
-        tong_dao_column:'',
-        column:[
-          {dbColumnField:'',params:['param1','param2']}
+      resultTableInfo: {
+        resultGroups: [
+          { name: '', save_type: 'tong_dao', table: '', column: [{ dbColumnField: '', params: [] }] }
         ]
-      }],
+      },
 
       //参数选择
       paramOptions: [
@@ -251,11 +249,11 @@ export default {
       ],
       //计划表字段映射
       planTableColumnOptions: [
-        {column_name:''}
+        {column_name:'aaa'}
       ],
       //结果表字段映射
       resultTableColumnOptions: [
-        {column_name:''}
+        {column_name:'aaa'}
       ],
     }
   },
