@@ -78,7 +78,10 @@
       @remove-parameter="removeParameter"
     />
 
-    <!-- 设备状态枚举配置 -->
+    <!-- 
+    设备状态枚举配置 
+    启停状态枚举
+    -->
     <MeterConfigDeviceStatusSetting 
       :config="deviceStatusConfig"
       :title="'设备状态枚举配置'"
@@ -91,8 +94,29 @@
     />
 
     <!--
-      启停状态枚举
+      通道号设置
+      一个文本输入框
+      根据用户输入的文本，识别文本中连续的”{}“字符，
+      每个”{}“字符表示一个自定义的参数选择，参数来源为paramOptions，为每个”{}“ 提供一个下拉框来选择对应的参数
+      例如：用户输入”{}123{}“，则会识别出两个自定义参数选择，用户需要从paramOptions中选择对应的参数值,
+      用户为第一个”{}“选择了参数param1，为第二个”{}“选择了参数param2,最后生成的通道号为”{param1}123{param2}“
     -->
+    <MeterConfigMeterTongDaoSetting 
+      :config="wnChannelNumber"
+      :title="'当前计量通道号'"
+      :name="'wnChannelNumber'"
+      :param-options="paramOptions"
+      @update:channelNumber="updateChannelNumber"
+    />
+
+    <MeterConfigMeterTongDaoSetting 
+      :config="wmChannelNumber"
+      :title="'上次计量通道号'"
+      :tips="'(主要用作统计结果时的通道确认)'"
+      :name="'wmChannelNumber'"
+      :param-options="paramOptions"
+      @update:channelNumber="updateChannelNumber"
+    />
 
   </div>
 </template>
@@ -101,6 +125,7 @@
 import { Setting, Collection, Plus, Check } from '@element-plus/icons-vue'
 import MeterConfigStartStopSetting from './MeterConfigStartStopSetting.vue'
 import MeterConfigDeviceStatusSetting from './MeterConfigDeviceStatusSetting.vue'
+import MeterConfigMeterTongDaoSetting from './MeterConfigMeterTongDaoSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -110,7 +135,8 @@ export default {
     Plus,
     Check,
     MeterConfigStartStopSetting,
-    MeterConfigDeviceStatusSetting
+    MeterConfigDeviceStatusSetting,
+    MeterConfigMeterTongDaoSetting
   },
   setup() {
     return {
@@ -139,6 +165,9 @@ export default {
           stop_status: []
         }
       },
+      //通道号设置
+      wnChannelNumber: '',
+      wmChannelNumber: '',
 
 
       //参数选择
@@ -158,7 +187,9 @@ export default {
       console.log(this.checkStartParameters),
       console.log(this.stopParameters),
       console.log(this.checkStopParameters),
-      console.log(this.deviceStatusEnums),
+      console.log(this.deviceStatusConfig),
+      console.log(this.wnChannelNumber),
+      console.log(this.wmChannelNumber),
 
       this.$message.success('保存配置成功')
     },
@@ -220,6 +251,18 @@ export default {
       console.log(name, index)
       if(name === "deviceStatusCode"){
         this.deviceStatusConfig.enums.splice(index, 1)
+      }
+    },
+
+    //通道号设置变更
+    updateChannelNumber(name, newChannelNumber){
+      switch(name){
+        case "wnChannelNumber":
+          this.wnChannelNumber = newChannelNumber
+          break
+        case "wmChannelNumber":
+          this.wmChannelNumber = newChannelNumber
+          break
       }
     },
 
