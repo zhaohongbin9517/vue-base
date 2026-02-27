@@ -171,6 +171,24 @@
       @save-config="saveConfig"
     />
 
+    <!--参数解压-->
+    <MeterConfigStartStopSetting 
+      :parameters="paramUncompress"
+      :title="'参数解压设置'"
+      :tips="'(同名参数只保留一个值)'"
+      :name="'paramUncompress'"
+      :param-options="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+      @save-config="saveConfig"
+    />
+
+    <!-- 
+    可变参数选择
+    一个下拉框，用户可以从paramOptions中选择多个参数，每个参数之间用逗号隔开
+    -->
+   
+
   </div>
 </template>
 
@@ -255,6 +273,12 @@ export default {
           { param: '', expression:''}
         ]
       },
+      //参数解压
+      paramUncompress: [
+        { paramName: '', paramValue: 0 }
+      ],
+      //可变参数选择
+      changeParamOptions: ["param1", "param2"],
 
       //参数选择
       paramOptions: [
@@ -276,6 +300,10 @@ export default {
       ],
     }
   },
+  mounted() {
+    //初始化数据
+    // this.fetchTableOptions()
+  },
   methods: {
     addConfig() {
       this.$message.info('新增配置')
@@ -289,7 +317,8 @@ export default {
       console.log(this.deviceStatusConfig),
       console.log(this.wnChannelNumber),
       console.log(this.wmChannelNumber),
-      console.log(this.planTableInfo)
+      console.log(this.planTableInfo),
+      console.log(this.paramUncompress)
 
       this.$message.success('保存配置成功')
     },
@@ -316,6 +345,9 @@ export default {
         case "deviceStatusCode":
           this.deviceStatusConfig.enums.push({ value: 0, status: '' })
           break
+        case "paramUncompress":
+          this.paramUncompress.push({ paramName: '', paramValue: 0 })
+          break
       }
     },
 
@@ -339,6 +371,9 @@ export default {
           break
         case "deviceStatusCode":
           this.deviceStatusConfig.enums.splice(index, 1)
+          break
+        case "paramUncompress":
+          this.paramUncompress.splice(index, 1)
           break
       }
     },

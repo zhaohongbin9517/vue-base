@@ -15,8 +15,8 @@
     <el-form :model="localResultCheck" label-width="120px">
       <el-form-item label="判断关系：">
         <el-radio-group v-model="localResultCheck.relation" @change="updateResultCheck">
-          <el-radio label="and">且</el-radio>
-          <el-radio label="or">或</el-radio>
+          <el-radio value="and">且</el-radio>
+          <el-radio value="or">或</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-button type="primary" size="small" @click="addCheck" class="add-param-btn">
