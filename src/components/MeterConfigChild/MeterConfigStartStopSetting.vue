@@ -15,9 +15,9 @@
       </div>
     </template>
     <el-table :data="parameters" border class="config-table" stripe>
-      <el-table-column prop="paramName" label="参数选择" min-width="200">
+      <el-table-column prop="code_id" label="参数选择" min-width="200">
         <template #default="{ row }">
-          <el-select v-model="row.paramName" placeholder="请选择参数">
+          <el-select v-model="row.code_id" placeholder="请选择参数">
               <el-option 
                 v-for="option in paramOptions" 
                 :key="option.code_id" 
@@ -27,10 +27,10 @@
             </el-select>
         </template>
       </el-table-column>
-      <el-table-column prop="paramValue" label="参数值" min-width="200">
+      <el-table-column prop="value" label="参数值" min-width="200">
         <template #default="{ row }">
           <el-input-number 
-            v-model="row.paramValue" 
+            v-model="row.value" 
             placeholder="请输入参数值" 
             :min="0" 
             controls-position="right"
@@ -79,11 +79,7 @@ export default {
 
     paramOptions: {
       type: Array,
-      default: () => [
-        // { label: '参数1', value: 'param1' },
-        // { label: '参数2', value: 'param2' },
-        // { label: '参数3', value: 'param3' }
-      ]
+      default: () => []
     }
   },
   setup() {
@@ -94,6 +90,9 @@ export default {
   methods: {
     addParameter() {
       this.$emit('add-parameter', this.name)
+    },
+    printParameter() {
+      console.log(this.parameters)  
     },
     removeParameter(index) {
       this.$emit('remove-parameter', this.name, index)

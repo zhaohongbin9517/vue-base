@@ -110,14 +110,7 @@
       @save-config="saveConfig"
     />
 
-    <!--
-      通道号设置
-      一个文本输入框
-      根据用户输入的文本，识别文本中连续的”{}“字符，
-      每个”{}“字符表示一个自定义的参数选择，参数来源为paramOptions，为每个”{}“ 提供一个下拉框来选择对应的参数
-      例如：用户输入”{}123{}“，则会识别出两个自定义参数选择，用户需要从paramOptions中选择对应的参数值,
-      用户为第一个”{}“选择了参数param1，为第二个”{}“选择了参数param2,最后生成的通道号为”{param1}123{param2}“
-    -->
+    <!--通道号设置 -->
     <MeterConfigMeterTongDaoSetting 
       :config="wnChannelNumber"
       :title="'当前计量通道号'"
@@ -290,13 +283,13 @@ export default {
         config:{}      //配置信息
       },
       //启动设备参数设置
-      startParameters: [{ paramName: '', paramValue: 0 }],
+      startParameters: [{ code_id: '', value: 0 }],
       //启动检查参数设置
-      checkStartParameters: [{ paramName: '', paramValue: 0 }],
+      checkStartParameters: [{ code_id: '', value: 0 }],
       //停止设备参数设置
-      stopParameters: [{ paramName: '', paramValue: 0 }],
+      stopParameters: [{ code_id: '', value: 0 }],
       //停止检查参数设置  
-      checkStopParameters: [{ paramName: '', paramValue: 0 }],
+      checkStopParameters: [{ code_id: '', value: 0 }],
       //设备状态枚举
       deviceStatusConfig: {
         paramName: '',
@@ -378,8 +371,7 @@ export default {
       ],
       //参数选择
       paramOptions: [
-        { label: '参数1', value: 'param1' },
-        { label: '参数2', value: 'param2' }
+        // { code_id:'',desc:''}
       ],
       //数据表名
       tableOptions: [
@@ -419,6 +411,93 @@ export default {
         this.$message.error('初始化配置的站列表失败')
       }
     },
+    initConfig(){
+      const config = this.baseData.config
+    
+
+      this.startParameters = config.start_device  || [{ code_id: '', value: 0 }]
+      this.stopParameters = config.stop_device || [{ code_id: '', value: 0 }]
+
+      this.checkStartParameters = config.check_start_device.flatMap(item =>{
+        return item.value.map(val => ({ code_id: item.code_id, value: val }))
+      }) || [{ code_id: '', value: 0 }]
+      this.checkStopParameters = config.check_stop_device.flatMap(item =>{
+        return item.value.map(val => ({ code_id: item.code_id, value: val }))
+      }) || [{ code_id: '', value: 0 }]
+
+      console.log(this.startParameters)
+      console.log(this.checkStartParameters)
+      console.log(this.stopParameters)
+      console.log(this.checkStopParameters)
+      //设备状态枚举
+      this.deviceStatusConfig = {
+        paramName: config.device_status.code_id,
+        enums: config.device_status.status || [{ value: '', status: '' }],
+        statusEnumClassification: {
+          run_status: config.run_status || [],
+          stop_status: config.stop_status || [] 
+        }
+      },
+      // //通道号设置
+      // wnChannelNumber: '',
+      // wmChannelNumber: '',
+      // //计划数据
+      // planTableInfo:{
+      //   tableName:'',
+      //   sql:'',
+      //   tong_dao_column:'',
+      //   column:[
+      //     {set:'',check:'',column:''}
+      //   ]
+      // },
+      // //初始化设备数据设置
+      // initDeviceMappings: [
+      //   { set: '', check: '', value: 0 }
+      // ],
+      // //计量结果配置
+      // resultTableInfo: {
+      //   resultGroups: [
+      //     { name: '', save_type: 'tong_dao', table: '', column: [{ dbColumnField: '', params: [] }] }
+      //   ]
+      // },
+      // //出结果判断
+      // resultCheck: {
+      //   relation: 'and',
+      //   checks: [
+      //     { param: '', expression: '' }
+      //   ]
+      // },
+      // //可变参数选择
+      // changeParam: {
+      //   params: []
+      // },
+      // //二次计量
+      // emphasisPlan: {
+      //   plan: { set: '', check: '', value: 0 },
+      //   plan_time: { set: '', check: '' },
+      //   plan_sort: { set: '', check: '' }
+      // },
+      // //扩展信息
+      // extendConfig: {
+      //   meterResultBind: '',
+      //   filterRealTime: ''
+      // },
+      // //循环计量信息
+      // loopMeterInfo: {
+      //   paramName: '',
+      //   enable: false
+      // },
+      // //参数解压
+      // paramUncompress: [
+      //   { paramName: '', paramValue: 0 }
+      // ],
+      // //可变参数选择
+      // changeParamOptions: ["param1", "param2"],
+
+
+
+      console.log(config)
+    },
     //新增配置
     addConfig() {
       this.$message.info('新增配置')
@@ -436,6 +515,7 @@ export default {
       const selectedItem = this.allMeterConfig.find(item => item.config_id === configId)
       this.baseData.config = selectedItem.config
       //变更配置信息
+      this.initConfig()
     },
     //站选择变更事件
     async handleStationChange(stationId) {
