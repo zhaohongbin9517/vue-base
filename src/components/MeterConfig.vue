@@ -230,17 +230,17 @@
 
 <script>
 import { Setting, Collection, Plus, Check } from '@element-plus/icons-vue'
-import MeterConfigStartStopSetting from './MeterConfigStartStopSetting.vue'
-import MeterConfigDeviceStatusSetting from './MeterConfigDeviceStatusSetting.vue'
-import MeterConfigMeterTongDaoSetting from './MeterConfigMeterTongDaoSetting.vue'
-import MeterConfigPlanSetting from './MeterConfigPlanSetting.vue'
-import MeterConfigInitDeviceSetting from './MeterConfigInitDeviceSetting.vue'
-import MeterConfigResultSetting from './MeterConfigResultSetting.vue'
-import MeterConfigCheckResultSetting from './MeterConfigCheckResultSetting.vue'
-import MeterConfigChangeParamSetting from './MeterConfigChangeParamSetting.vue'
-import MeterConfigEmphasisPlanSetting from './MeterConfigEmphasisPlanSetting.vue'
-import MeterConfigExtendConfigSetting from './MeterConfigExtendConfigSetting.vue'
-import MeterConfigLoopMeterSetting from './MeterConfigLoopMeterSetting.vue'
+import MeterConfigStartStopSetting from './MeterConfigChild/MeterConfigStartStopSetting.vue'
+import MeterConfigDeviceStatusSetting from './MeterConfigChild/MeterConfigDeviceStatusSetting.vue'
+import MeterConfigMeterTongDaoSetting from './MeterConfigChild/MeterConfigMeterTongDaoSetting.vue'
+import MeterConfigPlanSetting from './MeterConfigChild/MeterConfigPlanSetting.vue'
+import MeterConfigInitDeviceSetting from './MeterConfigChild/MeterConfigInitDeviceSetting.vue'
+import MeterConfigResultSetting from './MeterConfigChild/MeterConfigResultSetting.vue'
+import MeterConfigCheckResultSetting from './MeterConfigChild/MeterConfigCheckResultSetting.vue'
+import MeterConfigChangeParamSetting from './MeterConfigChild/MeterConfigChangeParamSetting.vue'
+import MeterConfigEmphasisPlanSetting from './MeterConfigChild/MeterConfigEmphasisPlanSetting.vue'
+import MeterConfigExtendConfigSetting from './MeterConfigChild/MeterConfigExtendConfigSetting.vue'
+import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeterSetting.vue'
 
 export default {
   name: 'MeterConfig',
