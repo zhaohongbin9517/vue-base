@@ -192,6 +192,16 @@
       :paramOptions="paramOptions"
       @save-config="saveConfig"
     />
+
+    <!-- 二次计量 -->
+    <MeterConfigEmphasisPlanSetting 
+      v-model:emphasisPlan="emphasisPlan"
+      :title="'二次计量'"
+      :tips="''"
+      :name="'emphasisPlanSetting'"
+      :paramOptions="paramOptions"
+      @save-config="saveConfig"
+    />
    
 
   </div>
@@ -207,6 +217,7 @@ import MeterConfigInitDeviceSetting from './MeterConfigInitDeviceSetting.vue'
 import MeterConfigResultSetting from './MeterConfigResultSetting.vue'
 import MeterConfigCheckResultSetting from './MeterConfigCheckResultSetting.vue'
 import MeterConfigChangeParamSetting from './MeterConfigChangeParamSetting.vue'
+import MeterConfigEmphasisPlanSetting from './MeterConfigEmphasisPlanSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -222,7 +233,8 @@ export default {
     MeterConfigInitDeviceSetting,
     MeterConfigResultSetting,
     MeterConfigCheckResultSetting,
-    MeterConfigChangeParamSetting
+    MeterConfigChangeParamSetting,
+    MeterConfigEmphasisPlanSetting
   },
   setup() {
     return {
@@ -284,12 +296,24 @@ export default {
       changeParam: {
         params: []
       },
+      //二次计量
+      emphasisPlan: {
+        plan: {set:'',check:'',value:0},
+        plan_time: {set:'',check:''},
+        plan_sort: {set:'',check:''}
+      },
       //参数解压
       paramUncompress: [
         { paramName: '', paramValue: 0 }
       ],
       //可变参数选择
       changeParamOptions: ["param1", "param2"],
+      //二次计量
+      emphasis_plan:{
+        plan:{set:'',check:'',value:0},
+        plan_sort:{set:'',check:''},
+        plan_time:{set:'',check:''}
+      },
 
       //参数选择
       paramOptions: [
