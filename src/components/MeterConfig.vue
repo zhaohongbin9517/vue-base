@@ -2,9 +2,7 @@
   <div class="meter-config">
     <div class="page-header">
       <h2 class="page-title">
-        <el-icon class="title-icon">
-          <setting />
-        </el-icon>
+        <el-icon class="title-icon"><setting /></el-icon>
         计量配置
       </h2>
       <p class="page-desc">配置计量设备参数和启动设备参数设置</p>
@@ -14,9 +12,7 @@
     <el-card class="config-card" shadow="hover">
       <template #header>
         <div class="card-header">
-          <el-icon class="header-icon">
-            <collection />
-          </el-icon>
+          <el-icon class="header-icon"><collection /></el-icon>
           <span>配置基础</span>
         </div>
       </template>
@@ -30,46 +26,77 @@
           <el-option label="站2" value="station2" />
         </el-select>
         <el-button type="primary" @click="addConfig">
-          <el-icon>
-            <plus />
-          </el-icon>
+          <el-icon><plus /></el-icon>
           新增配置
         </el-button>
         <el-button type="success" @click="saveConfig">
-          <el-icon>
-            <check />
-          </el-icon>
+          <el-icon><check /></el-icon>
           保存配置
         </el-button>
       </div>
     </el-card>
 
     <!-- 启动设备参数设置 -->
-    <MeterConfigStartStopSetting :parameters="startParameters" :title="'启动设备参数设置'" :tips="'(同名参数只保留一个值)'"
-      :name="'startCode'" :param-options="paramOptions" @add-parameter="addParameter"
-      @remove-parameter="removeParameter" @save-config="saveConfig" />
+    <MeterConfigStartStopSetting 
+      :parameters="startParameters"
+      :title="'启动设备参数设置'"
+      :tips="'(同名参数只保留一个值)'"
+      :name="'startCode'"
+      :param-options="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+      @save-config="saveConfig"
+    />
     <!-- 启动检查参数设置 -->
-    <MeterConfigStartStopSetting :parameters="checkStartParameters" :title="'启动检查参数设置'" :tips="'(同名参数保留多个值)'"
-      :name="'checkStartCode'" :param-options="paramOptions" @add-parameter="addParameter"
-      @remove-parameter="removeParameter" @save-config="saveConfig" />
+    <MeterConfigStartStopSetting 
+      :parameters="checkStartParameters"
+      :title="'启动检查参数设置'"
+      :tips="'(同名参数保留多个值)'"
+      :name="'checkStartCode'"
+      :param-options="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+      @save-config="saveConfig"
+    />
 
     <!-- 停止设备参数设置 -->
-    <MeterConfigStartStopSetting :parameters="stopParameters" :title="'停止设备参数设置'" :tips="'(同名参数只保留一个值)'"
-      :name="'stopCode'" :param-options="paramOptions" @add-parameter="addParameter" @remove-parameter="removeParameter"
-      @save-config="saveConfig" />
+    <MeterConfigStartStopSetting 
+      :parameters="stopParameters"
+      :title="'停止设备参数设置'"
+      :tips="'(同名参数只保留一个值)'"
+      :name="'stopCode'"
+      :param-options="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+      @save-config="saveConfig"
+    />
     <!-- 停止检查参数设置 -->
-    <MeterConfigStartStopSetting :parameters="checkStopParameters" :title="'停止检查参数设置'" :tips="'(同名参数保留多个值)'"
-      :name="'checkStopCode'" :param-options="paramOptions" @add-parameter="addParameter"
-      @remove-parameter="removeParameter" @save-config="saveConfig" />
+    <MeterConfigStartStopSetting 
+      :parameters="checkStopParameters"
+      :title="'停止检查参数设置'"
+      :tips="'(同名参数保留多个值)'"
+      :name="'checkStopCode'"
+      :param-options="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+      @save-config="saveConfig"
+    />
 
     <!-- 
     设备状态枚举配置 
     启停状态枚举
     -->
-    <MeterConfigDeviceStatusSetting :config="deviceStatusConfig" :title="'设备状态枚举配置'" :name="'deviceStatusCode'"
-      :param-options="paramOptions" @update:paramName="updateDeviceStatusParamName"
-      @update:statusClassification="updateStatusClassification" @add-enum="addParameter" @remove-enum="removeParameter"
-      @save-config="saveConfig" />
+    <MeterConfigDeviceStatusSetting 
+      :config="deviceStatusConfig"
+      :title="'设备状态枚举配置'"
+      :name="'deviceStatusCode'"
+      :param-options="paramOptions"
+      @update:paramName="updateDeviceStatusParamName"
+      @update:statusClassification="updateStatusClassification"
+      @add-enum="addParameter"
+      @remove-enum="removeParameter"
+      @save-config="saveConfig"
+    />
 
     <!--
       通道号设置
@@ -79,45 +106,103 @@
       例如：用户输入”{}123{}“，则会识别出两个自定义参数选择，用户需要从paramOptions中选择对应的参数值,
       用户为第一个”{}“选择了参数param1，为第二个”{}“选择了参数param2,最后生成的通道号为”{param1}123{param2}“
     -->
-    <MeterConfigMeterTongDaoSetting :config="wnChannelNumber" :title="'当前计量通道号'" :name="'wnChannelNumber'"
-      :param-options="paramOptions" @update:channelNumber="updateChannelNumber" @save-config="saveConfig" />
+    <MeterConfigMeterTongDaoSetting 
+      :config="wnChannelNumber"
+      :title="'当前计量通道号'"
+      :name="'wnChannelNumber'"
+      :param-options="paramOptions"
+      @update:channelNumber="updateChannelNumber"
+      @save-config="saveConfig"
+    />
 
-    <MeterConfigMeterTongDaoSetting :config="wmChannelNumber" :title="'上次计量通道号'" :tips="'(主要用作统计结果时的通道确认)'"
-      :name="'wmChannelNumber'" :param-options="paramOptions" @update:channelNumber="updateChannelNumber"
-      @save-config="saveConfig" />
+    <MeterConfigMeterTongDaoSetting 
+      :config="wmChannelNumber"
+      :title="'上次计量通道号'"
+      :tips="'(主要用作统计结果时的通道确认)'"
+      :name="'wmChannelNumber'"
+      :param-options="paramOptions"
+      @update:channelNumber="updateChannelNumber"
+      @save-config="saveConfig"
+    />
 
     <!-- 计划数据配置 -->
-    <MeterConfigPlanSetting :title="'计划数据配置'" :tips="'(下发计划配置信息)'" :name="'planSetinfo'"
-      v-model:planTableInfo="planTableInfo" :tableOptions="tableOptions"
-      :planTableColumnOptions="planTableColumnOptions" :paramOptions="paramOptions" @save-config="saveConfig" />
+    <MeterConfigPlanSetting 
+      :title="'计划数据配置'"
+      :tips="'(下发计划配置信息)'"
+      :name="'planSetinfo'"
+      v-model:planTableInfo="planTableInfo"
+      :tableOptions="tableOptions"
+      :planTableColumnOptions="planTableColumnOptions"
+      :paramOptions="paramOptions"
+      @save-config="saveConfig"
+    />
 
     <!-- 初始化设备数据设置 -->
-    <MeterConfigInitDeviceSetting :mappings="initDeviceMappings" :title="'初始化设备数据设置'" :tips="''"
-      :name="'initDeviceSetting'" :paramOptions="paramOptions" @add-parameter="addParameter"
-      @remove-parameter="removeParameter" @save-config="saveConfig" />
+    <MeterConfigInitDeviceSetting 
+      :mappings="initDeviceMappings"
+      :title="'初始化设备数据设置'"
+      :tips="''"
+      :name="'initDeviceSetting'"
+      :paramOptions="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+      @save-config="saveConfig"
+    />
 
     <!-- 计量结果配置 -->
-    <MeterConfigResultSetting v-model:resultTableInfo="resultTableInfo" :title="'计量结果配置'" :tips="''"
-      :name="'resultSetting'" :tableOptions="tableOptions" :resultTableColumnOptions="resultTableColumnOptions"
-      :paramOptions="paramOptions" @save-config="saveConfig" />
+    <MeterConfigResultSetting 
+      v-model:resultTableInfo="resultTableInfo"
+      :title="'计量结果配置'"
+      :tips="''"
+      :name="'resultSetting'"
+      :tableOptions="tableOptions"
+      :resultTableColumnOptions="resultTableColumnOptions"
+      :paramOptions="paramOptions"
+      @save-config="saveConfig"
+    />
 
     <!-- 出结果判断 -->
-    <MeterConfigCheckResultSetting v-model:resultCheck="resultCheck" :title="'出结果判断'" :tips="''"
-      :name="'checkResultSetting'" :paramOptions="paramOptions" @save-config="saveConfig" />
+    <MeterConfigCheckResultSetting 
+      v-model:resultCheck="resultCheck"
+      :title="'出结果判断'"
+      :tips="''"
+      :name="'checkResultSetting'"
+      :paramOptions="paramOptions"
+      @save-config="saveConfig"
+    />
 
     <!--参数解压-->
-    <MeterConfigStartStopSetting :parameters="paramUncompress" :title="'参数解压设置'" :tips="'(同名参数只保留一个值)'"
-      :name="'paramUncompress'" :param-options="paramOptions" @add-parameter="addParameter"
-      @remove-parameter="removeParameter" @save-config="saveConfig" />
+    <MeterConfigStartStopSetting 
+      :parameters="paramUncompress"
+      :title="'参数解压设置'"
+      :tips="'(同名参数只保留一个值)'"
+      :name="'paramUncompress'"
+      :param-options="paramOptions"
+      @add-parameter="addParameter"
+      @remove-parameter="removeParameter"
+      @save-config="saveConfig"
+    />
 
     <!-- 可变参数选择 -->
-    <MeterConfigChangeParamSetting v-model:changeParam="changeParam" :title="'可修改参数选择'" :tips="''"
-      :name="'changeParamSetting'" :paramOptions="paramOptions" @save-config="saveConfig" />
+    <MeterConfigChangeParamSetting 
+      v-model:changeParam="changeParam"
+      :title="'可修改参数选择'"
+      :tips="''"
+      :name="'changeParamSetting'"
+      :paramOptions="paramOptions"
+      @save-config="saveConfig"
+    />
 
     <!-- 二次计量 -->
-    <MeterConfigEmphasisPlanSetting v-model:emphasisPlan="emphasisPlan" :title="'二次计量'" :tips="''"
-      :name="'emphasisPlanSetting'" :paramOptions="paramOptions" @save-config="saveConfig" />
-
+    <MeterConfigEmphasisPlanSetting 
+      v-model:emphasisPlan="emphasisPlan"
+      :title="'二次计量'"
+      :tips="''"
+      :name="'emphasisPlanSetting'"
+      :paramOptions="paramOptions"
+      @save-config="saveConfig"
+    />
+   
 
   </div>
 </template>
@@ -182,12 +267,12 @@ export default {
       wnChannelNumber: '',
       wmChannelNumber: '',
       //计划数据
-      planTableInfo: {
-        tableName: '',
-        sql: '',
-        tong_dao_column: '',
-        column: [
-          { set: '', check: '', column: '' }
+      planTableInfo:{
+        tableName:'',
+        sql:'',
+        tong_dao_column:'',
+        column:[
+          {set:'',check:'',column:''}
         ]
       },
       //初始化设备数据设置
@@ -223,12 +308,6 @@ export default {
       ],
       //可变参数选择
       changeParamOptions: ["param1", "param2"],
-      //二次计量
-      emphasis_plan: {
-        plan: { set: '', check: '', value: 0 },
-        plan_sort: { set: '', check: '' },
-        plan_time: { set: '', check: '' }
-      },
 
       //参数选择
       paramOptions: [
@@ -242,11 +321,11 @@ export default {
       ],
       //计划表字段映射
       planTableColumnOptions: [
-        { column_name: 'aaa' }
+        {column_name:'aaa'}
       ],
       //结果表字段映射
       resultTableColumnOptions: [
-        { column_name: 'aaa' }
+        {column_name:'aaa'}
       ],
     }
   },
@@ -261,22 +340,22 @@ export default {
     saveConfig() {
 
       console.log(this.startParameters),
-        console.log(this.checkStartParameters),
-        console.log(this.stopParameters),
-        console.log(this.checkStopParameters),
-        console.log(this.deviceStatusConfig),
-        console.log(this.wnChannelNumber),
-        console.log(this.wmChannelNumber),
-        console.log(this.planTableInfo),
-        console.log(this.paramUncompress)
+      console.log(this.checkStartParameters),
+      console.log(this.stopParameters),
+      console.log(this.checkStopParameters),
+      console.log(this.deviceStatusConfig),
+      console.log(this.wnChannelNumber),
+      console.log(this.wmChannelNumber),
+      console.log(this.planTableInfo),
+      console.log(this.paramUncompress)
 
       this.$message.success('保存配置成功')
     },
 
     //启动参数设置 启动检查参数设置、停止设备参数设置、停止检查参数设置 增加删除
-    addParameter(name) {
+    addParameter(name){
       console.log(name)
-      switch (name) {
+      switch(name){
         case "startCode":
           this.startParameters.push({ paramName: '', paramValue: 0 })
           break
@@ -301,9 +380,9 @@ export default {
       }
     },
 
-    removeParameter(name, index) {
+    removeParameter(name, index){
       console.log(name, index)
-      switch (name) {
+      switch(name){
         case "startCode":
           this.startParameters.splice(index, 1)
           break
@@ -329,19 +408,19 @@ export default {
     },
 
     //状态枚举增加删除
-    updateDeviceStatusParamName(value) {
+    updateDeviceStatusParamName(value){
       this.deviceStatusConfig.paramName = value
     },
-    updateStatusClassification(data) {
+    updateStatusClassification(data){
       const { type, value } = data
-      if (type === 'run_status' || type === 'stop_status') {
+      if(type === 'run_status' || type === 'stop_status'){
         this.deviceStatusConfig.statusEnumClassification[type] = value
       }
     },
 
     //通道号设置变更
-    updateChannelNumber(name, newChannelNumber) {
-      switch (name) {
+    updateChannelNumber(name, newChannelNumber){
+      switch(name){
         case "wnChannelNumber":
           this.wnChannelNumber = newChannelNumber
           break
