@@ -212,6 +212,17 @@
       :modulesChoose="modulesChoose"
       @save-config="saveConfig"
     />
+
+    <!-- 循环计量信息 -->
+    <MeterConfigLoopMeterSetting 
+      v-model:loopMeterInfo="loopMeterInfo"
+      :title="'循环计量信息'"
+      :tips="''"
+      :name="'loopMeterSetting'"
+      :paramOptions="paramOptions"
+      @save-config="saveConfig"
+    />
+   
    
 
   </div>
@@ -229,6 +240,7 @@ import MeterConfigCheckResultSetting from './MeterConfigCheckResultSetting.vue'
 import MeterConfigChangeParamSetting from './MeterConfigChangeParamSetting.vue'
 import MeterConfigEmphasisPlanSetting from './MeterConfigEmphasisPlanSetting.vue'
 import MeterConfigExtendConfigSetting from './MeterConfigExtendConfigSetting.vue'
+import MeterConfigLoopMeterSetting from './MeterConfigLoopMeterSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -246,7 +258,8 @@ export default {
     MeterConfigCheckResultSetting,
     MeterConfigChangeParamSetting,
     MeterConfigEmphasisPlanSetting,
-    MeterConfigExtendConfigSetting
+    MeterConfigExtendConfigSetting,
+    MeterConfigLoopMeterSetting
   },
   setup() {
     return {
@@ -319,13 +332,17 @@ export default {
         meterResultBind: '',
         filterRealTime: ''
       },
+      //循环计量信息
+      loopMeterInfo: {
+        paramName: '',
+        enable: false
+      },
       //参数解压
       paramUncompress: [
         { paramName: '', paramValue: 0 }
       ],
       //可变参数选择
       changeParamOptions: ["param1", "param2"],
-
 
       //模块选择
       modulesChoose: [
