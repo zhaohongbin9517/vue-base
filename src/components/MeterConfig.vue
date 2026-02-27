@@ -202,6 +202,16 @@
       :paramOptions="paramOptions"
       @save-config="saveConfig"
     />
+
+    <!-- 扩展信息 -->
+    <MeterConfigExtendConfigSetting 
+      v-model:extendConfig="extendConfig"
+      :title="'扩展信息'"
+      :tips="''"
+      :name="'extendConfigSetting'"
+      :modulesChoose="modulesChoose"
+      @save-config="saveConfig"
+    />
    
 
   </div>
@@ -218,6 +228,7 @@ import MeterConfigResultSetting from './MeterConfigResultSetting.vue'
 import MeterConfigCheckResultSetting from './MeterConfigCheckResultSetting.vue'
 import MeterConfigChangeParamSetting from './MeterConfigChangeParamSetting.vue'
 import MeterConfigEmphasisPlanSetting from './MeterConfigEmphasisPlanSetting.vue'
+import MeterConfigExtendConfigSetting from './MeterConfigExtendConfigSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -234,7 +245,8 @@ export default {
     MeterConfigResultSetting,
     MeterConfigCheckResultSetting,
     MeterConfigChangeParamSetting,
-    MeterConfigEmphasisPlanSetting
+    MeterConfigEmphasisPlanSetting,
+    MeterConfigExtendConfigSetting
   },
   setup() {
     return {
@@ -302,6 +314,11 @@ export default {
         plan_time: { set: '', check: '' },
         plan_sort: { set: '', check: '' }
       },
+      //扩展信息
+      extendConfig: {
+        meterResultBind: '',
+        filterRealTime: ''
+      },
       //参数解压
       paramUncompress: [
         { paramName: '', paramValue: 0 }
@@ -309,6 +326,21 @@ export default {
       //可变参数选择
       changeParamOptions: ["param1", "param2"],
 
+
+      //模块选择
+      modulesChoose: [
+        { label: '获取计量结果绑定采集点-默认', value: '0' },
+        { label: '获取计量结果绑定采集点-百口泉瑞飞', value: '1' },
+        { label: '过滤实时数据-默认', value: '2' },
+        { label: '过滤实时数据-百口泉瑞飞', value: '3' }
+      ],
+      //全部模块功能枚举
+      modulesBase:[
+        {index:'0',module: 'tmms_station_meter_result_lib', func:'get_result_tags_default', desc:'获取计量结果绑定采集点-默认'},
+        {index:'1',module: 'tmms_station_meter_result_lib', func:'get_result_tags_ruifei', desc:'获取计量结果绑定采集点-百口泉瑞飞'},
+        {index:'2',module: 'tmms_station_meter_result_lib', func:'filter_real_meter_data_default', desc:'过滤实时数据-默认'},
+        {index:'3',module: 'tmms_station_meter_result_lib', func:'filter_real_meter_data_ruifei', desc:'过滤实时数据-百口泉瑞飞'},
+      ],
       //参数选择
       paramOptions: [
         { label: '参数1', value: 'param1' },
