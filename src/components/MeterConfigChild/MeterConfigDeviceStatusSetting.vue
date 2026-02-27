@@ -8,6 +8,12 @@
           <el-icon><check /></el-icon>
           保存配置
         </el-button>
+
+         <el-button type="success" size="small" @click="printConfig" class="save-param-btn">
+          <el-icon><check /></el-icon>
+          打印数据
+        </el-button>
+
       </div>
     </template>
     
@@ -38,7 +44,18 @@
     <el-table :data="enums" border class="config-table" stripe>
       <el-table-column prop="value" label="值" min-width="150">
         <template #default="{ row }">
-          <el-input-number v-model="row.value" placeholder="请输入值" :min="0" controls-position="right" />
+          <el-input-number 
+            v-if="typeof row.value === 'number'" 
+            v-model="row.value" 
+            placeholder="请输入值" 
+            :min="0" 
+            controls-position="right" 
+          />
+          <el-input 
+            v-else 
+            v-model="row.value" 
+            placeholder="请输入值" 
+          />
         </template>
       </el-table-column>
       <el-table-column prop="status" label="状态(英文)" min-width="150">
@@ -233,6 +250,9 @@ export default {
     },
     saveConfig() {
       this.$emit('save-config')
+    },
+    printConfig() {
+      console.log(this.config)
     }
   }
 }

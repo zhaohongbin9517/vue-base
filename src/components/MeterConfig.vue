@@ -112,7 +112,7 @@
 
     <!--通道号设置 -->
     <MeterConfigMeterTongDaoSetting 
-      :config="wnChannelNumber"
+      :channelNumber="wnChannelNumber"
       :title="'当前计量通道号'"
       :name="'wnChannelNumber'"
       :param-options="paramOptions"
@@ -121,7 +121,7 @@
     />
 
     <MeterConfigMeterTongDaoSetting 
-      :config="wmChannelNumber"
+      :channelNumber="wmChannelNumber"
       :title="'上次计量通道号'"
       :tips="'(主要用作统计结果时的通道确认)'"
       :name="'wmChannelNumber'"
@@ -246,7 +246,7 @@ import MeterConfigChangeParamSetting from './MeterConfigChild/MeterConfigChangeP
 import MeterConfigEmphasisPlanSetting from './MeterConfigChild/MeterConfigEmphasisPlanSetting.vue'
 import MeterConfigExtendConfigSetting from './MeterConfigChild/MeterConfigExtendConfigSetting.vue'
 import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeterSetting.vue'
-import { getAllMeterConfig,getAllStationTagKey,getStationCode } from '@/api/config'
+import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName ,getTableColumn} from '@/api/config'
 
 export default {
   name: 'MeterConfig',
@@ -349,11 +349,8 @@ export default {
         enable: false
       },
       //参数解压
-      paramUncompress: [
-        { paramName: '', paramValue: 0 }
-      ],
-      //可变参数选择
-      changeParamOptions: ["param1", "param2"],
+      paramUncompress: [{ code_id: '', value: 0 }],
+
 
       //模块选择
       modulesChoose: [
@@ -401,11 +398,23 @@ export default {
       try {
         const data = await getAllMeterConfig()
         const stationIds = await getAllStationTagKey()
+        const allTable = await getAllTableName()
         this.allMeterConfig =data
         this.allStations = stationIds.map(stationId => ({
           label: stationId,
           value: stationId
         }))
+        this.tableOptions = allTable.table_names.map(name => ({
+          label: name,
+          value: name
+        }))
+        //默认先选择一个配置
+        this.baseData.configId = 'Z01SAGD_3'
+        const selectedItem = this.allMeterConfig.find(item => item.config_id === 'Z01SAGD_3')
+        this.baseData.config = selectedItem.config
+        this.baseData.stationId = selectedItem.meter_station_id
+        this.initConfig()
+        this.handleStationChange(selectedItem.meter_station_id)
       } catch (error) {
         console.error('初始化配置的站列表失败:', error)
         this.$message.error('初始化配置的站列表失败')
@@ -413,7 +422,6 @@ export default {
     },
     initConfig(){
       const config = this.baseData.config
-    
 
       this.startParameters = config.start_device  || [{ code_id: '', value: 0 }]
       this.stopParameters = config.stop_device || [{ code_id: '', value: 0 }]
@@ -425,78 +433,111 @@ export default {
         return item.value.map(val => ({ code_id: item.code_id, value: val }))
       }) || [{ code_id: '', value: 0 }]
 
-      console.log(this.startParameters)
-      console.log(this.checkStartParameters)
-      console.log(this.stopParameters)
-      console.log(this.checkStopParameters)
-      //设备状态枚举
-      this.deviceStatusConfig = {
-        paramName: config.device_status.code_id,
-        enums: config.device_status.status || [{ value: '', status: '' }],
-        statusEnumClassification: {
-          run_status: config.run_status || [],
-          stop_status: config.stop_status || [] 
+      //通道号设置
+      this.wnChannelNumber = config.wn || ''
+      this.wmChannelNumber = config.wm || ''
+
+      //计划数据
+      this.planTableInfo={
+        tableName:config.plan_table.table || '',
+        sql:config.plan_table.sql || '',
+        tong_dao_column:config.plan_table.tong_dao_column || '',
+        column:config.plan_table.column.map(item => ({set:item.set,check:item.check,column:item.column || item.cloumn})) || [ {set:'',check:'',column:''} ]
+      }
+      if(config.plan_table.table){
+        this.loadPlanTableColumn()
+      }
+      
+      //初始化设备数据设置
+      this.initDeviceMappings= config.init_device
+
+      //计量结果配置
+      this.resultTableInfo= {
+        resultGroups: config.result.map(item => ({
+          name: item.name || 'result1',
+          save_type: item.save_type || '',
+          table: item.table || '',
+          column: Object.entries(item.column || {}).map(([key, value]) => ({ dbColumnField: key,  params: value })) || [{ dbColumnField: '', params: [] }]
+        })) 
+      }
+
+      //出结果判断
+      this.resultCheck= {
+        relation: config.check_result.relation || '',
+        checks: config.check_result.condition.map(item => ({ param: item.code_id || '', expression: item.expression || '' })) || []
+      }
+
+      //可变参数选择
+      this.changeParam= {
+        params: config.change_code_id || []
+      }
+
+      //参数解压
+      this.paramUncompress=  Object.entries(config.code_id_uncompress || {}).map(([key, value]) => 
+      ({ code_id: key,  value: value })) || [{ code_id: '', value: 0 }]
+
+      //循环计量信息
+      this.loopMeterInfo= {
+        paramName: config.meter_loop.code_id || '',
+        enable: config.meter_loop_enable|| false
+      }
+
+      //扩展信息
+      // 扩展信息：全链路判空，避免任意层级属性/方法调用报错
+      // 1. 先逐层解构+兜底，避免深层属性访问报错
+      const extendConfig = config.extend_config || {}; // 兜底extend_config
+      const getResultTags = extendConfig.get_result_tags || {}; // 兜底get_result_tags
+      const filterRealMeterData = extendConfig.filter_real_meter_data || {}; // 兜底filter_real_meter_data
+
+      // 2. 封装通用查找方法（减少冗余，统一判空逻辑）
+      const findModule = (moduleVal, funcVal) => {
+        // 先判断modulesBase是有效数组，且module/func有值，再执行find
+        if (!Array.isArray(this.modulesBase) || !moduleVal || !funcVal) {
+          return null;
         }
-      },
-      // //通道号设置
-      // wnChannelNumber: '',
-      // wmChannelNumber: '',
-      // //计划数据
-      // planTableInfo:{
-      //   tableName:'',
-      //   sql:'',
-      //   tong_dao_column:'',
-      //   column:[
-      //     {set:'',check:'',column:''}
-      //   ]
-      // },
-      // //初始化设备数据设置
-      // initDeviceMappings: [
-      //   { set: '', check: '', value: 0 }
-      // ],
-      // //计量结果配置
-      // resultTableInfo: {
-      //   resultGroups: [
-      //     { name: '', save_type: 'tong_dao', table: '', column: [{ dbColumnField: '', params: [] }] }
-      //   ]
-      // },
-      // //出结果判断
-      // resultCheck: {
-      //   relation: 'and',
-      //   checks: [
-      //     { param: '', expression: '' }
-      //   ]
-      // },
-      // //可变参数选择
-      // changeParam: {
-      //   params: []
-      // },
-      // //二次计量
-      // emphasisPlan: {
-      //   plan: { set: '', check: '', value: 0 },
-      //   plan_time: { set: '', check: '' },
-      //   plan_sort: { set: '', check: '' }
-      // },
-      // //扩展信息
-      // extendConfig: {
-      //   meterResultBind: '',
-      //   filterRealTime: ''
-      // },
-      // //循环计量信息
-      // loopMeterInfo: {
-      //   paramName: '',
-      //   enable: false
-      // },
-      // //参数解压
-      // paramUncompress: [
-      //   { paramName: '', paramValue: 0 }
-      // ],
-      // //可变参数选择
-      // changeParamOptions: ["param1", "param2"],
+        // find回调中先判空item，再比较属性
+        return this.modulesBase.find(item => 
+          item && item.module === moduleVal && item.func === funcVal
+        );
+      };
+
+      // 3. 查找匹配模块（传入兜底后的module/func）
+      const selectedModules1 = findModule(getResultTags.module, getResultTags.func);
+      const selectedModules2 = findModule(filterRealMeterData.module, filterRealMeterData.func);
+
+      // 4. 赋值extendConfig：对查找结果兜底，避免访问index报错
+      this.extendConfig = {
+        meterResultBind: selectedModules1?.index || '', // 可选链+默认值
+        filterRealTime: selectedModules2?.index || ''   // 可选链+默认值
+      };
+
+      //二次计量
+      this.emphasisPlan= {
+        plan: config.emphasis_plan.plan || { set: '', check: '', value: 0 },
+        plan_time: config.emphasis_plan.plan_time || { set: '', check: '' },
+        plan_sort: config.emphasis_plan.plan_sort || { set: '', check: '' }
+      }
 
 
-
-      console.log(config)
+      //待处理
+      // //设备状态枚举
+      // this.deviceStatusConfig = {
+      //   paramName: config.device_status.code_id,
+      //   enums: config.device_status.status || [{ value: '', status: '' }],
+      //   statusEnumClassification: {
+      //     run_status: config.run_status || [],
+      //     stop_status: config.stop_status || [] 
+      //   }
+      // },
+    },
+    async loadPlanTableColumn(){
+      try {
+        const planTableColumnData = await getTableColumn(this.baseData.config.plan_table.table,'meter_plan')
+        this.planTableColumnOptions = planTableColumnData || {column_name:'aaa'}
+      } catch (error) {
+        console.error('获取计划表名失败:', error)
+        this.$message.error('获取计划表名失败')
+      }
     },
     //新增配置
     addConfig() {
@@ -511,7 +552,7 @@ export default {
       this.$message.success('保存配置成功')
     },
     //配置选择变更事件
-    handleConfigChange(configId) {
+    async handleConfigChange(configId) {
       const selectedItem = this.allMeterConfig.find(item => item.config_id === configId)
       this.baseData.config = selectedItem.config
       //变更配置信息
@@ -521,7 +562,7 @@ export default {
     async handleStationChange(stationId) {
       try {
         const data = await getStationCode(stationId)
-        this.paramOptions = data
+        this.paramOptions = data || []
       } catch (error) {
         console.error('获取站参数失败:', error)
         this.$message.error('获取站参数失败')
