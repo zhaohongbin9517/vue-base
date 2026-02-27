@@ -19,9 +19,9 @@
             <el-select v-model="localEmphasisPlan.plan.set" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
-                :key="option.value" 
-                :label="option.label" 
-                :value="option.value" 
+                :key="option.code_id" 
+                :label="option.desc" 
+                :value="option.code_id" 
               />
             </el-select>
           </div>
@@ -30,9 +30,9 @@
             <el-select v-model="localEmphasisPlan.plan.check" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
-                :key="option.value" 
-                :label="option.label" 
-                :value="option.value" 
+                :key="option.code_id" 
+                :label="option.desc" 
+                :value="option.code_id" 
               />
             </el-select>
           </div>
@@ -56,9 +56,9 @@
             <el-select v-model="localEmphasisPlan.plan_time.set" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
-                :key="option.value" 
-                :label="option.label" 
-                :value="option.value" 
+                :key="option.code_id" 
+                :label="option.desc" 
+                :value="option.code_id" 
               />
             </el-select>
           </div>
@@ -67,9 +67,9 @@
             <el-select v-model="localEmphasisPlan.plan_time.check" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
-                :key="option.value" 
-                :label="option.label" 
-                :value="option.value" 
+                :key="option.code_id" 
+                :label="option.desc" 
+                :value="option.code_id" 
               />
             </el-select>
           </div>
@@ -82,9 +82,9 @@
             <el-select v-model="localEmphasisPlan.plan_sort.set" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
-                :key="option.value" 
-                :label="option.label" 
-                :value="option.value" 
+                :key="option.code_id" 
+                :label="option.desc" 
+                :value="option.code_id" 
               />
             </el-select>
           </div>
@@ -93,9 +93,9 @@
             <el-select v-model="localEmphasisPlan.plan_sort.check" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
-                :key="option.value" 
-                :label="option.label" 
-                :value="option.value" 
+                :key="option.code_id" 
+                :label="option.desc" 
+                :value="option.code_id" 
               />
             </el-select>
           </div>

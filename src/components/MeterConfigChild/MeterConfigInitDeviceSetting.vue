@@ -20,9 +20,9 @@
           <el-select v-model="row.set" placeholder="请选择参数">
             <el-option 
               v-for="option in paramOptions" 
-              :key="option.value" 
-              :label="option.label" 
-              :value="option.value" 
+              :key="option.code_id" 
+              :label="option.desc" 
+              :value="option.code_id" 
             />
           </el-select>
         </template>
@@ -32,9 +32,9 @@
           <el-select v-model="row.check" placeholder="请选择参数">
             <el-option 
               v-for="option in paramOptions" 
-              :key="option.value" 
-              :label="option.label" 
-              :value="option.value" 
+              :key="option.code_id" 
+              :label="option.desc" 
+              :value="option.code_id" 
             />
           </el-select>
         </template>

@@ -51,3 +51,28 @@ export function updateTmmsConfigPlan(data) {
 export function updateTmmsConfigResult(data) {
   return post('/tmms_config/update_tmms_config_result', data)
 }
+
+
+/**
+ * 获取所有配置信息
+ * @returns {Promise<Array>} 配置信息列表
+ */
+export function getAllMeterConfig() {
+  return get('/tmms_config/get_meter_config')
+}
+
+/**
+ * 获取所有配了参数的站id
+ * @returns {Promise<Array>} 站id列表
+ */
+export function getAllStationTagKey() {
+  return get('/tmms_config/get_all_station_tag_key')
+}
+
+/**
+ * 获取所有配了参数的站id
+ * @returns {Promise<Array>} 站id列表
+ */
+export function getStationCode(stationId) {
+  return get('/tmms_config/get_station_code', {station_id : stationId})
+}

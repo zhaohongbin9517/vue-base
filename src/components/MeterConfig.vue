@@ -17,17 +17,29 @@
         </div>
       </template>
       <div class="base-config">
-        <el-select v-model="configType" placeholder="请选择配置" class="config-select">
-          <el-option label="配置1" value="config1" />
-          <el-option label="配置2" value="config2" />
+        <el-select v-model="baseData.configId" @change="handleConfigChange" placeholder="请选择配置" class="config-select">
+          <el-option 
+          v-for="item in allMeterConfig" 
+          :key="item.config_id" 
+          :label="item.name" 
+          :value="item.config_id"
+          />
         </el-select>
-        <el-select v-model="stationId" placeholder="请选择站" class="station-select">
-          <el-option label="站1" value="station1" />
-          <el-option label="站2" value="station2" />
+        <el-select v-model="baseData.stationId" @change="handleStationChange" placeholder="请选择站" class="station-select">
+          <el-option 
+          v-for="item in allStations" 
+          :key="item.value" 
+          :label="item.label" 
+          :value="item.value"
+          />
         </el-select>
         <el-button type="primary" @click="addConfig">
           <el-icon><plus /></el-icon>
           新增配置
+        </el-button>
+        <el-button type="primary" @click="resetConfig">
+          <el-icon><refresh-right /></el-icon>
+          取消修改
         </el-button>
         <el-button type="success" @click="saveConfig">
           <el-icon><check /></el-icon>
@@ -229,7 +241,7 @@
 </template>
 
 <script>
-import { Setting, Collection, Plus, Check } from '@element-plus/icons-vue'
+import { Setting, Collection, Plus, Check ,RefreshRight} from '@element-plus/icons-vue'
 import MeterConfigStartStopSetting from './MeterConfigChild/MeterConfigStartStopSetting.vue'
 import MeterConfigDeviceStatusSetting from './MeterConfigChild/MeterConfigDeviceStatusSetting.vue'
 import MeterConfigMeterTongDaoSetting from './MeterConfigChild/MeterConfigMeterTongDaoSetting.vue'
@@ -241,10 +253,12 @@ import MeterConfigChangeParamSetting from './MeterConfigChild/MeterConfigChangeP
 import MeterConfigEmphasisPlanSetting from './MeterConfigChild/MeterConfigEmphasisPlanSetting.vue'
 import MeterConfigExtendConfigSetting from './MeterConfigChild/MeterConfigExtendConfigSetting.vue'
 import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeterSetting.vue'
+import { getAllMeterConfig,getAllStationTagKey,getStationCode } from '@/api/config'
 
 export default {
   name: 'MeterConfig',
   components: {
+    RefreshRight,
     Setting,
     Collection,
     Plus,
@@ -269,8 +283,12 @@ export default {
   },
   data() {
     return {
-      configType: '',
-      stationId: '',
+      //基础信息
+      baseData:{
+        configId:'',   //计量配置id
+        stationId:'',  //站点id
+        config:{}      //配置信息
+      },
       //启动设备参数设置
       startParameters: [{ paramName: '', paramValue: 0 }],
       //启动检查参数设置
@@ -376,29 +394,58 @@ export default {
       resultTableColumnOptions: [
         {column_name:'aaa'}
       ],
+      //全部计量配置
+      allMeterConfig:[],
+      allStations:[]
     }
   },
   mounted() {
     //初始化数据
-    // this.fetchTableOptions()
+    this.init()
   },
   methods: {
+    //初始化全部计量配置
+    async init(){
+      try {
+        const data = await getAllMeterConfig()
+        const stationIds = await getAllStationTagKey()
+        this.allMeterConfig =data
+        this.allStations = stationIds.map(stationId => ({
+          label: stationId,
+          value: stationId
+        }))
+      } catch (error) {
+        console.error('初始化配置的站列表失败:', error)
+        this.$message.error('初始化配置的站列表失败')
+      }
+    },
+    //新增配置
     addConfig() {
       this.$message.info('新增配置')
     },
+    //重置配置
+    resetConfig() {
+      this.$message.info('刷新配置')
+    },
+    //保存配置
     saveConfig() {
-
-      console.log(this.startParameters),
-      console.log(this.checkStartParameters),
-      console.log(this.stopParameters),
-      console.log(this.checkStopParameters),
-      console.log(this.deviceStatusConfig),
-      console.log(this.wnChannelNumber),
-      console.log(this.wmChannelNumber),
-      console.log(this.planTableInfo),
-      console.log(this.paramUncompress)
-
       this.$message.success('保存配置成功')
+    },
+    //配置选择变更事件
+    handleConfigChange(configId) {
+      const selectedItem = this.allMeterConfig.find(item => item.config_id === configId)
+      this.baseData.config = selectedItem.config
+      //变更配置信息
+    },
+    //站选择变更事件
+    async handleStationChange(stationId) {
+      try {
+        const data = await getStationCode(stationId)
+        this.paramOptions = data
+      } catch (error) {
+        console.error('获取站参数失败:', error)
+        this.$message.error('获取站参数失败')
+      }
     },
 
     //启动参数设置 启动检查参数设置、停止设备参数设置、停止检查参数设置 增加删除
