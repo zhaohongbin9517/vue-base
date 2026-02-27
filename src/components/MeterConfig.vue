@@ -183,10 +183,15 @@
       @save-config="saveConfig"
     />
 
-    <!-- 
-    可变参数选择
-    一个下拉框，用户可以从paramOptions中选择多个参数，每个参数之间用逗号隔开
-    -->
+    <!-- 可变参数选择 -->
+    <MeterConfigChangeParamSetting 
+      v-model:changeParam="changeParam"
+      :title="'可修改参数选择'"
+      :tips="''"
+      :name="'changeParamSetting'"
+      :paramOptions="paramOptions"
+      @save-config="saveConfig"
+    />
    
 
   </div>
@@ -201,6 +206,7 @@ import MeterConfigPlanSetting from './MeterConfigPlanSetting.vue'
 import MeterConfigInitDeviceSetting from './MeterConfigInitDeviceSetting.vue'
 import MeterConfigResultSetting from './MeterConfigResultSetting.vue'
 import MeterConfigCheckResultSetting from './MeterConfigCheckResultSetting.vue'
+import MeterConfigChangeParamSetting from './MeterConfigChangeParamSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -215,7 +221,8 @@ export default {
     MeterConfigPlanSetting,
     MeterConfigInitDeviceSetting,
     MeterConfigResultSetting,
-    MeterConfigCheckResultSetting
+    MeterConfigCheckResultSetting,
+    MeterConfigChangeParamSetting
   },
   setup() {
     return {
@@ -270,8 +277,12 @@ export default {
       resultCheck: {
         relation: 'and',
         checks: [
-          { param: '', expression:''}
+          { param: '', expression: '' }
         ]
+      },
+      //可变参数选择
+      changeParam: {
+        params: []
       },
       //参数解压
       paramUncompress: [
