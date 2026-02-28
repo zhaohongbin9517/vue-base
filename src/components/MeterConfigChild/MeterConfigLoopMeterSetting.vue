@@ -13,7 +13,13 @@
 
     <el-form :model="localLoopMeterInfo" label-width="180px">
       <el-form-item label="循环计量参数：">
-        <el-select v-model="localLoopMeterInfo.paramName" @change="updateLoopMeterInfo" placeholder="请选择参数" class="form-select">
+        <el-select 
+        v-model="localLoopMeterInfo.paramName" 
+        @change="updateLoopMeterInfo" 
+        placeholder="请选择参数" 
+        filterable
+        :class="{'is-error': codeIdIsValidParam(localLoopMeterInfo.paramName)}" 
+        class="form-select">
           <el-option 
             v-for="option in paramOptions" 
             :key="option.code_id" 
@@ -84,6 +90,12 @@ export default {
     }
   },
   methods: {
+    codeIdIsValidParam(codeId) {
+      // 如果没有选择参数，无效
+      if (!codeId || this.paramOptions.length === 0)  return true
+      // 检查选择的参数是否在选项中
+      return !this.paramOptions.some(option => option.code_id === codeId)
+    },
     syncLocalData() {
       this.localLoopMeterInfo = JSON.parse(JSON.stringify(this.loopMeterInfo))
     },
@@ -130,6 +142,14 @@ export default {
 .form-select {
   width: 400px;
   min-width: 200px;
+}
+.form-select.is-error :deep(.el-input__wrapper) {
+  box-shadow: 0 0 0 1px #f56c6c inset;
+}
+
+.form-select.is-error :deep(.el-input__inner),
+.form-select.is-error :deep(.el-select__selected-item) {
+  color: #f56c6c !important;
 }
 
 /* 确保在小屏幕上也能正常显示 */

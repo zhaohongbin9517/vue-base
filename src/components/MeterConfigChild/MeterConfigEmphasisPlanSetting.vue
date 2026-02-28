@@ -16,7 +16,13 @@
         <div class="form-row">
           <div class="form-col">
             <span class="form-col-label">设置：</span>
-            <el-select v-model="localEmphasisPlan.plan.set" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
+            <el-select 
+            v-model="localEmphasisPlan.plan.set" 
+            @change="updateEmphasisPlan" 
+            placeholder="请选择参数" 
+            filterable
+            :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan.set)}" 
+            class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
                 :key="option.code_id" 
@@ -27,7 +33,13 @@
           </div>
           <div class="form-col">
             <span class="form-col-label">检查：</span>
-            <el-select v-model="localEmphasisPlan.plan.check" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
+            <el-select 
+            v-model="localEmphasisPlan.plan.check" 
+            @change="updateEmphasisPlan" 
+            placeholder="请选择参数" 
+            filterable
+            :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan.check)}" 
+            class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
                 :key="option.code_id" 
@@ -53,7 +65,13 @@
         <div class="form-row">
           <div class="form-col">
             <span class="form-col-label">设置：</span>
-            <el-select v-model="localEmphasisPlan.plan_time.set" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
+            <el-select 
+            v-model="localEmphasisPlan.plan_time.set" 
+            @change="updateEmphasisPlan" 
+            placeholder="请选择参数" 
+            filterable
+            :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan_time.set)}" 
+            class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
                 :key="option.code_id" 
@@ -64,7 +82,13 @@
           </div>
           <div class="form-col">
             <span class="form-col-label">检查：</span>
-            <el-select v-model="localEmphasisPlan.plan_time.check" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
+            <el-select 
+            v-model="localEmphasisPlan.plan_time.check" 
+            @change="updateEmphasisPlan" 
+            placeholder="请选择参数" 
+            filterable
+            :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan_time.check)}" 
+            class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
                 :key="option.code_id" 
@@ -79,7 +103,13 @@
         <div class="form-row">
           <div class="form-col">
             <span class="form-col-label">设置：</span>
-            <el-select v-model="localEmphasisPlan.plan_sort.set" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
+            <el-select 
+            v-model="localEmphasisPlan.plan_sort.set" 
+            @change="updateEmphasisPlan" 
+            placeholder="请选择参数" 
+            filterable
+            :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan_sort.set)}" 
+            class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
                 :key="option.code_id" 
@@ -90,7 +120,13 @@
           </div>
           <div class="form-col">
             <span class="form-col-label">检查：</span>
-            <el-select v-model="localEmphasisPlan.plan_sort.check" @change="updateEmphasisPlan" placeholder="请选择参数" class="form-select">
+            <el-select 
+            v-model="localEmphasisPlan.plan_sort.check" 
+            @change="updateEmphasisPlan" 
+            placeholder="请选择参数" 
+            filterable
+            :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan_sort.check)}" 
+            class="form-select">
               <el-option 
                 v-for="option in paramOptions" 
                 :key="option.code_id" 
@@ -161,6 +197,12 @@ export default {
     }
   },
   methods: {
+    codeIdIsValidParam(codeId) {
+      // 如果没有选择参数，无效
+      if (!codeId || this.paramOptions.length === 0)  return true
+      // 检查选择的参数是否在选项中
+      return !this.paramOptions.some(option => option.code_id === codeId)
+    },
     syncLocalData() {
       this.localEmphasisPlan = JSON.parse(JSON.stringify(this.emphasisPlan))
     },
@@ -231,6 +273,14 @@ export default {
   /* width: calc(100% - 68px); */
   width: 200px;
   min-width: 120px;
+}
+.form-select.is-error :deep(.el-input__wrapper) {
+  box-shadow: 0 0 0 1px #f56c6c inset;
+}
+
+.form-select.is-error :deep(.el-input__inner),
+.form-select.is-error :deep(.el-select__selected-item) {
+  color: #f56c6c !important;
 }
 
 .form-input-number {
