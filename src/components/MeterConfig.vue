@@ -227,14 +227,6 @@
       :paramOptions="paramOptions"
       @save-config="saveConfig"
     />
-   
-
-    
-    <!-- 循环计量信息 -->
-    <RedTest 
-    />
-   
-   
 
   </div>
 </template>
@@ -254,12 +246,9 @@ import MeterConfigExtendConfigSetting from './MeterConfigChild/MeterConfigExtend
 import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeterSetting.vue'
 import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName} from '@/api/config'
 
-import RedTest from './MeterConfigChild/red-test.vue'
-
 export default {
   name: 'MeterConfig',
   components: {
-    RedTest,
     RefreshRight,
     Setting,
     Collection,

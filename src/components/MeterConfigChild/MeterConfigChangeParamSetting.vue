@@ -14,6 +14,7 @@
     <el-form :model="localChangeParam" label-width="120px">
       <el-form-item label="可变参数：">
         <el-select 
+          v-if="Array.isArray(localChangeParam.params)"
           v-model="localChangeParam.params" 
           @change="updateChangeParam" 
           multiple 
@@ -25,8 +26,19 @@
             v-for="option in paramOptions" 
             :key="option.code_id" 
             :label="option.desc" 
-            :value="option.code_id" 
-          />
+            :value="option.code_id">
+            <span style="float: left">{{ option.desc }}</span>
+            <span style="float: right; color: #8492a6; font-size: 13px">{{ option.code_id }}</span> 
+          </el-option>
+            <template #tag>
+              <el-tag 
+              v-for="param in localChangeParam.params" 
+              :key="param" 
+              closable
+              @close="removeParam(param)"
+              :color="getTagColor(param)"
+              >{{ param }}</el-tag>
+            </template>
         </el-select>
       </el-form-item>
     </el-form>
@@ -87,6 +99,15 @@ export default {
     }
   },
   methods: {
+    removeParam(param) {
+      this.localChangeParam.params = this.localChangeParam.params.filter(item => item !== param)
+      this.updateChangeParam()
+    },
+    getTagColor(param) {
+      if(this.paramOptions.length === 0)  return '#ffdccc'
+      if(this.paramOptions.some(option => option.code_id === param))  return '#e6f9ff'
+      return '#ffdccc'
+    },
     syncLocalData() {
       this.localChangeParam = JSON.parse(JSON.stringify(this.changeParam))
     },
