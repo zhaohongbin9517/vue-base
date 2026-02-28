@@ -103,7 +103,7 @@
       :title="'设备状态枚举配置'"
       :name="'deviceStatusCode'"
       :param-options="paramOptions"
-      @update:paramName="updateDeviceStatusParamName"
+      @update:DeviceStatusEnums="updateDeviceStatusEnums"
       @update:statusClassification="updateStatusClassification"
       @add-enum="addParameter"
       @remove-enum="removeParameter"
@@ -290,8 +290,10 @@ export default {
       checkStopParameters: [{ code_id: '', value: 0 }],
       //设备状态枚举
       deviceStatusConfig: {
-        paramName: '',
-        enums: [{ value: 0, status: '' }],
+        enums: [{ 
+          tag_value: [ {value:0,code_id:'param1'},{value:1,code_id:'param2'}], 
+          status: '' 
+        }],
         statusEnumClassification: {
           run_status: [],
           stop_status: []
@@ -512,19 +514,16 @@ export default {
         plan: config.emphasis_plan.plan || { set: '', check: '', value: 0 },
         plan_time: config.emphasis_plan.plan_time || { set: '', check: '' },
         plan_sort: config.emphasis_plan.plan_sort || { set: '', check: '' }
+      };
+
+      //设备状态枚举
+      this.deviceStatusConfig = {
+        enums: config.device_status.status || [{ value: '', status: '' }],
+        statusEnumClassification: {
+          run_status: config.run_status || [],
+          stop_status: config.stop_status || [] 
+        }
       }
-
-
-      //待处理
-      // //设备状态枚举
-      // this.deviceStatusConfig = {
-      //   paramName: config.device_status.code_id,
-      //   enums: config.device_status.status || [{ value: '', status: '' }],
-      //   statusEnumClassification: {
-      //     run_status: config.run_status || [],
-      //     stop_status: config.stop_status || [] 
-      //   }
-      // },
     },
     //新增配置
     addConfig() {
@@ -576,7 +575,7 @@ export default {
           this.initDeviceMappings.push({ set: '', check: '', value: 0 })
           break
         case "deviceStatusCode":
-          this.deviceStatusConfig.enums.push({ value: 0, status: '' })
+          this.deviceStatusConfig.enums.push({ tags: [], status: '' })
           break
         case "paramUncompress":
           this.paramUncompress.push({ paramName: '', paramValue: 0 })
@@ -610,10 +609,10 @@ export default {
           break
       }
     },
-
     //状态枚举增加删除
-    updateDeviceStatusParamName(value){
-      this.deviceStatusConfig.paramName = value
+    updateDeviceStatusEnums(deviceEnum){
+      this.deviceStatusConfig.enums = deviceEnum
+      console.log(this.deviceStatusConfig.enums)
     },
     updateStatusClassification(data){
       const { type, value } = data

@@ -18,20 +18,6 @@
     </template>
     
     <!-- 参数选择 -->
-    <div class="param-select-section">
-      <el-form label-width="100px">
-        <el-form-item label="状态参数">
-          <el-select v-model="localParamName" placeholder="请选择参数" @change="handleParamNameChange">
-            <el-option 
-              v-for="option in paramOptions" 
-              :key="option.code_id" 
-              :label="option.desc" 
-              :value="option.code_id" 
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
-    </div>
     
     <el-button type="primary" size="small" @click="addEnum" class="add-param-btn">
       <el-icon><plus /></el-icon>
@@ -42,20 +28,59 @@
 
     <!-- 枚举列表 -->
     <el-table :data="enums" border class="config-table" stripe>
-      <el-table-column prop="value" label="值" min-width="150">
+      <el-table-column prop="tag_value" label="标签" min-width="250">
         <template #default="{ row }">
-          <el-input-number 
-            v-if="typeof row.value === 'number'" 
-            v-model="row.value" 
-            placeholder="请输入值" 
-            :min="0" 
-            controls-position="right" 
-          />
-          <el-input 
-            v-else 
-            v-model="row.value" 
-            placeholder="请输入值" 
-          />
+          <div v-if="row.tag_value && row.tag_value.length > 0" class="tags-container">
+            <el-button 
+              type="primary" 
+              size="small" 
+              @click="addTag(row)"
+              style="margin-top: 8px;"
+            >
+              <el-icon><plus /></el-icon>
+              新增参数
+            </el-button>
+
+            <p > &nbsp; </p>
+
+            <div v-for="(tag, index) in row.tag_value" :key="index" class="tag-item">
+              <el-input-number 
+                v-model="tag.value" 
+                placeholder="值" 
+                :min="0" 
+                controls-position="right" 
+                size="small"
+                class="tag-input"
+                @change="handleParamNameChange"
+              />
+              <el-select 
+                v-model="tag.code_id" 
+                placeholder="请选择参数" 
+                filterable
+                :class="{'is-error': isValidParam(tag.code_id)}"
+                @change="handleParamNameChange"
+                size="small"
+                class="tag-select"
+              >
+                <el-option 
+                  v-for="option in paramOptions" 
+                  :key="option.code_id" 
+                  :label="option.desc" 
+                  :value="option.code_id" 
+                />
+              </el-select>
+
+              <el-button 
+                type="danger" 
+                size="small" 
+                circle 
+                @click="removeTag(row, index)"
+                class="tag-delete-btn"
+              >
+                <el-icon><delete /></el-icon>
+              </el-button>
+            </div>
+          </div>
         </template>
       </el-table-column>
       <el-table-column prop="status" label="状态(英文)" min-width="150">
@@ -64,6 +89,7 @@
             v-model="row.status" 
             placeholder="请输入状态" 
             @input="filterStatusInput(row)"
+            @change="handleParamNameChange"
           />
         </template>
       </el-table-column>
@@ -137,8 +163,7 @@ export default {
     config: {
       type: Object,
       default: () => ({
-        paramName: '',
-        enums: [{ value: '', status: '' }],
+        enums: [{ value: {}, status: '' }],
         statusEnumClassification: {
           run_status: [],
           stop_status: []
@@ -169,7 +194,6 @@ export default {
   },
   data() {
     return {
-      localParamName: this.config.paramName,
       localRunStatus: this.config.statusEnumClassification?.run_status || [],
       localStopStatus: this.config.statusEnumClassification?.stop_status || []
     }
@@ -190,12 +214,6 @@ export default {
     }
   },
   watch: {
-    'config.paramName': {
-      handler(newVal) {
-        this.localParamName = newVal
-      },
-      immediate: true
-    },
     'config.statusEnumClassification': {
       handler(newVal) {
         if (newVal) {
@@ -207,8 +225,14 @@ export default {
     }
   },
   methods: {
-    handleParamNameChange(value) {
-      this.$emit('update:paramName', value)
+    isValidParam(codeId) {
+      // 如果没有选择参数，无效
+      if (!codeId || this.paramOptions.length === 0)  return true
+      // 检查选择的参数是否在选项中
+      return !this.paramOptions.some(option => option.code_id === codeId)
+    },
+    handleParamNameChange() {
+      this.$emit('update:DeviceStatusEnums', this.enums)
     },
     toggleRunStatus(status) {
       let newValue = [...this.localRunStatus]
@@ -247,6 +271,21 @@ export default {
     },
     removeEnum(index) {
       this.$emit('remove-enum', this.name, index)
+    },
+    addTag(row) {
+      // 确保 tag_value 数组存在
+      if (!row.tag_value) {
+        row.tag_value = []
+      }
+      // 添加新标签
+      row.tag_value.push({ value: 0, code_id: '' })
+    },
+    removeTag(row, index) {
+      // 移除指定索引的标签
+      if (row.tag_value && row.tag_value.length > 0) {
+        row.tag_value.splice(index, 1)
+      }
+      this.handleParamNameChange()
     },
     saveConfig() {
       this.$emit('save-config')
@@ -431,6 +470,48 @@ export default {
   font-size: 13px;
   color: #909399;
   font-style: italic;
+}
+
+.tags-container {
+  padding: 8px 0;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+}
+
+.tag-input {
+  display: flex;
+  width: 30%;
+  min-width: 30%;
+  margin-right: 8px;
+}
+
+.tag-select {
+  width: 100%;
+  margin-right: 8px;
+}
+
+.tag-delete-btn {
+  margin-left: 8px;
+}
+
+.empty-tags {
+  padding: 8px 0;
+}
+
+/* 错误样式 */
+.config-table :deep(.el-select.is-error .el-input__wrapper) {
+  box-shadow: 0 0 0 1px #f56c6c inset;
+}
+
+.config-table :deep(.el-select.is-error .el-select__selected-item) {
+  color: #f56c6c !important;
 }
 
 .checkbox-selection :deep(.el-checkbox) {
