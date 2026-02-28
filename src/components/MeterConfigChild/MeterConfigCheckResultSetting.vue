@@ -37,7 +37,14 @@
           
           <el-form :model="check" label-width="100px">
             <el-form-item label="参数：">
-              <el-select v-model="check.param" @change="updateResultCheck" placeholder="请选择参数" class="form-select">
+              <el-select 
+              v-model="check.param" 
+              @change="updateResultCheck" 
+              placeholder="请选择参数" 
+              filterable
+              class="form-select"
+              :class="{'is-error': codeIdIsValidParam(check.param)}"
+              >
                 <el-option 
                   v-for="option in paramOptions" 
                   :key="option.code_id" 
@@ -57,6 +64,10 @@
               />
             </el-form-item>
           </el-form>
+          <p class="hint-text">
+            <el-icon class="hint-icon"><info-filled /></el-icon>
+            old表示上次参数值，new表示当前参数值
+          </p>
         </el-card>
       </div>
     </el-form>
@@ -64,7 +75,7 @@
 </template>
 
 <script>
-import { Tools, Plus, Delete, Check } from '@element-plus/icons-vue'
+import { Tools, Plus, Delete, Check, InfoFilled } from '@element-plus/icons-vue'
 
 export default {
   name: 'MeterConfigCheckResultSetting',
@@ -72,7 +83,8 @@ export default {
     Tools,
     Plus,
     Delete,
-    Check
+    Check,
+    InfoFilled
   },
   props: {
     title: {
@@ -121,6 +133,12 @@ export default {
     }
   },
   methods: {
+    codeIdIsValidParam(codeId) {
+      // 如果没有选择参数，无效
+      if (!codeId || this.paramOptions.length === 0)  return true
+      // 检查选择的参数是否在选项中
+      return !this.paramOptions.some(option => option.code_id === codeId)
+    },
     syncLocalData() {
       this.localResultCheck = JSON.parse(JSON.stringify(this.resultCheck))
     },
@@ -201,6 +219,15 @@ export default {
   width: 300px;
 }
 
+.form-select.is-error :deep(.el-input__wrapper) {
+  box-shadow: 0 0 0 1px #f56c6c inset;
+}
+
+.form-select.is-error :deep(.el-input__inner),
+.form-select.is-error :deep(.el-select__selected-item) {
+  color: #f56c6c !important;
+}
+
 .form-input {
   width: 80%;
   min-width: 300px;
@@ -208,5 +235,20 @@ export default {
 
 .el-form :deep(.el-form-item) {
   margin-bottom: 16px;
+}
+
+.hint-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #909399;
+  margin-top: 8px;
+  padding-left: 100px;
+}
+
+.hint-icon {
+  font-size: 14px;
+  color: #409eff;
 }
 </style>

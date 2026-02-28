@@ -17,7 +17,11 @@
     <el-table :data="mappings" border class="config-table" stripe>
       <el-table-column label="设置字段" min-width="200">
         <template #default="{ row }">
-          <el-select v-model="row.set" placeholder="请选择参数">
+          <el-select 
+          v-model="row.set" 
+          filterable
+          :class="{'is-error': codeIdIsValidParam(row.set)}" 
+          placeholder="请选择参数">
             <el-option 
               v-for="option in paramOptions" 
               :key="option.code_id" 
@@ -29,7 +33,11 @@
       </el-table-column>
       <el-table-column label="检查字段" min-width="200">
         <template #default="{ row }">
-          <el-select v-model="row.check" placeholder="请选择参数">
+          <el-select 
+          v-model="row.check" 
+          filterable
+          :class="{'is-error': codeIdIsValidParam(row.check)}" 
+          placeholder="请选择参数">
             <el-option 
               v-for="option in paramOptions" 
               :key="option.code_id" 
@@ -101,6 +109,12 @@ export default {
     }
   },
   methods: {
+    codeIdIsValidParam(codeId) {
+      // 如果没有选择参数，无效
+      if (!codeId || this.paramOptions.length === 0)  return true
+      // 检查选择的参数是否在选项中
+      return !this.paramOptions.some(option => option.code_id === codeId)
+    },
     addParameter() {
       this.$emit('add-parameter', this.name)
     },
@@ -173,4 +187,13 @@ export default {
 .config-table :deep(.el-input__wrapper) {
   width: 100%;
 }
+
+.config-table :deep(.el-select.is-error .el-input__wrapper) {
+  box-shadow: 0 0 0 1px #f56c6c inset;
+}
+
+.config-table :deep(.el-select.is-error .el-select__selected-item) {
+  color: #f56c6c !important;
+}
+
 </style>

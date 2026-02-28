@@ -40,6 +40,7 @@
             <el-select 
               v-model="placeholder.selectedParam" 
               placeholder="请选择参数"
+              filterable
               @change="generateChannelNumber"
             >
               <el-option 

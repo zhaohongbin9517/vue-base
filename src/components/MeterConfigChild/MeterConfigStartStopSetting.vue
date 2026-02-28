@@ -17,7 +17,12 @@
     <el-table :data="parameters" border class="config-table" stripe>
       <el-table-column prop="code_id" label="参数选择" min-width="200">
         <template #default="{ row }">
-          <el-select v-model="row.code_id" placeholder="请选择参数">
+          <el-select 
+            v-model="row.code_id" 
+            placeholder="请选择参数"
+            filterable
+            :class="{ 'invalid-param': isValidParam(row.code_id) }"
+          >
               <el-option 
                 v-for="option in paramOptions" 
                 :key="option.code_id" 
@@ -99,6 +104,12 @@ export default {
     },
     saveConfig() {
       this.$emit('save-config')
+    },
+    isValidParam(codeId) {
+      // 如果没有选择参数，无效
+      if (!codeId || this.paramOptions.length === 0)  return true
+      // 检查选择的参数是否在选项中
+      return !this.paramOptions.some(option => option.code_id === codeId)
     }
   }
 }
@@ -162,5 +173,13 @@ export default {
 
 .config-table :deep(.el-select) {
   width: 100%;
+}
+
+.config-table :deep(.el-select.invalid-param .el-input__wrapper) {
+  box-shadow: 0 0 0 1px #f56c6c inset;
+}
+
+.config-table :deep(.el-select.invalid-param .el-select__selected-item) {
+  color: #f56c6c !important;
 }
 </style>

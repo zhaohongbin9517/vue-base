@@ -246,7 +246,7 @@ import MeterConfigChangeParamSetting from './MeterConfigChild/MeterConfigChangeP
 import MeterConfigEmphasisPlanSetting from './MeterConfigChild/MeterConfigEmphasisPlanSetting.vue'
 import MeterConfigExtendConfigSetting from './MeterConfigChild/MeterConfigExtendConfigSetting.vue'
 import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeterSetting.vue'
-import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName ,getTableColumn} from '@/api/config'
+import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName} from '@/api/config'
 
 export default {
   name: 'MeterConfig',
@@ -368,12 +368,12 @@ export default {
       ],
       //参数选择
       paramOptions: [
-        // { code_id:'',desc:''}
+        { code_id:'',desc:''}
       ],
       //数据表名
       tableOptions: [
-        { label: '表1', value: 'table1' },
-        { label: '表2', value: 'table2' }
+        // { label: '表1', value: 'table1' },
+        // { label: '表2', value: 'table2' }
       ],
       //计划表字段映射
       planTableColumnOptions: [
@@ -393,6 +393,9 @@ export default {
     this.init()
   },
   methods: {
+    changeParamOptions(){
+      this.paramOptions = [{ code_id:'1',desc:'1'},{ code_id:'2',desc:'2'}]
+    },
     //初始化全部计量配置
     async init(){
       try {
@@ -414,7 +417,8 @@ export default {
         this.baseData.config = selectedItem.config
         this.baseData.stationId = selectedItem.meter_station_id
         this.initConfig()
-        this.handleStationChange(selectedItem.meter_station_id)
+        // this.handleStationChange(selectedItem.meter_station_id)
+        this.handleStationChange('aaa')
       } catch (error) {
         console.error('初始化配置的站列表失败:', error)
         this.$message.error('初始化配置的站列表失败')
@@ -443,9 +447,6 @@ export default {
         sql:config.plan_table.sql || '',
         tong_dao_column:config.plan_table.tong_dao_column || '',
         column:config.plan_table.column.map(item => ({set:item.set,check:item.check,column:item.column || item.cloumn})) || [ {set:'',check:'',column:''} ]
-      }
-      if(config.plan_table.table){
-        this.loadPlanTableColumn()
       }
       
       //初始化设备数据设置
@@ -530,15 +531,6 @@ export default {
       //   }
       // },
     },
-    async loadPlanTableColumn(){
-      try {
-        const planTableColumnData = await getTableColumn(this.baseData.config.plan_table.table,'meter_plan')
-        this.planTableColumnOptions = planTableColumnData || {column_name:'aaa'}
-      } catch (error) {
-        console.error('获取计划表名失败:', error)
-        this.$message.error('获取计划表名失败')
-      }
-    },
     //新增配置
     addConfig() {
       this.$message.info('新增配置')
@@ -562,7 +554,7 @@ export default {
     async handleStationChange(stationId) {
       try {
         const data = await getStationCode(stationId)
-        this.paramOptions = data || []
+        this.paramOptions = data || [{ code_id: '', desc: '' }]
       } catch (error) {
         console.error('获取站参数失败:', error)
         this.$message.error('获取站参数失败')

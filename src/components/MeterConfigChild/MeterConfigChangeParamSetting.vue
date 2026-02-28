@@ -17,6 +17,7 @@
           v-model="localChangeParam.params" 
           @change="updateChangeParam" 
           multiple 
+          filterable
           placeholder="请选择可修改参数" 
           class="form-select"
         >

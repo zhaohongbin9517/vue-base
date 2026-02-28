@@ -13,7 +13,13 @@
 
     <el-form :model="localPlanTableInfo" label-width="120px">
       <el-form-item label="计划关系库表：">
-        <el-select v-model="localPlanTableInfo.tableName" @change="updatePlanTableInfo" class="form-select" placeholder="请选择计划关系库表">
+        <el-select 
+        v-model="localPlanTableInfo.tableName" 
+        @change="updateTableName" 
+        class="form-select"
+        filterable
+        :class="{'is-error': tableIsValidParam(localPlanTableInfo.tableName)}" 
+        placeholder="请选择计划关系库表">
           <el-option 
             v-for="option in tableOptions" 
             :key="option.value" 
@@ -33,7 +39,13 @@
         />
       </el-form-item>
       <el-form-item label="管汇号字段：">
-        <el-select v-model="localPlanTableInfo.tong_dao_column" @change="updatePlanTableInfo" class="form-select" placeholder="请选择管汇号字段">
+        <el-select 
+        v-model="localPlanTableInfo.tong_dao_column" 
+        @change="updatePlanTableInfo" 
+        class="form-select" 
+        filterable
+        :class="{'is-error': columnIsValidParam(localPlanTableInfo.tong_dao_column)}" 
+        placeholder="请选择管汇号字段">
           <el-option 
             v-for="option in planTableColumnOptions" 
             :key="option.column_name" 
@@ -57,7 +69,12 @@
             <el-table :data="localPlanTableInfo.column" border class="config-table" stripe>
               <el-table-column label="设置" min-width="200">
                 <template #default="{ row }">
-                  <el-select v-model="row.set" @change="updatePlanTableInfo" placeholder="请选择参数">
+                  <el-select 
+                  v-model="row.set" 
+                  @change="updatePlanTableInfo" 
+                  filterable
+                  :class="{'is-error': codeIdIsValidParam(row.set)}" 
+                  placeholder="请选择参数">
                     <el-option 
                       v-for="option in paramOptions" 
                       :key="option.code_id" 
@@ -69,7 +86,12 @@
               </el-table-column>
               <el-table-column label="检查" min-width="200">
                 <template #default="{ row }">
-                  <el-select v-model="row.check" @change="updatePlanTableInfo" placeholder="请选择参数">
+                  <el-select 
+                  v-model="row.check" 
+                  @change="updatePlanTableInfo"
+                  filterable
+                  :class="{'is-error': codeIdIsValidParam(row.check)}" 
+                  placeholder="请选择参数">
                     <el-option 
                       v-for="option in paramOptions" 
                       :key="option.code_id" 
@@ -81,7 +103,12 @@
               </el-table-column>
               <el-table-column label="字段" min-width="200">
                 <template #default="{ row }">
-                  <el-select v-model="row.column" @change="updatePlanTableInfo" placeholder="请选择字段">
+                  <el-select 
+                  v-model="row.column" 
+                  @change="updatePlanTableInfo" 
+                  filterable
+                  :class="{'is-error': columnIsValidParam(row.column)}" 
+                  placeholder="请选择字段">
                     <el-option 
                       v-for="option in planTableColumnOptions" 
                       :key="option.column_name" 
@@ -108,6 +135,7 @@
 
 <script>
 import { Tools,Plus, Delete, Check } from '@element-plus/icons-vue'
+import { getTableColumn } from '@/api/config'
 
 export default {
   name: 'MeterConfigPlanSetting',
@@ -138,10 +166,6 @@ export default {
       type: Array,
       default: () => []
     },
-    planTableColumnOptions: {
-      type: Array,
-      default: () => []
-    },
     paramOptions: {
       type: Array,
       default: () => []
@@ -155,6 +179,7 @@ export default {
   },
   data() {
     return {
+      planTableColumnOptions: [],
       localPlanTableInfo: {
         tableName: '',
         sql: '',
@@ -165,18 +190,53 @@ export default {
   },
   mounted() {
     this.syncLocalData()
+    this.loadPlanTableColumn()
   },
   watch: {
     planTableInfo: {
       handler() {
         this.syncLocalData()
+        this.loadPlanTableColumn()
       },
       deep: true
     }
   },
   methods: {
+    async loadPlanTableColumn(){
+      if(this.localPlanTableInfo.tableName) {
+        try {
+          const planTableColumnData = await getTableColumn(this.localPlanTableInfo.tableName,'meter_plan')
+          this.planTableColumnOptions = planTableColumnData || []
+        } catch (error) {
+          this.planTableColumnOptions =  []
+          this.$message.error('获取计划表名失败')
+        }
+      }
+    },
+    tableIsValidParam(tableName) {
+      // 如果没有选择参数，无效
+      if (!tableName || this.tableOptions.length === 0)  return true
+      // 检查选择的参数是否在选项中
+      return !this.tableOptions.some(option => option.value === tableName)
+    },
+    columnIsValidParam(columnName) {
+      // 如果没有选择参数，无效
+      if (!columnName || this.planTableColumnOptions.length === 0)  return true
+      // 检查选择的参数是否在选项中
+      return !this.planTableColumnOptions.some(option => option.column_name === columnName)
+    },
+    codeIdIsValidParam(codeId) {
+      // 如果没有选择参数，无效
+      if (!codeId || this.paramOptions.length === 0)  return true
+      // 检查选择的参数是否在选项中
+      return !this.paramOptions.some(option => option.code_id === codeId)
+    },
     syncLocalData() {
       this.localPlanTableInfo = JSON.parse(JSON.stringify(this.planTableInfo))
+    },
+    updateTableName(){
+      this.loadPlanTableColumn()
+      this.updatePlanTableInfo()
     },
     updatePlanTableInfo() {
       this.$emit('update:planTableInfo', JSON.parse(JSON.stringify(this.localPlanTableInfo)))
@@ -228,6 +288,23 @@ export default {
 
 .form-select {
   width: 300px;
+}
+
+.form-select.is-error :deep(.el-input__wrapper) {
+  box-shadow: 0 0 0 1px #f56c6c inset;
+}
+
+.form-select.is-error :deep(.el-input__inner),
+.form-select.is-error :deep(.el-select__selected-item) {
+  color: #f56c6c !important;
+}
+
+.config-table :deep(.el-select.is-error .el-input__wrapper) {
+  box-shadow: 0 0 0 1px #f56c6c inset;
+}
+
+.config-table :deep(.el-select.is-error .el-select__selected-item) {
+  color: #f56c6c !important;
 }
 
 .form-textarea {
