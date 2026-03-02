@@ -244,7 +244,7 @@ import MeterConfigChangeParamSetting from './MeterConfigChild/MeterConfigChangeP
 import MeterConfigEmphasisPlanSetting from './MeterConfigChild/MeterConfigEmphasisPlanSetting.vue'
 import MeterConfigExtendConfigSetting from './MeterConfigChild/MeterConfigExtendConfigSetting.vue'
 import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeterSetting.vue'
-import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName} from '@/api/config'
+import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName,updateMeterConfig} from '@/api/config'
 
 export default {
   name: 'MeterConfig',
@@ -276,6 +276,7 @@ export default {
     return {
       //基础信息
       baseData:{
+        name:'',
         configId:'',   //计量配置id
         stationId:'',  //站点id
         config:{}      //配置信息
@@ -519,10 +520,9 @@ export default {
       };
 
       //设备状态枚举
-      console.log(config.device_status)
       this.deviceStatusConfig = {
         allParam:config.device_status ? config.device_status.code_ids || []: [],
-        enums: config.device_status ? config.device_status.status || [{  tag_value: [],    status: ''  }]: [],
+        enums: config.device_status ? structuredClone(config.device_status.status) || [{  tag_value: [],    status: ''  }]: [],
         statusEnumClassification: {
           run_status: config.run_status || [],
           stop_status: config.stop_status || [] 
@@ -538,24 +538,26 @@ export default {
       this.$message.info('刷新配置')
     },
     //保存配置
-    saveAllConfig(){
-      this.updateConfig('startCode')
-      this.updateConfig('checkStartCode')
-      this.updateConfig('stopCode')
-      this.updateConfig('checkStopCode')
-      this.updateConfig('deviceStatusCode')
-      this.updateConfig('wnChannelNumber')
-      this.updateConfig('wmChannelNumber')
-      this.updateConfig('planSetinfo')
-      this.updateConfig('initDeviceSetting')
-      this.updateConfig('resultSetting')
-      this.updateConfig('checkResultSetting')
-      this.updateConfig('paramUncompress')
-      this.updateConfig('changeParamSetting')
-      this.updateConfig('emphasisPlanSetting')
-      this.updateConfig('extendConfigSetting')
-      this.updateConfig('loopMeterSetting')
-      this.$message.success('保存所有配置成功')
+    async saveAllConfig(){
+      // 定义需要更新的配置项数组
+      const configsToUpdate = [
+        'startCode', 'checkStartCode', 'stopCode', 'checkStopCode',
+        'deviceStatusCode', 'wnChannelNumber', 'wmChannelNumber', 'planSetinfo',
+        'initDeviceSetting', 'resultSetting', 'checkResultSetting', 'paramUncompress',
+        'changeParamSetting', 'emphasisPlanSetting', 'extendConfigSetting', 'loopMeterSetting'
+      ];
+      
+      // 遍历并检查每个配置项的更新结果
+      for (const configName of configsToUpdate) {
+        const result = this.updateConfig(configName);
+        // 如果有错误，提示错误信息并终止执行
+        if (result && result.result === false) {
+          this.$message.error(result.error);
+          return;
+        }
+      }
+      // 所有配置项更新成功后，执行保存
+      await this.saveAllConfigApi()
     },
     async saveConfig(name) {
       const result =  this.updateConfig(name)
@@ -749,7 +751,21 @@ export default {
     },
     async saveAllConfigApi(){
       console.log(this.baseData.config)
-      console.log('发送接口')
+      try {
+        const data = {
+          config_id: this.baseData.configId,
+          name: this.baseData.name,
+          config:structuredClone(this.baseData.config),
+          meter_station_id:this.baseData.stationId
+        }
+        console.log(data)
+        await updateMeterConfig(data)
+      } catch (error) {
+        console.error('保存所有配置失败:', error)
+        this.$message.error('保存所有配置失败')
+        return
+      }
+      this.$message.success('保存所有配置成功')
     },
 
     isEmptyObject(obj) {
@@ -770,8 +786,9 @@ export default {
     //配置选择变更事件
     async handleConfigChange(configId) {
       const selectedItem = this.allMeterConfig.find(item => item.config_id === configId)
-      this.baseData.config = selectedItem.config
+      this.baseData.config = structuredClone(selectedItem.config)
       this.baseData.stationId = selectedItem.meter_station_id
+      this.baseData.name = selectedItem.name
       //变更配置信息
       this.initConfig()
       this.handleStationChange(selectedItem.meter_station_id)

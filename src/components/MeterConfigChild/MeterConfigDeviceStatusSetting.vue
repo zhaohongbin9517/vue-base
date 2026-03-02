@@ -333,8 +333,10 @@ export default {
     },
     removeTag(row, index) {
       // 移除指定索引的标签
-      if (row.tag_value && row.tag_value.length > 0) {
+      if (row.tag_value && row.tag_value.length > 1) {
         row.tag_value.splice(index, 1)
+      }else {
+        this.$message.error('每个枚举项必须包含至少一个参数')
       }
       this.handleParamNameChange()
     },

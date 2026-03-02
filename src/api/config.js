@@ -76,3 +76,12 @@ export function getAllStationTagKey() {
 export function getStationCode(stationId) {
   return get('/tmms_config/get_station_code', {station_id : stationId})
 }
+
+/**
+ * 保存配置相关配置
+ * @param {Object} data - 配置数据
+ * @returns {Promise}
+ */
+export function updateMeterConfig(data) {
+  return post('/tmms_config/update_meter_config', data)
+}
