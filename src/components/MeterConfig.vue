@@ -41,7 +41,7 @@
           <el-icon><refresh-right /></el-icon>
           取消修改
         </el-button>
-        <el-button type="success" @click="saveConfig">
+        <el-button type="success" @click="saveAllConfig">
           <el-icon><check /></el-icon>
           保存配置
         </el-button>
@@ -408,12 +408,12 @@ export default {
           value: name
         }))
         //默认先选择一个配置
-        this.baseData.configId = 'Z01SAGD_3'
-        const selectedItem = this.allMeterConfig.find(item => item.config_id === 'Z01SAGD_3')
-        this.baseData.config = selectedItem.config
-        this.baseData.stationId = selectedItem.meter_station_id
-        this.initConfig()
-        this.handleStationChange(selectedItem.meter_station_id)
+        // this.baseData.configId = 'Z01SAGD_3'
+        // const selectedItem = this.allMeterConfig.find(item => item.config_id === 'Z01SAGD_3')
+        // this.baseData.config = selectedItem.config
+        // this.baseData.stationId = selectedItem.meter_station_id
+        // this.initConfig()
+        // this.handleStationChange(selectedItem.meter_station_id)
       } catch (error) {
         console.error('初始化配置的站列表失败:', error)
         this.$message.error('初始化配置的站列表失败')
@@ -541,15 +541,30 @@ export default {
       this.$message.info('刷新配置')
     },
     //保存配置
-    saveConfig() {
-      this.$message.success('保存配置成功')
+    saveAllConfig(){
+      this.$message.success('保存所有配置成功')
+    },
+    saveConfig(name) {
+      switch(name){
+        case "checkResultSetting":
+          this.resultCheck = this.localResultCheck
+          break
+        case "paramUncompress":
+          this.paramUncompress = this.localParamUncompress
+          break
+      }
+    },
+    async saveAllConfigApi(){
+      console.log('发送接口')
     },
     //配置选择变更事件
     async handleConfigChange(configId) {
       const selectedItem = this.allMeterConfig.find(item => item.config_id === configId)
       this.baseData.config = selectedItem.config
+      this.baseData.stationId = selectedItem.meter_station_id
       //变更配置信息
       this.initConfig()
+      this.handleStationChange(selectedItem.meter_station_id)
     },
     //站选择变更事件
     async handleStationChange(stationId) {

@@ -8,12 +8,6 @@
           <el-icon><check /></el-icon>
           保存配置
         </el-button>
-
-         <el-button type="success" size="small" @click="printConfig" class="save-param-btn">
-          <el-icon><check /></el-icon>
-          打印数据
-        </el-button>
-
       </div>
     </template>
     
@@ -288,7 +282,7 @@ export default {
       this.handleParamNameChange()
     },
     saveConfig() {
-      this.$emit('save-config')
+      this.$emit('save-config',this.name)
     },
     printConfig() {
       console.log(this.config)

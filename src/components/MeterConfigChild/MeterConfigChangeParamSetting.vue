@@ -115,7 +115,7 @@ export default {
       this.$emit('update:changeParam', JSON.parse(JSON.stringify(this.localChangeParam)))
     },
     saveConfig() {
-      this.$emit('save-config')
+      this.$emit('save-config',this.name)
     }
   }
 }

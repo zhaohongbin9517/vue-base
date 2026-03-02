@@ -141,7 +141,7 @@ export default {
       this.$emit('update:channelNumber', this.name, this.templateInput)
     },
     saveConfig() {
-      this.$emit('save-config')
+      this.$emit('save-config',this.name)
     }
   }
 }

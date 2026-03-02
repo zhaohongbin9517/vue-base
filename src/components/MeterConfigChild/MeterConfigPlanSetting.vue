@@ -250,7 +250,7 @@ export default {
       this.updatePlanTableInfo()
     },
     saveConfig() {
-      this.$emit('save-config')
+      this.$emit('save-config',this.name)
     }
   }
 }

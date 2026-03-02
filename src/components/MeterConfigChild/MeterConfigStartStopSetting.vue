@@ -103,7 +103,7 @@ export default {
       this.$emit('remove-parameter', this.name, index)
     },
     saveConfig() {
-      this.$emit('save-config')
+      this.$emit('save-config',this.name)
     },
     isValidParam(codeId) {
       // 如果没有选择参数，无效

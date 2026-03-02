@@ -255,7 +255,7 @@ export default {
       this.updateResultTableInfo()
     },
     saveConfig() {
-      this.$emit('save-config')
+      this.$emit('save-config',this.name)
     }
   }
 }

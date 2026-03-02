@@ -210,7 +210,7 @@ export default {
       this.$emit('update:emphasisPlan', JSON.parse(JSON.stringify(this.localEmphasisPlan)))
     },
     saveConfig() {
-      this.$emit('save-config')
+      this.$emit('save-config',this.name)
     }
   }
 }

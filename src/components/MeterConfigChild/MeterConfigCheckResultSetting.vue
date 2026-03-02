@@ -154,7 +154,7 @@ export default {
       this.updateResultCheck()
     },
     saveConfig() {
-      this.$emit('save-config')
+      this.$emit('save-config',this.name)
     }
   }
 }

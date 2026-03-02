@@ -122,7 +122,7 @@ export default {
       this.$emit('remove-parameter', this.name, index)
     },
     saveConfig() {
-      this.$emit('save-config')
+      this.$emit('save-config',this.name)
     }
   }
 }

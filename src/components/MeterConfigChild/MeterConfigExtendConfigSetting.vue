@@ -98,7 +98,7 @@ export default {
       this.$emit('update:extendConfig', JSON.parse(JSON.stringify(this.localExtendConfig)))
     },
     saveConfig() {
-      this.$emit('save-config')
+      this.$emit('save-config',this.name)
     }
   }
 }

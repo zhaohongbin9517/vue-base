@@ -104,7 +104,7 @@ export default {
       this.$emit('update:loopMeterInfo', JSON.parse(JSON.stringify(this.localLoopMeterInfo)))
     },
     saveConfig() {
-      this.$emit('save-config')
+      this.$emit('save-config',this.name)
     }
   }
 }
