@@ -253,6 +253,11 @@ export default {
     config: {
       handler() {
         this.localAllParam = this.config.allParam || []
+      },
+      deep: true
+    },
+    paramOptions: {
+      handler() {
         this.localParamOptions = this.paramOptions.filter(item => this.localAllParam.includes(item.code_id)) || []
       },
       deep: true
