@@ -161,7 +161,6 @@
       :tips="''"
       :name="'resultSetting'"
       :tableOptions="tableOptions"
-      :resultTableColumnOptions="resultTableColumnOptions"
       :paramOptions="paramOptions"
       @save-config="saveConfig"
     />
@@ -414,8 +413,7 @@ export default {
         this.baseData.config = selectedItem.config
         this.baseData.stationId = selectedItem.meter_station_id
         this.initConfig()
-        // this.handleStationChange(selectedItem.meter_station_id)
-        this.handleStationChange('aaa')
+        this.handleStationChange(selectedItem.meter_station_id)
       } catch (error) {
         console.error('初始化配置的站列表失败:', error)
         this.$message.error('初始化配置的站列表失败')
@@ -427,12 +425,13 @@ export default {
       this.startParameters = config.start_device  || [{ code_id: '', value: 0 }]
       this.stopParameters = config.stop_device || [{ code_id: '', value: 0 }]
 
-      this.checkStartParameters = config.check_start_device.flatMap(item =>{
+      this.checkStartParameters = 
+      config.check_start_device ? config.check_start_device.flatMap(item =>{
         return item.value.map(val => ({ code_id: item.code_id, value: val }))
-      }) || [{ code_id: '', value: 0 }]
-      this.checkStopParameters = config.check_stop_device.flatMap(item =>{
+      }) : [{ code_id: '', value: 0 }]
+      this.checkStopParameters = config.check_stop_device ? config.check_stop_device.flatMap(item =>{
         return item.value.map(val => ({ code_id: item.code_id, value: val }))
-      }) || [{ code_id: '', value: 0 }]
+      }) : [{ code_id: '', value: 0 }]
 
       //通道号设置
       this.wnChannelNumber = config.wn || ''
@@ -440,30 +439,32 @@ export default {
 
       //计划数据
       this.planTableInfo={
-        tableName:config.plan_table.table || '',
-        sql:config.plan_table.sql || '',
-        tong_dao_column:config.plan_table.tong_dao_column || '',
-        column:config.plan_table.column.map(item => ({set:item.set,check:item.check,column:item.column || item.cloumn})) || [ {set:'',check:'',column:''} ]
+        tableName: config.plan_table ? config.plan_table.table || '' : '',
+        sql:config.plan_table ? config.plan_table.sql || '' : '',
+        tong_dao_column:config.plan_table ? config.plan_table.tong_dao_column || '' : '',
+        column:config.plan_table ? config.plan_table.column.map(item => ({set:item.set,check:item.check,column:item.column || item.cloumn})) || [ {set:'',check:'',column:''} ] : []
       }
       
       //初始化设备数据设置
-      this.initDeviceMappings= config.init_device
+      this.initDeviceMappings= config.init_device || []
 
       //计量结果配置
       this.resultTableInfo= {
-        resultGroups: config.result.map(item => ({
+        resultGroups: config.result ? config.result.map(item => ({
           name: item.name || 'result1',
           save_type: item.save_type || '',
           table: item.table || '',
           column: Object.entries(item.column || {}).map(([key, value]) => ({ dbColumnField: key,  params: value })) || [{ dbColumnField: '', params: [] }]
-        })) 
+        })) : []
       }
 
       //出结果判断
-      this.resultCheck= {
+      this.resultCheck= 
+      config.check_result ? {
         relation: config.check_result.relation || '',
-        checks: config.check_result.condition.map(item => ({ param: item.code_id || '', expression: item.expression || '' })) || []
-      }
+        checks:  config.check_result.condition.map(item => ({ param: item.code_id || '', expression: item.expression || '' })) || [] 
+      } : 
+      { relation: '',  checks: []  }
 
       //可变参数选择
       this.changeParam= {
@@ -476,7 +477,7 @@ export default {
 
       //循环计量信息
       this.loopMeterInfo= {
-        paramName: config.meter_loop.code_id || '',
+        paramName: config.meter_loop ? config.meter_loop.code_id || '' : '',
         enable: config.meter_loop_enable|| false
       }
 
@@ -510,15 +511,21 @@ export default {
       };
 
       //二次计量
-      this.emphasisPlan= {
+      this.emphasisPlan= 
+      config.emphasis_plan ?
+      {
         plan: config.emphasis_plan.plan || { set: '', check: '', value: 0 },
         plan_time: config.emphasis_plan.plan_time || { set: '', check: '' },
         plan_sort: config.emphasis_plan.plan_sort || { set: '', check: '' }
+      } : {
+        plan: { set: '', check: '', value: 0 },
+        plan_time: { set: '', check: '' },
+        plan_sort: { set: '', check: '' }
       };
 
       //设备状态枚举
       this.deviceStatusConfig = {
-        enums: config.device_status.status || [{ value: '', status: '' }],
+        enums: config.device_status ? config.device_status.status || [{ value: '', status: '' }] : [],
         statusEnumClassification: {
           run_status: config.run_status || [],
           stop_status: config.stop_status || [] 

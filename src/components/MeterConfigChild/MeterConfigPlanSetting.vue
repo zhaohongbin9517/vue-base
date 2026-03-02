@@ -209,7 +209,7 @@ export default {
           this.planTableColumnOptions = planTableColumnData || []
         } catch (error) {
           this.planTableColumnOptions =  []
-          this.$message.error('获取计划表名失败')
+          this.$message.error('获取计划表列名失败：' + this.localPlanTableInfo.tableName)
         }
       }
     },

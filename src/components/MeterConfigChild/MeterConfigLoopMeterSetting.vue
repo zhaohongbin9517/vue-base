@@ -18,6 +18,7 @@
         @change="updateLoopMeterInfo" 
         placeholder="请选择参数" 
         filterable
+        clearable
         :class="{'is-error': codeIdIsValidParam(localLoopMeterInfo.paramName)}" 
         class="form-select">
           <el-option 
