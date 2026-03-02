@@ -21,6 +21,7 @@
             @change="updateEmphasisPlan" 
             placeholder="请选择参数" 
             filterable
+            clearable
             :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan.set)}" 
             class="form-select">
               <el-option 
@@ -38,6 +39,7 @@
             @change="updateEmphasisPlan" 
             placeholder="请选择参数" 
             filterable
+            clearable
             :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan.check)}" 
             class="form-select">
               <el-option 
@@ -70,6 +72,7 @@
             @change="updateEmphasisPlan" 
             placeholder="请选择参数" 
             filterable
+            clearable
             :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan_time.set)}" 
             class="form-select">
               <el-option 
@@ -87,6 +90,7 @@
             @change="updateEmphasisPlan" 
             placeholder="请选择参数" 
             filterable
+            clearable
             :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan_time.check)}" 
             class="form-select">
               <el-option 
@@ -108,6 +112,7 @@
             @change="updateEmphasisPlan" 
             placeholder="请选择参数" 
             filterable
+            clearable
             :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan_sort.set)}" 
             class="form-select">
               <el-option 
@@ -125,6 +130,7 @@
             @change="updateEmphasisPlan" 
             placeholder="请选择参数" 
             filterable
+            clearable
             :class="{'is-error': codeIdIsValidParam(localEmphasisPlan.plan_sort.check)}" 
             class="form-select">
               <el-option 
@@ -199,7 +205,7 @@ export default {
   methods: {
     codeIdIsValidParam(codeId) {
       // 如果没有选择参数，无效
-      if (!codeId || this.paramOptions.length === 0)  return true
+      if (!codeId || this.paramOptions.length === 0)  return false
       // 检查选择的参数是否在选项中
       return !this.paramOptions.some(option => option.code_id === codeId)
     },

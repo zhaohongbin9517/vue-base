@@ -292,7 +292,7 @@ export default {
       deviceStatusConfig: {
         allParam:[],
         enums: [{ 
-          tag_value: [ {value:0,code_id:'param1'},{value:1,code_id:'param2'}], 
+          tag_value: [ {value:0,code_id:''}], 
           status: '' 
         }],
         statusEnumClassification: {
@@ -522,7 +522,7 @@ export default {
       console.log(config.device_status)
       this.deviceStatusConfig = {
         allParam:config.device_status ? config.device_status.code_ids || []: [],
-        enums: config.device_status ? config.device_status.status || []: [],
+        enums: config.device_status ? config.device_status.status || [{  tag_value: [],    status: ''  }]: [],
         statusEnumClassification: {
           run_status: config.run_status || [],
           stop_status: config.stop_status || [] 
@@ -539,9 +539,35 @@ export default {
     },
     //保存配置
     saveAllConfig(){
+      this.updateConfig('startCode')
+      this.updateConfig('checkStartCode')
+      this.updateConfig('stopCode')
+      this.updateConfig('checkStopCode')
+      this.updateConfig('deviceStatusCode')
+      this.updateConfig('wnChannelNumber')
+      this.updateConfig('wmChannelNumber')
+      this.updateConfig('planSetinfo')
+      this.updateConfig('initDeviceSetting')
+      this.updateConfig('resultSetting')
+      this.updateConfig('checkResultSetting')
+      this.updateConfig('paramUncompress')
+      this.updateConfig('changeParamSetting')
+      this.updateConfig('emphasisPlanSetting')
+      this.updateConfig('extendConfigSetting')
+      this.updateConfig('loopMeterSetting')
       this.$message.success('保存所有配置成功')
     },
     async saveConfig(name) {
+      const result =  this.updateConfig(name)
+      console.log(name,result)
+      if(!result.result){
+        console.error(`更新${name}配置失败:${result.error}`)
+        this.$message.error(`更新${name}配置失败:${result.error}`)
+      }else {
+        this.saveAllConfigApi()
+      }
+    },
+    updateConfig(name) {
       //startCode
       //checkStartCode
       //stopCode
@@ -560,7 +586,9 @@ export default {
       //loopMeterSetting
       switch(name){
         case "startCode":
-          this.baseData.config.start_device = this.startParameters
+          this.baseData.config.start_device = this.startParameters.filter(item => item.code_id !== '')
+          console.log( this.baseData.config.start_device,this.isEmptyObject(this.baseData.config.start_device))
+          if(this.baseData.config.start_device.length === 0) return {result:false,error:'启动设备参数不能为空'}
           break
         case "checkStartCode":{
           const cache = {};
@@ -572,11 +600,12 @@ export default {
           this.baseData.config.check_start_device = Object.keys(cache).map(code_id => ({
             code_id:code_id,
             value: cache[code_id]
-          }))
+          })).filter(item => item.code_id !== '' && item.value.length > 0)
           break;
         }
         case "stopCode":
-          this.baseData.config.stop_device = this.stopParameters
+          this.baseData.config.stop_device = this.stopParameters.filter(item => item.code_id !== '')
+          if(this.baseData.config.stop_device.length === 0) return {result:false,error:'停止设备参数不能为空'}
           break
         case "checkStopCode":{
           const cache = {};
@@ -588,54 +617,155 @@ export default {
           this.baseData.config.check_stop_device = Object.keys(cache).map(code_id => ({
             code_id:code_id,
             value: cache[code_id]
-          }))
+          })).filter(item => item.code_id !== '' && item.value.length > 0)
           break;
         }
         case "deviceStatusCode":
+          this.baseData.config.device_status = this.baseData.config.device_status ||{}
           this.baseData.config.device_status.code_ids = this.deviceStatusConfig.allParam  
-          this.baseData.config.device_status.status = this.deviceStatusConfig.enums   
-          this.baseData.config.run_status = this.deviceStatusConfig.statusEnumClassification.run_status
-          this.baseData.config.stop_status = this.deviceStatusConfig.statusEnumClassification.stop_status
+          this.baseData.config.device_status.status = this.deviceStatusConfig.enums.map(item=>({
+            tag_value: item.tag_value.map(tag => ({value:tag.value,code_id:tag.code_id})).filter(tag => tag.code_id !== ''),
+            status: item.status
+          })).filter(item => item.tag_value.length > 0) || []
+          this.baseData.config.run_status = this.deviceStatusConfig.statusEnumClassification.run_status || []
+          this.baseData.config.stop_status = this.deviceStatusConfig.statusEnumClassification.stop_status || []
+          if(this.baseData.config.device_status.status.length === 0) return {result:false,error:'设备状态枚举不能为空'}
+          if(this.baseData.config.run_status.length === 0) return {result:false,error:'运行状态枚举不能为空'}
+          if(this.baseData.config.stop_status.length === 0) return {result:false,error:'停止状态枚举不能为空'}
           break
         case "wnChannelNumber":
           this.baseData.config.wn = this.wnChannelNumber
+          if(this.baseData.config.wn === '') return {result:false,error:'通道号模板不能为空'}
           break
         case "wmChannelNumber":
           this.baseData.config.wm = this.wmChannelNumber
+          if(this.baseData.config.wm === '') return {result:false,error:'通道号模板不能为空'}
           break
         case "planSetinfo":
-          console.log(this.planTableInfo)
+          this.baseData.config.plan_table = this.baseData.config.plan_table || {}
+          this.baseData.config.plan_table.table = this.planTableInfo.tableName
+          this.baseData.config.plan_table.sql = this.planTableInfo.sql
+          this.baseData.config.plan_table.tong_dao_column = this.planTableInfo.tong_dao_column
+          this.baseData.config.plan_table.column = this.planTableInfo.column.filter(item => item.set !== '' && item.check !== '' && item.column !== '')
+          
+          if(this.baseData.config.plan_table.table  === '') return {result:false,error:'计划表不能为空'}
+          if(this.baseData.config.plan_table.sql  === '') return {result:false,error:'读取计划sql不能为空'}
+          if(this.baseData.config.plan_table.tong_dao_column  === '') return {result:false,error:'通道列不能为空'}
+          if(this.baseData.config.plan_table.column.length === 0) return {result:false,error:'计划下发数据列不能为空'}
           break
         case "initDeviceSetting":
-          console.log(this.initDeviceMappings)
+          this.baseData.config.init_device = this.initDeviceMappings.filter(item => item.code_id !== '')
           break
         case "resultSetting":
-          console.log(this.resultTableInfo)
+          this.baseData.config.result = this.resultTableInfo.resultGroups.map(item => ({
+            name: item.name || 'result1',
+            save_type: item.save_type || '',
+            table: item.table || '',
+            column: item.column.reduce((acc, cur) => ({
+              ...acc,
+              [cur.dbColumnField]: cur.params
+            }), {}) || {}
+          }))
+          if(this.baseData.config.result.length === 0 ) return {result:false,error:'计量结果不能为空'}
           break
         case "checkResultSetting":
-          console.log(this.resultCheck)
+          this.baseData.config.check_result = {
+            relation: this.resultCheck.relation || '',
+            condition: this.resultCheck.checks.map(item => ({
+              code_id: item.param || '',
+              expression: item.expression || ''
+            })).filter(item => item.param !== '' && item.expression !== '') || []
+          }
+          if(this.baseData.config.check_result.relation === '') return {result:false,error:'判断关系不能为空'}
+          if(this.baseData.config.check_result.condition.length === 0) return {result:false,error:'判断条件不能为空'}
           break
         case "paramUncompress":
-          console.log(this.paramUncompress)
+          this.baseData.config.code_id_uncompress = this.paramUncompress.reduce((acc, cur) => ({
+            ...acc,
+            [cur.code_id]: cur.value
+          }), {}) || {}
           break
         case "changeParamSetting":
-          console.log(this.changeParam)
+          this.baseData.config.change_code_id = this.changeParam.params
           break
         case "emphasisPlanSetting":
-          console.log(this.emphasisPlan)
+          this.baseData.config.emphasis_plan = this.baseData.config.emphasis_plan || {}
+          this.baseData.config.emphasis_plan.plan = this.baseData.config.emphasis_plan.plan || {}
+          this.baseData.config.emphasis_plan.plan_time = this.baseData.config.emphasis_plan.plan_time || {}
+          this.baseData.config.emphasis_plan.plan_sort = this.baseData.config.emphasis_plan.plan_sort || {}
+          //
+          if( !this.isInvalidValue(this.emphasisPlan.plan.set)  &&  !this.isInvalidValue(this.emphasisPlan.plan.check)){
+            this.baseData.config.emphasis_plan.plan = this.emphasisPlan.plan
+          }else {
+            delete this.baseData.config.emphasis_plan.plan
+          }
+          //
+          if( !this.isInvalidValue(this.emphasisPlan.plan_time.set)  &&  !this.isInvalidValue(this.emphasisPlan.plan_time.check)){
+            this.baseData.config.emphasis_plan.plan_time = this.emphasisPlan.plan_time
+          }else {
+            delete this.baseData.config.emphasis_plan.plan_time
+          }
+          //
+          if( !this.isInvalidValue(this.emphasisPlan.plan_sort.set)  &&  !this.isInvalidValue(this.emphasisPlan.plan_sort.check)){
+            this.baseData.config.emphasis_plan.plan_sort = this.emphasisPlan.plan_sort
+          }else {
+            delete this.baseData.config.emphasis_plan.plan_sort
+          }
+          if( this.isEmptyObject(this.baseData.config.emphasis_plan)){
+            delete this.baseData.config.emphasis_plan
+          }
+          console.log(this.baseData.config.emphasis_plan)
           break
         case "extendConfigSetting":
-          console.log(this.extendConfig)
+          this.baseData.config.extend_config = this.baseData.config.extend_config || {}
+          this.baseData.config.extend_config.get_result_tags = this.baseData.config.extend_config.get_result_tags || {}
+          this.baseData.config.extend_config.filter_real_meter_data = this.baseData.config.extend_config.filter_real_meter_data || {}
+          this.baseData.config.extend_config.get_result_tags.module = this.modulesBase.find(item => item.index === this.extendConfig.meterResultBind)?.module || ''
+          this.baseData.config.extend_config.get_result_tags.func = this.modulesBase.find(item => item.index === this.extendConfig.meterResultBind)?.func || ''
+          this.baseData.config.extend_config.filter_real_meter_data.module = this.modulesBase.find(item => item.index === this.extendConfig.filterRealTime)?.module || ''
+          this.baseData.config.extend_config.filter_real_meter_data.func = this.modulesBase.find(item => item.index === this.extendConfig.filterRealTime)?.func || ''
+          
+          if(this.baseData.config.extend_config.get_result_tags.module === '' && this.baseData.config.extend_config.get_result_tags.func === ''){
+            delete this.baseData.config.extend_config.get_result_tags
+          }
+          //
+          if(this.baseData.config.extend_config.filter_real_meter_data.module === '' && this.baseData.config.extend_config.filter_real_meter_data.func === ''){
+            delete this.baseData.config.extend_config.filter_real_meter_data
+          }
+          if(this.isEmptyObject(this.baseData.config.extend_config)){
+            delete this.baseData.config.extend_config
+          }
           break
         case "loopMeterSetting":
-          console.log(this.loopMeterInfo)
+          this.baseData.config.meter_loop = this.baseData.config.meter_loop || {}
+          this.baseData.config.meter_loop.code_id = this.loopMeterInfo.paramName
+          this.baseData.config.meter_loop_enable = this.loopMeterInfo.enable
+          if(this.baseData.config.meter_loop.code_id === ''){
+            delete this.baseData.config.meter_loop
+          }
           break
       }
-      await this.saveAllConfigApi()
+      return {result:true,error:''}
     },
     async saveAllConfigApi(){
       console.log(this.baseData.config)
       console.log('发送接口')
+    },
+
+    isEmptyObject(obj) {
+      // 1. 先判断类型是否为 object（排除 null、undefined、基本类型）
+      if (typeof obj !== 'object' || obj === null) {
+        return false;
+      }
+      // 2. 排除数组（数组也是 object 类型）
+      if (Array.isArray(obj)) {
+        return false;
+      }
+      // 3. 判断是否有可枚举属性
+      return Object.keys(obj).length === 0;
+    },
+    isInvalidValue(value) {
+      return value === undefined || value === null || value === '';
     },
     //配置选择变更事件
     async handleConfigChange(configId) {
@@ -662,25 +792,25 @@ export default {
       console.log(name)
       switch(name){
         case "startCode":
-          this.startParameters.push({ paramName: '', paramValue: 0 })
+          this.startParameters.push({ code_id: '', value: 0 })
           break
         case "checkStartCode":
-          this.checkStartParameters.push({ paramName: '', paramValue: 0 })
+          this.checkStartParameters.push({ code_id: '', value: 0 })
           break
         case "stopCode":
-          this.stopParameters.push({ paramName: '', paramValue: 0 })
+          this.stopParameters.push({ code_id: '', value: 0 })
           break
         case "checkStopCode":
-          this.checkStopParameters.push({ paramName: '', paramValue: 0 })
+          this.checkStopParameters.push({ code_id: '', value: 0 })
           break
         case "initDeviceSetting":
           this.initDeviceMappings.push({ set: '', check: '', value: 0 })
           break
         case "deviceStatusCode":
-          this.deviceStatusConfig.enums.push({ tags: [], status: '' })
+          this.deviceStatusConfig.enums.push({ tag_value: [{ value: 0 ,code_id: ''}], status: '' })
           break
         case "paramUncompress":
-          this.paramUncompress.push({ paramName: '', paramValue: 0 })
+          this.paramUncompress.push({ code_id: '', value: 0 })
           break
       }
     },
