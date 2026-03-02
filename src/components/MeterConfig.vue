@@ -104,6 +104,7 @@
       :name="'deviceStatusCode'"
       :param-options="paramOptions"
       @update:DeviceStatusEnums="updateDeviceStatusEnums"
+      @update:DeviceStatusAllParam="updateDeviceStatusAllParam"
       @update:statusClassification="updateStatusClassification"
       @add-enum="addParameter"
       @remove-enum="removeParameter"
@@ -289,6 +290,7 @@ export default {
       checkStopParameters: [{ code_id: '', value: 0 }],
       //设备状态枚举
       deviceStatusConfig: {
+        allParam:[],
         enums: [{ 
           tag_value: [ {value:0,code_id:'param1'},{value:1,code_id:'param2'}], 
           status: '' 
@@ -407,13 +409,6 @@ export default {
           label: name,
           value: name
         }))
-        //默认先选择一个配置
-        // this.baseData.configId = 'Z01SAGD_3'
-        // const selectedItem = this.allMeterConfig.find(item => item.config_id === 'Z01SAGD_3')
-        // this.baseData.config = selectedItem.config
-        // this.baseData.stationId = selectedItem.meter_station_id
-        // this.initConfig()
-        // this.handleStationChange(selectedItem.meter_station_id)
       } catch (error) {
         console.error('初始化配置的站列表失败:', error)
         this.$message.error('初始化配置的站列表失败')
@@ -524,8 +519,10 @@ export default {
       };
 
       //设备状态枚举
+      console.log(config.device_status)
       this.deviceStatusConfig = {
-        enums: config.device_status ? config.device_status.status || [{ value: '', status: '' }] : [],
+        allParam:config.device_status ? config.device_status.code_ids || []: [],
+        enums: config.device_status ? config.device_status.status || []: [],
         statusEnumClassification: {
           run_status: config.run_status || [],
           stop_status: config.stop_status || [] 
@@ -544,17 +541,100 @@ export default {
     saveAllConfig(){
       this.$message.success('保存所有配置成功')
     },
-    saveConfig(name) {
+    async saveConfig(name) {
+      //startCode
+      //checkStartCode
+      //stopCode
+      //checkStopCode
+      //deviceStatusCode
+      //wnChannelNumber
+      //wmChannelNumber
+      //planSetinfo
+      //initDeviceSetting
+      //resultSetting
+      //checkResultSetting
+      //paramUncompress
+      //changeParamSetting
+      //emphasisPlanSetting
+      //extendConfigSetting
+      //loopMeterSetting
       switch(name){
+        case "startCode":
+          this.baseData.config.start_device = this.startParameters
+          break
+        case "checkStartCode":{
+          const cache = {};
+          this.checkStartParameters.forEach(item => {
+            const { code_id, value } = item;
+            if (!cache[code_id])  cache[code_id] = []
+            cache[code_id].push(value);
+          });
+          this.baseData.config.check_start_device = Object.keys(cache).map(code_id => ({
+            code_id:code_id,
+            value: cache[code_id]
+          }))
+          break;
+        }
+        case "stopCode":
+          this.baseData.config.stop_device = this.stopParameters
+          break
+        case "checkStopCode":{
+          const cache = {};
+          this.checkStopParameters.forEach(item => {
+            const { code_id, value } = item;
+            if (!cache[code_id])  cache[code_id] = []
+            cache[code_id].push(value);
+          });
+          this.baseData.config.check_stop_device = Object.keys(cache).map(code_id => ({
+            code_id:code_id,
+            value: cache[code_id]
+          }))
+          break;
+        }
+        case "deviceStatusCode":
+          this.baseData.config.device_status.code_ids = this.deviceStatusConfig.allParam  
+          this.baseData.config.device_status.status = this.deviceStatusConfig.enums   
+          this.baseData.config.run_status = this.deviceStatusConfig.statusEnumClassification.run_status
+          this.baseData.config.stop_status = this.deviceStatusConfig.statusEnumClassification.stop_status
+          break
+        case "wnChannelNumber":
+          this.baseData.config.wn = this.wnChannelNumber
+          break
+        case "wmChannelNumber":
+          this.baseData.config.wm = this.wmChannelNumber
+          break
+        case "planSetinfo":
+          console.log(this.planTableInfo)
+          break
+        case "initDeviceSetting":
+          console.log(this.initDeviceMappings)
+          break
+        case "resultSetting":
+          console.log(this.resultTableInfo)
+          break
         case "checkResultSetting":
-          this.resultCheck = this.localResultCheck
+          console.log(this.resultCheck)
           break
         case "paramUncompress":
-          this.paramUncompress = this.localParamUncompress
+          console.log(this.paramUncompress)
+          break
+        case "changeParamSetting":
+          console.log(this.changeParam)
+          break
+        case "emphasisPlanSetting":
+          console.log(this.emphasisPlan)
+          break
+        case "extendConfigSetting":
+          console.log(this.extendConfig)
+          break
+        case "loopMeterSetting":
+          console.log(this.loopMeterInfo)
           break
       }
+      await this.saveAllConfigApi()
     },
     async saveAllConfigApi(){
+      console.log(this.baseData.config)
       console.log('发送接口')
     },
     //配置选择变更事件
@@ -635,6 +715,10 @@ export default {
     updateDeviceStatusEnums(deviceEnum){
       this.deviceStatusConfig.enums = deviceEnum
       console.log(this.deviceStatusConfig.enums)
+    },
+    updateDeviceStatusAllParam(allParam){
+      this.deviceStatusConfig.allParam = allParam
+      console.log(this.deviceStatusConfig.allParam)
     },
     updateStatusClassification(data){
       const { type, value } = data

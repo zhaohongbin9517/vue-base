@@ -12,6 +12,36 @@
     </template>
     
     <!-- 参数选择 -->
+     
+    <!-- 参数选择 -->
+    <div class="param-select-section">
+      <el-form label-width="100px">
+        <el-form-item label="状态参数">
+          <el-select 
+          v-model="localAllParam" 
+          placeholder="请选择参数" 
+          multiple
+          filterable
+          @change="updateDeviceStatusAllParam">
+            <el-option 
+              v-for="option in paramOptions" 
+              :key="option.code_id" 
+              :label="option.desc" 
+              :value="option.code_id" 
+            />
+            <template #tag>
+              <el-tag 
+              v-for="param in localAllParam" 
+              :key="param" 
+              closable
+              @close="removeParam(param)"
+              :color="getTagColor(param)"
+              >{{ param }}</el-tag>
+            </template>
+          </el-select>
+        </el-form-item>
+      </el-form>
+    </div>
     
     <el-button type="primary" size="small" @click="addEnum" class="add-param-btn">
       <el-icon><plus /></el-icon>
@@ -57,7 +87,7 @@
                 class="tag-select"
               >
                 <el-option 
-                  v-for="option in paramOptions" 
+                  v-for="option in localParamOptions" 
                   :key="option.code_id" 
                   :label="option.desc" 
                   :value="option.code_id" 
@@ -157,7 +187,8 @@ export default {
     config: {
       type: Object,
       default: () => ({
-        enums: [{ value: {}, status: '' }],
+        allParam: [],
+        enums: [],
         statusEnumClassification: {
           run_status: [],
           stop_status: []
@@ -189,7 +220,9 @@ export default {
   data() {
     return {
       localRunStatus: this.config.statusEnumClassification?.run_status || [],
-      localStopStatus: this.config.statusEnumClassification?.stop_status || []
+      localStopStatus: this.config.statusEnumClassification?.stop_status || [],
+      localAllParam: this.config.allParam || [] ,
+      localParamOptions: []
     }
   },
   computed: {
@@ -216,17 +249,36 @@ export default {
         }
       },
       immediate: true
+    },
+    config: {
+      handler() {
+        this.localAllParam = this.config.allParam || []
+        this.localParamOptions = this.paramOptions.filter(item => this.localAllParam.includes(item.code_id)) || []
+      },
+      deep: true
     }
   },
   methods: {
+    removeParam(param) {
+      this.localAllParam = this.localAllParam.filter(item => item !== param)
+      this.updateDeviceStatusAllParam()
+    },
+    getTagColor(param) {
+      if(this.paramOptions.length === 0)  return '#ffdccc'
+      if(this.paramOptions.some(option => option.code_id === param))  return '#e6f9ff'
+      return '#ffdccc'
+    },
     isValidParam(codeId) {
       // 如果没有选择参数，无效
-      if (!codeId || this.paramOptions.length === 0)  return true
+      if (!codeId || this.localParamOptions.length === 0)  return true
       // 检查选择的参数是否在选项中
-      return !this.paramOptions.some(option => option.code_id === codeId)
+      return !this.localParamOptions.some(option => option.code_id === codeId)
     },
     handleParamNameChange() {
       this.$emit('update:DeviceStatusEnums', this.enums)
+    },
+    updateDeviceStatusAllParam(){
+      this.$emit('update:DeviceStatusAllParam', this.localAllParam)
     },
     toggleRunStatus(status) {
       let newValue = [...this.localRunStatus]
@@ -282,10 +334,8 @@ export default {
       this.handleParamNameChange()
     },
     saveConfig() {
-      this.$emit('save-config',this.name)
-    },
-    printConfig() {
       console.log(this.config)
+      this.$emit('save-config',this.name)
     }
   }
 }
@@ -337,7 +387,6 @@ export default {
 
 .param-select-section :deep(.el-select) {
   width: 100%;
-  max-width: 300px;
 }
 
 .param-select-section :deep(.el-form-label) {
