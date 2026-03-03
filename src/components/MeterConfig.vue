@@ -34,7 +34,10 @@
           :key="item.value" 
           :label="item.label" 
           :value="item.value"
-          />
+          >
+          <span style="float: left">{{ item.label }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span> 
+        </el-option>
         </el-select>
         <el-button type="primary" @click="addConfig">
           <el-icon><plus /></el-icon>
@@ -258,6 +261,7 @@ import MeterConfigExtendConfigSetting from './MeterConfigChild/MeterConfigExtend
 import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeterSetting.vue'
 import MeterConfigAddConfig from './MeterConfigChild/MeterConfigAddConfig.vue'
 import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName,updateMeterConfig,getExtendConfigEnum} from '@/api/config'
+import { getAllObjectInfoMap } from '@/api/cacheData'
 
 export default {
   name: 'MeterConfig',
@@ -412,6 +416,7 @@ export default {
         const stationIds = await getAllStationTagKey()
         const allTable = await getAllTableName()
         const extendConfigEnum = await getExtendConfigEnum()
+        const objectInfoMap = await getAllObjectInfoMap()
         this.modulesBase = extendConfigEnum
         this.modulesChoose = extendConfigEnum.map(item => ({
           label: item.desc,
@@ -422,10 +427,14 @@ export default {
           label: item.name,
           value: item.config_id
         }))
-        this.allStations = stationIds.map(stationId => ({
-          label: stationId,
-          value: stationId
-        }))
+        this.allStations = stationIds.map(stationId => {
+          const stationInfo = objectInfoMap.get(`${stationId}_METER_STATION`) || {}
+          const stationName = stationInfo.objectName || stationId
+          return {
+            label: stationName,
+            value: stationId
+          }
+        })
         this.stationOptions = this.allStations
         this.tableOptions = allTable.table_names.map(name => ({
           label: name,
@@ -1019,8 +1028,11 @@ export default {
   flex-wrap: wrap;
 }
 
-.config-select,
-.station-select {
+.config-select  {
   width: 300px;
+}
+
+.station-select {
+  width: 400px;
 }
 </style>

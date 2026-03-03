@@ -27,7 +27,7 @@
       <el-table :data="configList" border class="config-table" stripe>
         <el-table-column prop="config_id" label="配置ID" min-width="200" />
         <el-table-column prop="name" label="配置名称" min-width="200" />
-        <el-table-column prop="meter_station_id" label="参数模板" min-width="150" />
+        <el-table-column prop="meter_station_name" label="参数模板" min-width="150" />
         <el-table-column label="操作" width="120" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="danger" size="small" circle @click="handleDelete(row.config_id)" :icon="Delete">
@@ -53,6 +53,7 @@
 import { Delete, Plus, Setting, Document,Edit } from '@element-plus/icons-vue'
 import MeterConfigAddConfig from './MeterConfigChild/MeterConfigAddConfig.vue'
 import {getAllMeterConfig, getAllStationTagKey,updateMeterConfig,deleteMeterConfig} from '@/api/config'
+import {getAllObjectInfoMap} from '@/api/cacheData'
 
 export default {
   name: 'AllMeterConfig',
@@ -140,15 +141,27 @@ export default {
       try {
         const data = await getAllMeterConfig()
         const stationIds = await getAllStationTagKey()
+        const objectInfoMap = await getAllObjectInfoMap() || {}
+
         this.configList = data || []
+        this.configList.map(item => {
+          const stationInfo = objectInfoMap.get(`${item.meter_station_id}_METER_STATION`) || {}
+          console.log('stationInfo',item.meter_station_id,stationInfo)
+          item.meter_station_name = stationInfo.objectName || item.meter_station_id
+        })
+        console.log('configList',this.configList)
         this.templateOptions = data.map(item => ({
           label: item.name,
           value: item.config_id
         }))
-        this.stationOptions = stationIds.map(stationId => ({
-          label: stationId,
-          value: stationId
-        }))
+        this.stationOptions = stationIds.map(stationId => {
+          const stationInfo = objectInfoMap.get(`${stationId}_METER_STATION`) || {}
+          const stationName = stationInfo.objectName || stationId
+          return {
+            label: stationName,
+            value: stationId
+          }
+        })
       } catch (error) {
         console.error('获取配置列表失败:', error)
         this.$message.error('获取配置列表失败')

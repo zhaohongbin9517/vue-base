@@ -43,6 +43,9 @@
             <el-menu-item index="/meter" class="sub-menu-item">
               <span class="sub-menu-text">修改配置</span>
             </el-menu-item>
+            <el-menu-item index="/vue-test-temp" class="sub-menu-item">
+              <span class="sub-menu-text">Vue测试组件</span>
+            </el-menu-item>
           </el-sub-menu>
         </el-menu>
       </el-aside>
@@ -63,6 +66,8 @@ export default {
   components: {
     IconMenu,
     Setting
+  },
+  mounted() {
   },
   methods: {
     handleOpen(key, keyPath) {

@@ -6,6 +6,10 @@ module.exports = defineConfig({
       '/tmms_config': {
         target: 'http://127.0.0.1:8169',
         changeOrigin: true
+      },
+      '/meter_general': {
+        target: 'http://127.0.0.1:8169',
+        changeOrigin: true
       }
     }
   }

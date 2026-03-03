@@ -102,3 +102,11 @@ export function deleteMeterConfig(configId) {
 export function getExtendConfigEnum() {
   return get('/tmms_config/get_extend_config_enum')
 }
+
+/**
+ * 获取对象关系
+ * @returns {Promise<Array>} 对象关系列表
+ */
+export function getObjectRelation() {
+  return get('/meter_general/get_object_relation')
+}

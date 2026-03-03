@@ -37,7 +37,10 @@
             :key="station.value"
             :label="station.label"
             :value="station.value"
-          />
+          >
+          <span style="float: left">{{ station.label }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">{{ station.value }}</span> 
+        </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="模板配置" prop="templateId">
@@ -134,7 +137,6 @@ export default {
       this.formData.configName = '';
       this.formData.stationId = '';
       this.formData.templateId = '';
-      console.log('resetForm',this.formData)
     },
     // 处理关闭对话框
     handleClose() {

@@ -5,6 +5,7 @@ import ResultConfig from '../components/ResultConfig.vue'
 import MeterConfig from '../components/MeterConfig.vue'
 import AllMeterConfig from '../components/AllMeterConfig.vue'
 import AllStationConfig from '../components/AllStationConfig.vue'
+import VueTestTemp from '../components/VueTestTemp.vue'
 
 const routes = [
   {
@@ -46,6 +47,11 @@ const routes = [
     path: '/all-station',
     name: 'AllStation',
     component: AllStationConfig
+  },
+  {
+    path: '/vue-test-temp',
+    name: 'VueTestTemp',
+    component: VueTestTemp
   }
 ]
 

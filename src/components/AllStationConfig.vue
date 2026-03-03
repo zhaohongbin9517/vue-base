@@ -22,8 +22,6 @@
         <el-table-column prop="name" label="配置名称" min-width="200" />
         <el-table-column prop="meter_station_id" label="参数模板" min-width="150" />
 
-
-
         <el-table-column label="操作" width="120" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="danger" size="small" circle @click="handleDelete(row.config_id)" :icon="Delete">
