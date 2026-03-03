@@ -7,11 +7,11 @@
     <el-container class="layout-container">
       <el-aside width="200px" class="aside">
         <el-menu
-          :default-active="activeMenu"
+          :default-active="$route.path"
           class="el-menu-vertical"
+          router
           @open="handleOpen"
           @close="handleClose"
-          @select="handleSelect"
         >
           <el-sub-menu index="1" popper-class="custom-submenu">
             <template #title>
@@ -20,10 +20,10 @@
                 <span class="menu-text">通用配置</span>
               </div>
             </template>
-            <el-menu-item index="plan" class="sub-menu-item">
+            <el-menu-item index="/plan" class="sub-menu-item">
               <span class="sub-menu-text">计划配置</span>
             </el-menu-item>
-            <el-menu-item index="result" class="sub-menu-item">
+            <el-menu-item index="/result" class="sub-menu-item">
               <span class="sub-menu-text">结果配置</span>
             </el-menu-item>
           </el-sub-menu>
@@ -34,10 +34,10 @@
                 <span class="menu-text">计量配置</span>
               </div>
             </template>
-            <el-menu-item index="allMeter" class="sub-menu-item">
+            <el-menu-item index="/all-meter" class="sub-menu-item">
               <span class="sub-menu-text">配置一览</span>
             </el-menu-item>
-            <el-menu-item index="changMeter" class="sub-menu-item">
+            <el-menu-item index="/meter" class="sub-menu-item">
               <span class="sub-menu-text">修改配置</span>
             </el-menu-item>
           </el-sub-menu>
@@ -45,7 +45,7 @@
       </el-aside>
       <el-container>
         <el-main class="main">
-          <component :is="currentComponent" />
+          <router-view />
         </el-main>
       </el-container>
     </el-container>
@@ -54,28 +54,12 @@
 
 <script>
 import { Menu as IconMenu, Setting } from '@element-plus/icons-vue'
-import BlankConfig from './BlankConfig.vue'
-import PlanConfig from './PlanConfig.vue'
-import ResultConfig from './ResultConfig.vue'
-import MeterConfig from './MeterConfig.vue'
-import AllMeterConfig from './AllMeterConfig.vue'
 
 export default {
   name: 'MenuIndex',
   components: {
     IconMenu,
-    Setting,
-    BlankConfig,
-    PlanConfig,
-    ResultConfig,
-    MeterConfig,
-    AllMeterConfig
-  },
-  data() {
-    return {
-      activeMenu: '',
-      currentComponent: 'BlankConfig'
-    }
+    Setting
   },
   methods: {
     handleOpen(key, keyPath) {
@@ -83,26 +67,6 @@ export default {
     },
     handleClose(key, keyPath) {
       console.log('关闭:', key, keyPath)
-    },
-    handleSelect(index, indexPath) {
-      console.log('选中菜单:', index, indexPath)
-      this.activeMenu = index
-      switch (index) {
-        case 'plan':
-          this.currentComponent = 'PlanConfig'
-          break
-        case 'result':
-          this.currentComponent = 'ResultConfig'
-          break
-        case 'changMeter':
-          this.currentComponent = 'MeterConfig'
-          break
-        case 'allMeter':
-          this.currentComponent = 'AllMeterConfig'
-          break
-        default:
-          this.currentComponent = 'BlankConfig'
-      }
     }
   }
 }

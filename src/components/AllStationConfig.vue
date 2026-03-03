@@ -8,13 +8,6 @@
       <p class="page-desc">管理所有计量站配置信息</p>
     </div>
 
-    <!-- 按钮区域 -->
-    <div class="button-area">
-      <el-button type="primary" @click="openAddConfigDialog" :icon="Plus">
-        新增配置
-      </el-button>
-    </div>
-
     <!-- 配置预览表格 -->
     <el-card class="config-card" shadow="hover">
       <template #header>
@@ -80,11 +73,6 @@ export default {
     this.fetchData()
   },
   methods: {
-    // 打开新增配置弹窗
-    openAddConfigDialog() {
-      this.addConfigVisible = true
-    },
-
     // 处理新增配置保存
     async handleAddConfigSave(formData) {
       const templateId = formData.templateId || ''
@@ -157,10 +145,7 @@ export default {
 
     //跳转到配置修改界面
     handleChange(configId){
-        this.$router.push({
-            name: 'MeterEdit',
-            params: { id: configId }
-        })
+        console.log(configId)
     }
   }
 }

@@ -435,6 +435,12 @@ export default {
           label: name,
           value: name
         }))
+        
+        // 数据加载完成后检查路由参数
+        if (this.$route.params.id) {
+          this.baseData.configId = this.$route.params.id
+          this.handleConfigChange(this.$route.params.id)
+        }
       } catch (error) {
         console.error('初始化配置的站列表失败:', error)
         this.$message.error('初始化配置的站列表失败')
