@@ -8,6 +8,23 @@
       <p class="page-desc">管理所有计量站配置信息</p>
     </div>
 
+    <!-- 列选择区域 -->
+    <el-card class="config-card" shadow="hover" style="margin-bottom: 20px;">
+      <template #header>
+        <div class="card-header">
+          <el-icon class="header-icon"><Document /></el-icon>
+          <span>列显示设置</span>
+        </div>
+      </template>
+      <div class="column-selector">
+        <el-checkbox-group v-model="visibleColumns" @change="handleColumnChange">
+          <el-checkbox v-for="column in allColumns" :key="column.key" :label="column.key" class="column-checkbox">
+            {{ column.label }}
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
+    </el-card>
+
     <!-- 配置预览表格 -->
     <el-card class="config-card" shadow="hover">
       <template #header>
@@ -18,128 +35,148 @@
       </template>
 
       <el-table :data="configList" border class="config-table" stripe>
-        <el-table-column prop="config_id" label="站id" min-width="200" />
-        <el-table-column prop="name" label="配置名称" min-width="200" />
-        <el-table-column prop="meter_station_id" label="参数模板" min-width="150" />
-
+        <!-- 动态生成表格列 -->
+        <template v-for="column in visibleColumns" :key="column">
+          <!-- 特殊列处理 -->
+          <el-table-column
+            v-if="column === 'is_valid'"
+            :prop="column"
+            :label="getColumnLabel(column)"
+            min-width="100"
+            align="center"
+          >
+            <template #default="{ row }" >
+              <span 
+                :class="{ 'red-text': row.is_valid !== true  }">
+                {{ row.is_valid === true ? '是' : '否' }}
+              </span>
+            </template>
+          </el-table-column>
+          <!-- 普通列 -->
+          <el-table-column
+            v-else
+            :prop="column"
+            :label="getColumnLabel(column)"
+            min-width="150"
+          >
+          </el-table-column>
+        </template>
+        <!-- 操作列始终显示 -->
         <el-table-column label="操作" width="120" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="danger" size="small" circle @click="handleDelete(row.config_id)" :icon="Delete">
+            </el-button>
+            <el-button type="primary" size="small" circle @click="handleChange(row.config_id)" :icon="Edit">
             </el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
 
-    <!-- 新增配置弹窗 -->
-    <MeterConfigAddConfig
-      v-model:visible="addConfigVisible"
-      :stationOptions="stationOptions"
-      :templateOptions="templateOptions"
-      @save="handleAddConfigSave"
-    />
   </div>
 </template>
 
 <script>
-import { Delete, Plus, Setting, Document,Edit } from '@element-plus/icons-vue'
-import MeterConfigAddConfig from './MeterConfigChild/MeterConfigAddConfig.vue'
-import {getAllMeterConfig, getAllStationTagKey,updateMeterConfig,deleteMeterConfig} from '@/api/config'
+import { Delete,Document ,Setting,Edit} from '@element-plus/icons-vue'
+import { getAllStationConfig } from '@/api/config'
+import {} from '@/api/cacheData'
 
 export default {
-  name: 'AllMeterConfig',
+  name: 'AllStationConfig',
   components: {
     Setting,
-    Document,
-    MeterConfigAddConfig
+    Document
   },
   setup() {
     return {
-      Plus,
-      Delete,
-      Edit
+      Edit,
+      Delete
     }
   },
   data() {
     return {
-      addConfigVisible: false,
-      configList: [],
-      stationOptions: [],
-      templateOptions: []
+      configList:[],
+      allColumns: [], // 所有可选择的列
+      visibleColumns: ['id','object_id', 'is_valid', 
+      'behavior_tree', 'config_id', 'device_manu', 'mainfold_max_num', 'controller_id'
+      ], // 当前可见的列
+      // 默认列配置映射
+      columnLabels: {
+        object_id: '站id',
+        is_valid: '是否启用',
+        behavior_tree: '行为树id',
+        config_id: '配置id',
+        device_manu: '布局分组',
+        mainfold_max_num: '管汇号',
+        controller_id: '控制器id',
+        id:'序列id',
+        object_type:'对象类型',
+        sub_type:'子类型',
+        remark:'备注',
+        create_time:'创建时间',
+        modified_time:'修改时间'
+      }
     }
   },
   mounted() {
     this.fetchData()
   },
   methods: {
-    // 处理新增配置保存
-    async handleAddConfigSave(formData) {
-      const templateId = formData.templateId || ''
-      const data = {
-          config_id: formData.configId,
-          name: formData.configName,
-          meter_station_id:formData.stationId
-      }
-      if(templateId !== ''){
-        const selectedItem = this.configList.find(item => item.config_id === templateId)  
-        data.config = structuredClone(selectedItem.config)
-      } else {
-        data.config = {}
-      }
-      try {
-        await  updateMeterConfig(data)
-        this.$message.success('配置新增成功')
-      } catch (error) {
-        console.error('新增配置失败:', error)
-        this.$message.error('新增配置失败')
-      }
-      //关闭新增窗口
-      this.addConfigVisible = false
-      //重新加载信息
-      this.fetchData()
-    },
-
-    // 处理删除配置
-    async handleDelete(configId) {
-      this.$confirm('确定要删除该配置吗？', '删除确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(async () => {
-        try {
-            await deleteMeterConfig(configId)
-        } catch (error) {
-          console.error('删除配置失败:', error)
-          this.$message.error('删除配置失败')
-          return
-        }
-        this.configList = this.configList.filter(config => config.config_id !== configId)
-        // 显示成功消息
-        this.$message.success('配置删除成功')
-      }).catch(() => {
-        // 取消删除操作
-        this.$message.info('已取消删除')
-      })
-    },
-
     // 获取配置列表
     async fetchData() {
       try {
-        const data = await getAllMeterConfig()
-        const stationIds = await getAllStationTagKey()
+        const data = await getAllStationConfig()
         this.configList = data || []
-        this.templateOptions = data.map(item => ({
-          label: item.name,
-          value: item.config_id
-        }))
-        this.stationOptions = stationIds.map(stationId => ({
-          label: stationId,
-          value: stationId
-        }))
+        
+        // 动态生成列信息
+        this.generateColumns()
       } catch (error) {
-        console.error('获取配置列表失败:', error)
-        this.$message.error('获取配置列表失败')
+        console.error('获取所有站配置失败:', error)
       }
+    },
+    
+    // 动态生成列信息
+    generateColumns() {
+      if (this.configList.length === 0) {
+        // 如果没有数据，使用默认列配置
+        this.allColumns = Object.keys(this.columnLabels).map(key => ({
+          key,
+          label: this.columnLabels[key]
+        }))
+        // this.visibleColumns = Object.keys(this.columnLabels)
+        return
+      }
+      
+      // 从第一个数据项获取所有key
+      const firstItem = this.configList[0]
+      const keys = Object.keys(firstItem)
+      
+      // 生成列信息
+      this.allColumns = keys.map(key => ({
+        key,
+        label: this.columnLabels[key] || key // 如果没有映射，使用key作为label
+      }))
+      
+      // 默认显示所有列
+      // this.visibleColumns = keys
+    },
+    
+    // 根据列key获取显示名称
+    getColumnLabel(key) {
+      return this.columnLabels[key] || key
+    },
+    
+    // 处理列选择变化
+    handleColumnChange() {
+      this.visibleColumns = this.visibleColumns.sort((a, b) => {
+        const indexA = this.allColumns.findIndex(c => c.key === a)
+        const indexB = this.allColumns.findIndex(c => c.key === b)
+        return indexA - indexB
+      })
+    },
+    //删除
+    handleDelete(){
+      this.$message.info('删除暂时不可用')
     }
   }
 }
@@ -213,5 +250,27 @@ export default {
 
 .config-table {
   margin-top: 16px;
+}
+.config-table :deep(.el-table__header-wrapper th) {
+  text-align: center;
+}
+
+.red-text {
+  color: #f56c6c;
+}
+
+/* 列选择器样式 */
+.column-selector {
+  /* display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 10px 0; */
+}
+
+.column-checkbox {
+  /* display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 20px; */
 }
 </style>

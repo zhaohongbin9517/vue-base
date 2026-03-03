@@ -110,3 +110,12 @@ export function getExtendConfigEnum() {
 export function getObjectRelation() {
   return get('/meter_general/get_object_relation')
 }
+
+/**
+ * 获取所有站配置
+ * @returns {Promise<Array>} 站配置列表
+ */
+export function getAllStationConfig() {
+  return get('/tmms_config/get_station_config')
+}
+

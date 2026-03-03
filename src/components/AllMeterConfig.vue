@@ -146,10 +146,8 @@ export default {
         this.configList = data || []
         this.configList.map(item => {
           const stationInfo = objectInfoMap.get(`${item.meter_station_id}_METER_STATION`) || {}
-          console.log('stationInfo',item.meter_station_id,stationInfo)
           item.meter_station_name = stationInfo.objectName || item.meter_station_id
         })
-        console.log('configList',this.configList)
         this.templateOptions = data.map(item => ({
           label: item.name,
           value: item.config_id
