@@ -23,7 +23,10 @@
           :key="item.config_id" 
           :label="item.name" 
           :value="item.config_id"
-          />
+          >
+            <span style="float: left">{{ item.name }}</span>
+            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.config_id }}</span> 
+          </el-option>
         </el-select>
         <el-select v-model="baseData.stationId" @change="handleStationChange" placeholder="请选择站" class="station-select">
           <el-option 
@@ -41,10 +44,19 @@
           <el-icon><refresh-right /></el-icon>
           取消修改
         </el-button>
+    
         <el-button type="success" @click="saveAllConfig">
           <el-icon><check /></el-icon>
           保存配置
         </el-button>
+    
+    <!-- 新增配置对话框组件 -->
+    <MeterConfigAddConfig
+      v-model:visible="addConfigVisible"
+      :stationOptions="stationOptions"
+      :templateOptions="templateOptions"
+      @save="handleAddConfigSave"
+    />
       </div>
     </el-card>
 
@@ -244,6 +256,7 @@ import MeterConfigChangeParamSetting from './MeterConfigChild/MeterConfigChangeP
 import MeterConfigEmphasisPlanSetting from './MeterConfigChild/MeterConfigEmphasisPlanSetting.vue'
 import MeterConfigExtendConfigSetting from './MeterConfigChild/MeterConfigExtendConfigSetting.vue'
 import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeterSetting.vue'
+import MeterConfigAddConfig from './MeterConfigChild/MeterConfigAddConfig.vue'
 import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName,updateMeterConfig} from '@/api/config'
 
 export default {
@@ -264,7 +277,8 @@ export default {
     MeterConfigChangeParamSetting,
     MeterConfigEmphasisPlanSetting,
     MeterConfigExtendConfigSetting,
-    MeterConfigLoopMeterSetting
+    MeterConfigLoopMeterSetting,
+    MeterConfigAddConfig
   },
   setup() {
     return {
@@ -301,6 +315,12 @@ export default {
           stop_status: []
         }
       },
+      // 新增配置对话框
+      addConfigVisible: false,
+      // 计量站选项
+      stationOptions: [],
+      // 模板配置选项
+      templateOptions: [],
       //通道号设置
       wnChannelNumber: '',
       wmChannelNumber: '',
@@ -402,10 +422,15 @@ export default {
         const stationIds = await getAllStationTagKey()
         const allTable = await getAllTableName()
         this.allMeterConfig =data
+        this.templateOptions = data.map(item => ({
+          label: item.name,
+          value: item.config_id
+        }))
         this.allStations = stationIds.map(stationId => ({
           label: stationId,
           value: stationId
         }))
+        this.stationOptions = this.allStations
         this.tableOptions = allTable.table_names.map(name => ({
           label: name,
           value: name
@@ -531,11 +556,51 @@ export default {
     },
     //新增配置
     addConfig() {
-      this.$message.info('新增配置')
+      this.addConfigVisible = true
+    },
+    //处理新增配置保存
+    async handleAddConfigSave(formData){
+      const templateId = formData.templateId || ''
+      const data = {
+          config_id: formData.configId,
+          name: formData.configName,
+          meter_station_id:formData.stationId
+      }
+      if(templateId !== ''){
+        const selectedItem = this.allMeterConfig.find(item => item.config_id === templateId)  
+        data.config = structuredClone(selectedItem.config)
+      } else {
+        data.config = {}
+      }
+      try {
+        await  updateMeterConfig(data)
+        this.$message.success('配置新增成功')
+      } catch (error) {
+        console.error('新增配置失败:', error)
+        this.$message.error('新增配置失败')
+      }
+      //关闭新增窗口
+      this.addConfigVisible = false
+      //刷新配置
+      const meterData = await getAllMeterConfig()
+      this.allMeterConfig = meterData
+      this.templateOptions = meterData.map(item => ({
+        label: item.name,
+        value: item.config_id
+      }))
     },
     //重置配置
     resetConfig() {
-      this.$message.info('刷新配置')
+      // 重置所有配置项到默认值
+      if(!this.baseData.configId || this.baseData.configId === ''){
+        this.$message.error('请选择配置')
+        return
+      }else {
+        const selectedItem = this.allMeterConfig.find(item => item.config_id === this.baseData.configId)
+        this.baseData.config = structuredClone(selectedItem.config)
+        this.initConfig()
+        this.$message.info('重置修改')
+      }
     },
     //保存配置
     async saveAllConfig(){
@@ -963,6 +1028,6 @@ export default {
 
 .config-select,
 .station-select {
-  width: 200px;
+  width: 300px;
 }
 </style>
