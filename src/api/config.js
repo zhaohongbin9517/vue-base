@@ -85,3 +85,12 @@ export function getStationCode(stationId) {
 export function updateMeterConfig(data) {
   return post('/tmms_config/update_meter_config', data)
 }
+
+/**
+ * 删除配置
+ * @param {string} configId - 配置id
+ * @returns {Promise}
+ */
+export function deleteMeterConfig(configId) {
+   return get('/tmms_config/delete_meter_config', {config_id : configId})
+}

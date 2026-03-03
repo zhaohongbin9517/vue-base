@@ -34,8 +34,11 @@
                 <span class="menu-text">计量配置</span>
               </div>
             </template>
-            <el-menu-item index="meter" class="sub-menu-item">
-              <span class="sub-menu-text">计量配置</span>
+            <el-menu-item index="allMeter" class="sub-menu-item">
+              <span class="sub-menu-text">配置一览</span>
+            </el-menu-item>
+            <el-menu-item index="changMeter" class="sub-menu-item">
+              <span class="sub-menu-text">修改配置</span>
             </el-menu-item>
           </el-sub-menu>
         </el-menu>
@@ -55,6 +58,7 @@ import BlankConfig from './BlankConfig.vue'
 import PlanConfig from './PlanConfig.vue'
 import ResultConfig from './ResultConfig.vue'
 import MeterConfig from './MeterConfig.vue'
+import AllMeterConfig from './AllMeterConfig.vue'
 
 export default {
   name: 'MenuIndex',
@@ -64,7 +68,8 @@ export default {
     BlankConfig,
     PlanConfig,
     ResultConfig,
-    MeterConfig
+    MeterConfig,
+    AllMeterConfig
   },
   data() {
     return {
@@ -89,8 +94,11 @@ export default {
         case 'result':
           this.currentComponent = 'ResultConfig'
           break
-        case 'meter':
+        case 'changMeter':
           this.currentComponent = 'MeterConfig'
+          break
+        case 'allMeter':
+          this.currentComponent = 'AllMeterConfig'
           break
         default:
           this.currentComponent = 'BlankConfig'
