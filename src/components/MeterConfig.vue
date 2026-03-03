@@ -5,7 +5,7 @@
         <el-icon class="title-icon"><setting /></el-icon>
         计量配置
       </h2>
-      <p class="page-desc">配置计量设备参数和启动设备参数设置</p>
+      <p class="page-desc">配置计量过程参数</p>
     </div>
 
     <!-- 配置基础 -->
@@ -257,7 +257,7 @@ import MeterConfigEmphasisPlanSetting from './MeterConfigChild/MeterConfigEmphas
 import MeterConfigExtendConfigSetting from './MeterConfigChild/MeterConfigExtendConfigSetting.vue'
 import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeterSetting.vue'
 import MeterConfigAddConfig from './MeterConfigChild/MeterConfigAddConfig.vue'
-import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName,updateMeterConfig} from '@/api/config'
+import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName,updateMeterConfig,getExtendConfigEnum} from '@/api/config'
 
 export default {
   name: 'MeterConfig',
@@ -375,19 +375,9 @@ export default {
 
 
       //模块选择
-      modulesChoose: [
-        { label: '获取计量结果绑定采集点-默认', value: '0' },
-        { label: '获取计量结果绑定采集点-百口泉瑞飞', value: '1' },
-        { label: '过滤实时数据-默认', value: '2' },
-        { label: '过滤实时数据-百口泉瑞飞', value: '3' }
-      ],
+      modulesChoose: [ ],
       //全部模块功能枚举
-      modulesBase:[
-        {index:'0',module: 'tmms_station_meter_result_lib', func:'get_result_tags_default', desc:'获取计量结果绑定采集点-默认'},
-        {index:'1',module: 'tmms_station_meter_result_lib', func:'get_result_tags_ruifei', desc:'获取计量结果绑定采集点-百口泉瑞飞'},
-        {index:'2',module: 'tmms_station_meter_result_lib', func:'filter_real_meter_data_default', desc:'过滤实时数据-默认'},
-        {index:'3',module: 'tmms_station_meter_result_lib', func:'filter_real_meter_data_ruifei', desc:'过滤实时数据-百口泉瑞飞'},
-      ],
+      modulesBase:[],
       //参数选择
       paramOptions: [
         { code_id:'',desc:''}
@@ -421,6 +411,12 @@ export default {
         const data = await getAllMeterConfig()
         const stationIds = await getAllStationTagKey()
         const allTable = await getAllTableName()
+        const extendConfigEnum = await getExtendConfigEnum()
+        this.modulesBase = extendConfigEnum
+        this.modulesChoose = extendConfigEnum.map(item => ({
+          label: item.desc,
+          value: item.index
+        }))
         this.allMeterConfig =data
         this.templateOptions = data.map(item => ({
           label: item.name,
@@ -632,7 +628,6 @@ export default {
     },
     async saveConfig(name) {
       const result =  this.updateConfig(name)
-      console.log(name,result)
       if(!result.result){
         console.error(`更新${name}配置失败:${result.error}`)
         this.$message.error(`更新${name}配置失败:${result.error}`)
@@ -660,7 +655,6 @@ export default {
       switch(name){
         case "startCode":
           this.baseData.config.start_device = this.startParameters.filter(item => item.code_id !== '')
-          console.log( this.baseData.config.start_device,this.isEmptyObject(this.baseData.config.start_device))
           if(this.baseData.config.start_device.length === 0) return {result:false,error:'启动设备参数不能为空'}
           break
         case "checkStartCode":{
@@ -787,7 +781,6 @@ export default {
           if( this.isEmptyObject(this.baseData.config.emphasis_plan)){
             delete this.baseData.config.emphasis_plan
           }
-          console.log(this.baseData.config.emphasis_plan)
           break
         case "extendConfigSetting":
           this.baseData.config.extend_config = this.baseData.config.extend_config || {}
@@ -821,7 +814,6 @@ export default {
       return {result:true,error:''}
     },
     async saveAllConfigApi(){
-      console.log(this.baseData.config)
       try {
         const data = {
           config_id: this.baseData.configId,
@@ -829,7 +821,6 @@ export default {
           config:structuredClone(this.baseData.config),
           meter_station_id:this.baseData.stationId
         }
-        console.log(data)
         await updateMeterConfig(data)
       } catch (error) {
         console.error('保存所有配置失败:', error)
@@ -877,7 +868,6 @@ export default {
 
     //启动参数设置 启动检查参数设置、停止设备参数设置、停止检查参数设置 增加删除
     addParameter(name){
-      console.log(name)
       switch(name){
         case "startCode":
           this.startParameters.push({ code_id: '', value: 0 })
@@ -904,7 +894,6 @@ export default {
     },
 
     removeParameter(name, index){
-      console.log(name, index)
       switch(name){
         case "startCode":
           this.startParameters.splice(index, 1)
@@ -932,11 +921,9 @@ export default {
     //状态枚举增加删除
     updateDeviceStatusEnums(deviceEnum){
       this.deviceStatusConfig.enums = deviceEnum
-      console.log(this.deviceStatusConfig.enums)
     },
     updateDeviceStatusAllParam(allParam){
       this.deviceStatusConfig.allParam = allParam
-      console.log(this.deviceStatusConfig.allParam)
     },
     updateStatusClassification(data){
       const { type, value } = data

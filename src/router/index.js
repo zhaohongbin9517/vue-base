@@ -4,6 +4,7 @@ import PlanConfig from '../components/PlanConfig.vue'
 import ResultConfig from '../components/ResultConfig.vue'
 import MeterConfig from '../components/MeterConfig.vue'
 import AllMeterConfig from '../components/AllMeterConfig.vue'
+import AllStationConfig from '../components/AllStationConfig.vue'
 
 const routes = [
   {
@@ -40,6 +41,11 @@ const routes = [
     path: '/all-meter',
     name: 'AllMeter',
     component: AllMeterConfig
+  },
+  {
+    path: '/all-station',
+    name: 'AllStation',
+    component: AllStationConfig
   }
 ]
 

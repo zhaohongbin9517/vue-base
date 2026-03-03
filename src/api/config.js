@@ -94,3 +94,11 @@ export function updateMeterConfig(data) {
 export function deleteMeterConfig(configId) {
    return get('/tmms_config/delete_meter_config', {config_id : configId})
 }
+
+/**
+ * 获取额外参数枚举
+ * @returns {Promise<Array>} 额外参数枚举列表
+ */
+export function getExtendConfigEnum() {
+  return get('/tmms_config/get_extend_config_enum')
+}

@@ -3,7 +3,7 @@
     <div class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><Setting /></el-icon>
-        全部配置管理
+        全部计量站管理
       </h2>
       <p class="page-desc">管理所有计量站配置信息</p>
     </div>
@@ -13,19 +13,20 @@
       <template #header>
         <div class="card-header">
           <el-icon class="header-icon"><Document /></el-icon>
-          <span>配置列表</span>
+          <span>计量站列表</span>
         </div>
       </template>
 
       <el-table :data="configList" border class="config-table" stripe>
-        <el-table-column prop="config_id" label="配置ID" min-width="200" />
+        <el-table-column prop="config_id" label="站id" min-width="200" />
         <el-table-column prop="name" label="配置名称" min-width="200" />
         <el-table-column prop="meter_station_id" label="参数模板" min-width="150" />
+
+
+
         <el-table-column label="操作" width="120" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="danger" size="small" circle @click="handleDelete(row.config_id)" :icon="Delete">
-            </el-button>
-            <el-button type="primary" size="small" circle @click="handleChange(row.config_id)" :icon="Edit">
             </el-button>
           </template>
         </el-table-column>
@@ -141,11 +142,6 @@ export default {
         console.error('获取配置列表失败:', error)
         this.$message.error('获取配置列表失败')
       }
-    },
-
-    //跳转到配置修改界面
-    handleChange(configId){
-        console.log(configId)
     }
   }
 }

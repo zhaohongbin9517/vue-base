@@ -5,7 +5,7 @@
         <el-icon class="title-icon"><Setting /></el-icon>
         全部配置管理
       </h2>
-      <p class="page-desc">管理所有计量站配置信息</p>
+      <p class="page-desc">管理所有配置信息</p>
     </div>
 
     <!-- 按钮区域 -->

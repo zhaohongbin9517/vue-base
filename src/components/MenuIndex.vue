@@ -34,6 +34,9 @@
                 <span class="menu-text">计量配置</span>
               </div>
             </template>
+            <el-menu-item index="/all-station" class="sub-menu-item">
+              <span class="sub-menu-text">计量站一览</span>
+            </el-menu-item>
             <el-menu-item index="/all-meter" class="sub-menu-item">
               <span class="sub-menu-text">配置一览</span>
             </el-menu-item>
