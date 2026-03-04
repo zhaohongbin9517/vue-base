@@ -15,10 +15,11 @@
         <el-menu-item index="/user-center/auth">授权管理</el-menu-item>
       </el-menu>
     </el-aside>
-
-    <el-main class="user-center-layout__main">
-      <router-view />
-    </el-main>
+    <el-container>
+      <el-main class="user-center-layout__main">
+        <router-view />
+      </el-main>
+    </el-container>
   </el-container>
 </template>
 

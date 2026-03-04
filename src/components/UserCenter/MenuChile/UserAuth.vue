@@ -1,7 +1,23 @@
 <template>
-  <div class="user-page-card-wrap">
-    <el-card>
-      <el-table v-loading="loading" stripe :data="tableData" style="width: 100%">
+  <div class="user-auth-config">
+    <div class="page-header">
+      <h2 class="page-title">
+        <el-icon class="title-icon"><User /></el-icon>
+        用户授权管理
+      </h2>
+      <p class="page-desc">管理用户角色和权限</p>
+    </div>
+
+    <!-- 用户授权表格 -->
+    <el-card class="config-card" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <el-icon class="header-icon"><Document /></el-icon>
+          <span>用户授权列表</span>
+        </div>
+      </template>
+
+      <el-table v-loading="loading" stripe :data="tableData" style="width: 100%" border>
         <el-table-column prop="user_name" min-width="120" label="用户名" />
         <el-table-column prop="alias" min-width="140" label="账户别名" />
         <el-table-column min-width="220" label="授权角色">
@@ -101,6 +117,7 @@
 <script setup>
 import { nextTick, onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { User, Document } from '@element-plus/icons-vue'
 import {
   acGetAllRoles,
   acGetAllUserRole,
@@ -263,8 +280,63 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.user-page-card-wrap {
-  padding-bottom: 12px;
+.user-auth-config {
+  padding: 24px;
+  background: #f5f7fa;
+  min-height: 85vh;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.user-auth-config::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.user-auth-config {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.page-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 22px;
+  color: #303133;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.title-icon {
+  font-size: 26px;
+  color: #409eff;
+}
+
+.page-desc {
+  font-size: 14px;
+  color: #606266;
+  margin: 0;
+}
+
+.config-card {
+  margin-bottom: 24px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.header-icon {
+  color: #409eff;
 }
 
 .role-tag {

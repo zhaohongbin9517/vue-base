@@ -1,16 +1,33 @@
 <template>
-  <div class="user-page-card-wrap">
-    <el-card>
+  <div class="user-manager-config">
+    <div class="page-header">
+      <h2 class="page-title">
+        <el-icon class="title-icon"><User /></el-icon>
+        用户管理
+      </h2>
+      <p class="page-desc">管理系统用户信息</p>
+    </div>
+
+    <!-- 按钮区域 -->
+    <div class="button-area">
+      <el-button type="primary" @click="openAddDialog" :icon="Plus">
+        新增用户
+      </el-button>
+    </div>
+
+    <!-- 用户管理表格 -->
+    <el-card class="config-card" shadow="hover">
       <template #header>
-        <div class="user-page-toolbar">
-          <el-button type="primary" @click="openAddDialog">新增</el-button>
+        <div class="card-header">
+          <el-icon class="header-icon"><Document /></el-icon>
+          <span>用户列表</span>
         </div>
       </template>
 
-      <el-table v-loading="loading" :data="tableData" stripe>
-        <el-table-column prop="user_name" label="用户名" />
-        <el-table-column prop="alias" label="用户别名" />
-        <el-table-column label="操作" width="280">
+      <el-table v-loading="loading" :data="tableData" border class="config-table" stripe>
+        <el-table-column prop="user_name" label="用户名" min-width="200" />
+        <el-table-column prop="alias" label="用户别名" min-width="200" />
+        <el-table-column label="操作" width="280" align="center">
           <template #default="{ row }">
             <el-button-group>
               <el-button size="small" type="info" :disabled="isSystemUser(row)" @click="openEditDialog(row)">
@@ -82,6 +99,7 @@
 import md5 from 'js-md5'
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { User, Document, Plus } from '@element-plus/icons-vue'
 import { acAddUser, acDelUser, acGetAllUsers, acResetPasswd, acUpdateUser } from '@/api/userUtils/userCenter'
 
 const loading = ref(false)
@@ -300,12 +318,72 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.user-page-card-wrap {
-  padding-bottom: 12px;
+.user-manager-config {
+  padding: 24px;
+  background: #f5f7fa;
+  min-height: 85vh;
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
-.user-page-toolbar {
+.user-manager-config::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.user-manager-config {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.page-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 22px;
+  color: #303133;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.title-icon {
+  font-size: 26px;
+  color: #409eff;
+}
+
+.page-desc {
+  font-size: 14px;
+  color: #606266;
+  margin: 0;
+}
+
+.button-area {
+  margin-bottom: 24px;
   display: flex;
   justify-content: flex-start;
+}
+
+.config-card {
+  margin-bottom: 24px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.header-icon {
+  color: #409eff;
+}
+
+.config-table {
+  margin-top: 16px;
 }
 </style>

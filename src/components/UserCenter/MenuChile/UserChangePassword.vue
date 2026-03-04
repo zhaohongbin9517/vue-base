@@ -1,10 +1,19 @@
 <template>
-  <div class="user-page-card-wrap">
-    <el-card class="password-card">
+  <div class="user-password-config">
+    <div class="page-header">
+      <h2 class="page-title">
+        <el-icon class="title-icon"><Lock /></el-icon>
+        密码修改
+      </h2>
+      <p class="page-desc">修改当前用户密码</p>
+    </div>
+
+    <!-- 密码修改表单 -->
+    <el-card class="config-card" shadow="hover">
       <template #header>
-        <div class="password-card__header">
+        <div class="card-header">
+          <el-icon class="header-icon"><Document /></el-icon>
           <span>密码修改</span>
-          <el-button type="primary" @click="save" :loading="submitting">保存</el-button>
         </div>
       </template>
 
@@ -18,6 +27,11 @@
         <el-form-item prop="newPsd2" label="确认密码：">
           <el-input v-model="form.newPsd2" type="password" show-password />
         </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="save" :loading="submitting" style="margin-left: 120px;">
+            保存
+          </el-button>
+        </el-form-item>
       </el-form>
     </el-card>
   </div>
@@ -27,6 +41,7 @@
 import md5 from 'js-md5'
 import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Lock, Document } from '@element-plus/icons-vue'
 import { acUpdatePasswd } from '@/api/userUtils/userCenter'
 import { getAuthUser } from '@/api/userUtils/auth'
 
@@ -96,19 +111,65 @@ const save = async () => {
 </script>
 
 <style scoped>
-.user-page-card-wrap {
-  padding: 0 0 12px;
+.user-password-config {
+  padding: 24px;
+  background: #f5f7fa;
+  min-height: 85vh;
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
-.password-card {
+.user-password-config::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.user-password-config {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.page-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 22px;
+  color: #303133;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.title-icon {
+  font-size: 26px;
+  color: #409eff;
+}
+
+.page-desc {
+  font-size: 14px;
+  color: #606266;
+  margin: 0;
+}
+
+.config-card {
+  margin-bottom: 24px;
   width: min(720px, 100%);
   margin: 0 auto;
 }
 
-.password-card__header {
+.card-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.header-icon {
+  color: #409eff;
 }
 
 .password-form {

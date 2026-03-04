@@ -1,13 +1,30 @@
 <template>
-  <div class="user-page-card-wrap">
-    <el-card>
+  <div class="user-roles-config">
+    <div class="page-header">
+      <h2 class="page-title">
+        <el-icon class="title-icon"><User /></el-icon>
+        角色管理
+      </h2>
+      <p class="page-desc">管理系统角色和权限</p>
+    </div>
+
+    <!-- 按钮区域 -->
+    <div class="button-area">
+      <el-button type="primary" @click="openAddRoleDialog" :icon="Plus">
+        新增角色
+      </el-button>
+    </div>
+
+    <!-- 角色管理表格 -->
+    <el-card class="config-card" shadow="hover">
       <template #header>
-        <div class="user-page-toolbar">
-          <el-button type="primary" @click="openAddRoleDialog">新增</el-button>
+        <div class="card-header">
+          <el-icon class="header-icon"><Document /></el-icon>
+          <span>角色列表</span>
         </div>
       </template>
 
-      <el-table v-loading="loading" stripe :data="tableData" style="width: 100%">
+      <el-table v-loading="loading" stripe :data="tableData" style="width: 100%" border>
         <el-table-column prop="role" min-width="160" label="角色" />
         <el-table-column label="操作" align="center" width="260">
           <template #default="{ row }">
@@ -73,6 +90,7 @@
 <script setup>
 import { nextTick, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { User, Document, Plus } from '@element-plus/icons-vue'
 import { acBatchGrantRole, acDeleteRole, acGetAllRoles, acGetFeatures, acGetRoleAccess } from '@/api/userUtils/userCenter'
 import {
   accessItemsToCheckedKeys,
@@ -264,12 +282,76 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.user-page-card-wrap {
-  padding-bottom: 12px;
+.user-roles-config {
+  padding: 24px;
+  background: #f5f7fa;
+  min-height: 85vh;
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
-.user-page-toolbar {
+.user-roles-config::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.user-roles-config {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.page-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 22px;
+  color: #303133;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.title-icon {
+  font-size: 26px;
+  color: #409eff;
+}
+
+.page-desc {
+  font-size: 14px;
+  color: #606266;
+  margin: 0;
+}
+
+.button-area {
+  margin-bottom: 24px;
   display: flex;
   justify-content: flex-start;
+}
+
+.config-card {
+  margin-bottom: 24px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.header-icon {
+  color: #409eff;
+}
+
+:deep(.el-tree) {
+  max-height: 360px;
+  overflow: auto;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+  padding: 8px;
 }
 </style>
