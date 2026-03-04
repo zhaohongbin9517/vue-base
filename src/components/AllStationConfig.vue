@@ -66,12 +66,22 @@
           <template #default="{ row }">
             <el-button type="danger" size="small" circle @click="handleDelete(row.config_id)" :icon="Delete">
             </el-button>
-            <el-button type="primary" size="small" circle @click="handleChange(row.config_id)" :icon="Edit">
+            <el-button type="primary" size="small" circle @click="handleEdit(row.config_id)" :icon="Edit">
             </el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- 编辑配置弹窗 -->
+    <AllStationConfigEdit
+      v-model:visible="editVisible"
+      :data="currentEditData"
+      :visible-columns="visibleColumns"
+      :is-editable="isEditable"
+      :select-options="selectOptions"
+      @save="handleEditSave"
+    />
 
   </div>
 </template>
@@ -80,12 +90,14 @@
 import { Delete,Document ,Setting,Edit} from '@element-plus/icons-vue'
 import { getAllStationConfig } from '@/api/config'
 import {} from '@/api/cacheData'
+import AllStationConfigEdit from './AllStationConfigEdit.vue'
 
 export default {
   name: 'AllStationConfig',
   components: {
     Setting,
-    Document
+    Document,
+    AllStationConfigEdit
   },
   setup() {
     return {
@@ -115,6 +127,24 @@ export default {
         remark:'备注',
         create_time:'创建时间',
         modified_time:'修改时间'
+      },
+      // 编辑相关数据
+      editVisible: false,
+      currentEditData: {},
+      // 控制字段是否可编辑
+      isEditable: {
+        object_id: true,
+        // is_valid: true,
+        // behavior_tree: true,
+        // config_id: true,
+        // device_manu: true,
+        // mainfold_max_num: true,
+        // controller_id: true
+      },
+      // 下拉框选项数据
+      selectOptions: {
+        behavior_tree: [],
+        config_id: []
       }
     }
   },
@@ -177,6 +207,30 @@ export default {
     //删除
     handleDelete(){
       this.$message.info('删除暂时不可用')
+    },
+    
+    // 处理编辑按钮点击
+    handleEdit(config_id) {
+      // 查找对应的配置数据
+      const data = this.configList.find(item => item.config_id === config_id)
+      if (data) {
+        this.currentEditData = data
+        this.editVisible = true
+      }
+    },
+    
+    // 处理保存编辑
+    handleEditSave(data) {
+      // 这里可以添加保存逻辑，比如调用API更新配置
+      console.log('保存编辑数据:', data)
+      
+      // 模拟保存成功，更新本地列表
+      const index = this.configList.findIndex(item => item.config_id === data.config_id)
+      if (index !== -1) {
+        this.configList[index] = { ...this.configList[index], ...data }
+      }
+      
+      this.$message.success('配置更新成功')
     }
   }
 }
