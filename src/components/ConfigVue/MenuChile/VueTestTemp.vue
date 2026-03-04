@@ -9,7 +9,7 @@
 <script>
 // 引入 Vue3 核心 API
 import { Plus } from '@element-plus/icons-vue'
-import { getAllObjectInfoMap } from '@/api/cacheData'
+import { getAllObjectInfoMap } from '@/api/configUtils/cacheData'
 
 export default {
   name: 'VueTestTemp',

@@ -52,8 +52,8 @@
 <script>
 import { Delete, Plus, Setting, Document,Edit } from '@element-plus/icons-vue'
 import MeterConfigAddConfig from './MeterConfigChild/MeterConfigAddConfig.vue'
-import {getAllMeterConfig, getAllStationTagKey,updateMeterConfig,deleteMeterConfig} from '@/api/config'
-import {getAllObjectInfoMap} from '@/api/cacheData'
+import {getAllMeterConfig, getAllStationTagKey,updateMeterConfig,deleteMeterConfig} from '@/api/configUtils/config'
+import {getAllObjectInfoMap} from '@/api/configUtils/cacheData'
 
 export default {
   name: 'AllMeterConfig',

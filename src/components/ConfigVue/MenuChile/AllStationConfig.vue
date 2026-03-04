@@ -88,8 +88,8 @@
 
 <script>
 import { Delete,Document ,Setting,Edit} from '@element-plus/icons-vue'
-import { getAllStationConfig } from '@/api/config'
-import {} from '@/api/cacheData'
+import { getAllStationConfig } from '@/api/configUtils/config'
+import {} from '@/api/configUtils/cacheData'
 import AllStationConfigEdit from './AllStationConfigChild/AllStationConfigEdit.vue'
 
 export default {

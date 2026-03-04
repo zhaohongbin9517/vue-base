@@ -260,8 +260,8 @@ import MeterConfigEmphasisPlanSetting from './MeterConfigChild/MeterConfigEmphas
 import MeterConfigExtendConfigSetting from './MeterConfigChild/MeterConfigExtendConfigSetting.vue'
 import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeterSetting.vue'
 import MeterConfigAddConfig from './MeterConfigChild/MeterConfigAddConfig.vue'
-import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName,updateMeterConfig,getExtendConfigEnum} from '@/api/config'
-import { getAllObjectInfoMap } from '@/api/cacheData'
+import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName,updateMeterConfig,getExtendConfigEnum} from '@/api/configUtils/config'
+import { getAllObjectInfoMap } from '@/api/configUtils/cacheData'
 
 export default {
   name: 'MeterConfig',

@@ -135,7 +135,7 @@ import {
   Bottom, Top, Delete, Setting, Collection, Document, 
   ArrowDown, Plus, Warning, QuestionFilled, Check,RefreshLeft
  } from '@element-plus/icons-vue'
-import { getAllTableName, getTableColumn, getTmmsConfig, updateTmmsConfigResult } from '@/api/config'
+import { getAllTableName, getTableColumn, getTmmsConfig, updateTmmsConfigResult } from '@/api/configUtils/config'
 
 export default {
   name: 'ResultConfig',

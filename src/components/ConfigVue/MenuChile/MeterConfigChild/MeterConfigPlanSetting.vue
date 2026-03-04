@@ -135,7 +135,7 @@
 
 <script>
 import { Tools,Plus, Delete, Check } from '@element-plus/icons-vue'
-import { getTableColumn } from '@/api/config'
+import { getTableColumn } from '@/api/configUtils/config'
 
 export default {
   name: 'MeterConfigPlanSetting',

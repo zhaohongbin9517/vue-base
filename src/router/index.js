@@ -14,13 +14,13 @@ const routes = [
   {
     path: '/',
     component: MainLayout,
-    redirect: '/home',
+    redirect: '/config',
     children: [
       {
-        path: 'home',
-        name: 'home',
+        path: 'config',
+        name: 'config',
         component: MenuIndex,
-        redirect: '/home/blank',
+        redirect: '/config/blank',
         children: [
           {
             path: 'blank',

@@ -2,7 +2,7 @@
  * 计量配置相关接口
  * 对应 api.md 中的配置相关接口
  */
-import { get, post } from './request'
+import { get, post } from './configRequest'
 
 /**
  * 获取计量通用配置

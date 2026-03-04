@@ -222,7 +222,7 @@ import {
    Connection, Calendar, DocumentCopy, ArrowDown, Warning, QuestionFilled ,
    RefreshLeft
   } from '@element-plus/icons-vue'
-import { getAllTableName, getTableColumn, getTmmsConfig, updateTmmsConfigPlan } from '@/api/config'
+import { getAllTableName, getTableColumn, getTmmsConfig, updateTmmsConfigPlan } from '@/api/configUtils/config'
 
 export default {
   name: 'PlanConfig',
