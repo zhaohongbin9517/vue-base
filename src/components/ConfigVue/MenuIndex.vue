@@ -39,6 +39,14 @@
             <el-menu-item index="/config/meter" class="sub-menu-item">
               <span class="sub-menu-text">修改配置</span>
             </el-menu-item>
+          </el-sub-menu>
+          <el-sub-menu index="3" popper-class="custom-submenu">
+            <template #title>
+              <div class="menu-title-wrapper">
+                <el-icon class="menu-icon"><icon-menu /></el-icon>
+                <span class="menu-text">测试</span>
+              </div>
+            </template>
             <el-menu-item index="/config/vue-test-temp" class="sub-menu-item">
               <span class="sub-menu-text">Vue测试组件</span>
             </el-menu-item>

@@ -64,190 +64,250 @@
     </el-card>
 
     <!-- 启动设备参数设置 -->
-    <MeterConfigStartStopSetting 
-      :parameters="startParameters"
-      :title="'启动设备参数设置'"
-      :tips="'(同名参数只保留一个值)'"
-      :name="'startCode'"
-      :param-options="paramOptions"
-      @add-parameter="addParameter"
-      @remove-parameter="removeParameter"
-      @save-config="saveConfig"
-    />
+    <div id="start-parameters">
+      <MeterConfigStartStopSetting 
+        :parameters="startParameters"
+        :title="'启动设备参数设置'"
+        :tips="'(同名参数只保留一个值)'"
+        :name="'startCode'"
+        :param-options="paramOptions"
+        @add-parameter="addParameter"
+        @remove-parameter="removeParameter"
+        @save-config="saveConfig"
+      />
+    </div>
     <!-- 启动检查参数设置 -->
-    <MeterConfigStartStopSetting 
-      :parameters="checkStartParameters"
-      :title="'启动检查参数设置'"
-      :tips="'(同名参数保留多个值)'"
-      :name="'checkStartCode'"
-      :param-options="paramOptions"
-      @add-parameter="addParameter"
-      @remove-parameter="removeParameter"
-      @save-config="saveConfig"
-    />
+    <div id="check-start-parameters">
+      <MeterConfigStartStopSetting 
+        :parameters="checkStartParameters"
+        :title="'启动检查参数设置'"
+        :tips="'(同名参数保留多个值)'"
+        :name="'checkStartCode'"
+        :param-options="paramOptions"
+        @add-parameter="addParameter"
+        @remove-parameter="removeParameter"
+        @save-config="saveConfig"
+      />
+    </div>
 
     <!-- 停止设备参数设置 -->
-    <MeterConfigStartStopSetting 
-      :parameters="stopParameters"
-      :title="'停止设备参数设置'"
-      :tips="'(同名参数只保留一个值)'"
-      :name="'stopCode'"
-      :param-options="paramOptions"
-      @add-parameter="addParameter"
-      @remove-parameter="removeParameter"
-      @save-config="saveConfig"
-    />
+    <div id="stop-parameters">
+      <MeterConfigStartStopSetting 
+        :parameters="stopParameters"
+        :title="'停止设备参数设置'"
+        :tips="'(同名参数只保留一个值)'"
+        :name="'stopCode'"
+        :param-options="paramOptions"
+        @add-parameter="addParameter"
+        @remove-parameter="removeParameter"
+        @save-config="saveConfig"
+      />
+    </div>
     <!-- 停止检查参数设置 -->
-    <MeterConfigStartStopSetting 
-      :parameters="checkStopParameters"
-      :title="'停止检查参数设置'"
-      :tips="'(同名参数保留多个值)'"
-      :name="'checkStopCode'"
-      :param-options="paramOptions"
-      @add-parameter="addParameter"
-      @remove-parameter="removeParameter"
-      @save-config="saveConfig"
-    />
+    <div id="check-stop-parameters">
+      <MeterConfigStartStopSetting 
+        :parameters="checkStopParameters"
+        :title="'停止检查参数设置'"
+        :tips="'(同名参数保留多个值)'"
+        :name="'checkStopCode'"
+        :param-options="paramOptions"
+        @add-parameter="addParameter"
+        @remove-parameter="removeParameter"
+        @save-config="saveConfig"
+      />
+    </div>
 
     <!-- 
     设备状态枚举配置 
     启停状态枚举
     -->
-    <MeterConfigDeviceStatusSetting 
-      :config="deviceStatusConfig"
-      :title="'设备状态枚举配置'"
-      :name="'deviceStatusCode'"
-      :param-options="paramOptions"
-      @update:DeviceStatusEnums="updateDeviceStatusEnums"
-      @update:DeviceStatusAllParam="updateDeviceStatusAllParam"
-      @update:statusClassification="updateStatusClassification"
-      @add-enum="addParameter"
-      @remove-enum="removeParameter"
-      @save-config="saveConfig"
-    />
+    <div id="device-status-config">
+      <MeterConfigDeviceStatusSetting 
+        :config="deviceStatusConfig"
+        :title="'设备状态枚举配置'"
+        :name="'deviceStatusCode'"
+        :param-options="paramOptions"
+        @update:DeviceStatusEnums="updateDeviceStatusEnums"
+        @update:DeviceStatusAllParam="updateDeviceStatusAllParam"
+        @update:statusClassification="updateStatusClassification"
+        @add-enum="addParameter"
+        @remove-enum="removeParameter"
+        @save-config="saveConfig"
+      />
+    </div>
 
     <!--通道号设置 -->
-    <MeterConfigMeterTongDaoSetting 
-      :channelNumber="wnChannelNumber"
-      :title="'当前计量通道号'"
-      :name="'wnChannelNumber'"
-      :param-options="paramOptions"
-      @update:channelNumber="updateChannelNumber"
-      @save-config="saveConfig"
-    />
+    <div id="wn-channel-number">
+      <MeterConfigMeterTongDaoSetting 
+        :channelNumber="wnChannelNumber"
+        :title="'当前计量通道号'"
+        :name="'wnChannelNumber'"
+        :param-options="paramOptions"
+        @update:channelNumber="updateChannelNumber"
+        @save-config="saveConfig"
+      />
+    </div>
 
-    <MeterConfigMeterTongDaoSetting 
-      :channelNumber="wmChannelNumber"
-      :title="'上次计量通道号'"
-      :tips="'(主要用作统计结果时的通道确认)'"
-      :name="'wmChannelNumber'"
-      :param-options="paramOptions"
-      @update:channelNumber="updateChannelNumber"
-      @save-config="saveConfig"
-    />
+    <div id="wm-channel-number">
+      <MeterConfigMeterTongDaoSetting 
+        :channelNumber="wmChannelNumber"
+        :title="'上次计量通道号'"
+        :tips="'(主要用作统计结果时的通道确认)'"
+        :name="'wmChannelNumber'"
+        :param-options="paramOptions"
+        @update:channelNumber="updateChannelNumber"
+        @save-config="saveConfig"
+      />
+    </div>
 
     <!-- 计划数据配置 -->
-    <MeterConfigPlanSetting 
-      :title="'计划数据配置'"
-      :tips="'(下发计划配置信息)'"
-      :name="'planSetinfo'"
-      v-model:planTableInfo="planTableInfo"
-      :tableOptions="tableOptions"
-      :planTableColumnOptions="planTableColumnOptions"
-      :paramOptions="paramOptions"
-      @save-config="saveConfig"
-    />
+    <div id="plan-data-config">
+      <MeterConfigPlanSetting 
+        :title="'计划数据配置'"
+        :tips="'(下发计划配置信息)'"
+        :name="'planSetinfo'"
+        v-model:planTableInfo="planTableInfo"
+        :tableOptions="tableOptions"
+        :planTableColumnOptions="planTableColumnOptions"
+        :paramOptions="paramOptions"
+        @save-config="saveConfig"
+      />
+    </div>
 
     <!-- 初始化设备数据设置 -->
-    <MeterConfigInitDeviceSetting 
-      :mappings="initDeviceMappings"
-      :title="'初始化设备数据设置'"
-      :tips="''"
-      :name="'initDeviceSetting'"
-      :paramOptions="paramOptions"
-      @add-parameter="addParameter"
-      @remove-parameter="removeParameter"
-      @save-config="saveConfig"
-    />
+    <div id="init-device-setting">
+      <MeterConfigInitDeviceSetting 
+        :mappings="initDeviceMappings"
+        :title="'初始化设备数据设置'"
+        :tips="''"
+        :name="'initDeviceSetting'"
+        :paramOptions="paramOptions"
+        @add-parameter="addParameter"
+        @remove-parameter="removeParameter"
+        @save-config="saveConfig"
+      />
+    </div>
 
     <!-- 计量结果配置 -->
-    <MeterConfigResultSetting 
-      v-model:resultTableInfo="resultTableInfo"
-      :title="'计量结果配置'"
-      :tips="''"
-      :name="'resultSetting'"
-      :tableOptions="tableOptions"
-      :paramOptions="paramOptions"
-      @save-config="saveConfig"
-    />
+    <div id="result-config">
+      <MeterConfigResultSetting 
+        v-model:resultTableInfo="resultTableInfo"
+        :title="'计量结果配置'"
+        :tips="''"
+        :name="'resultSetting'"
+        :tableOptions="tableOptions"
+        :paramOptions="paramOptions"
+        @save-config="saveConfig"
+      />
+    </div>
 
     <!-- 出结果判断 -->
-    <MeterConfigCheckResultSetting 
-      v-model:resultCheck="resultCheck"
-      :title="'出结果判断'"
-      :tips="''"
-      :name="'checkResultSetting'"
-      :paramOptions="paramOptions"
-      @save-config="saveConfig"
-    />
+    <div id="check-result">
+      <MeterConfigCheckResultSetting 
+        v-model:resultCheck="resultCheck"
+        :title="'出结果判断'"
+        :tips="''"
+        :name="'checkResultSetting'"
+        :paramOptions="paramOptions"
+        @save-config="saveConfig"
+      />
+    </div>
 
-    <!--参数解压-->
-    <MeterConfigStartStopSetting 
-      :parameters="paramUncompress"
-      :title="'参数解压设置'"
-      :tips="'(同名参数只保留一个值)'"
-      :name="'paramUncompress'"
-      :param-options="paramOptions"
-      @add-parameter="addParameter"
-      @remove-parameter="removeParameter"
-      @save-config="saveConfig"
-    />
+    <!--参数解压-->    
+    <div id="param-uncompress">
+      <MeterConfigStartStopSetting 
+        :parameters="paramUncompress"
+        :title="'参数解压设置'"
+        :tips="'(同名参数只保留一个值)'"
+        :name="'paramUncompress'"
+        :param-options="paramOptions"
+        @add-parameter="addParameter"
+        @remove-parameter="removeParameter"
+        @save-config="saveConfig"
+      />
+    </div>
 
     <!-- 可变参数选择 -->
-    <MeterConfigChangeParamSetting 
-      v-model:changeParam="changeParam"
-      :title="'可修改参数选择'"
-      :tips="''"
-      :name="'changeParamSetting'"
-      :paramOptions="paramOptions"
-      @save-config="saveConfig"
-    />
+    <div id="change-param">
+      <MeterConfigChangeParamSetting 
+        v-model:changeParam="changeParam"
+        :title="'可修改参数选择'"
+        :tips="''"
+        :name="'changeParamSetting'"
+        :paramOptions="paramOptions"
+        @save-config="saveConfig"
+      />
+    </div>
 
     <!-- 二次计量 -->
-    <MeterConfigEmphasisPlanSetting 
-      v-model:emphasisPlan="emphasisPlan"
-      :title="'二次计量'"
-      :tips="''"
-      :name="'emphasisPlanSetting'"
-      :paramOptions="paramOptions"
-      @save-config="saveConfig"
-    />
+    <div id="secondary-measurement">
+      <MeterConfigEmphasisPlanSetting 
+        v-model:emphasisPlan="emphasisPlan"
+        :title="'二次计量'"
+        :tips="''"
+        :name="'emphasisPlanSetting'"
+        :paramOptions="paramOptions"
+        @save-config="saveConfig"
+      />
+    </div>
 
     <!-- 扩展信息 -->
-    <MeterConfigExtendConfigSetting 
-      v-model:extendConfig="extendConfig"
-      :title="'扩展信息'"
-      :tips="''"
-      :name="'extendConfigSetting'"
-      :modulesChoose="modulesChoose"
-      @save-config="saveConfig"
-    />
+    <div id="extend-info">
+      <MeterConfigExtendConfigSetting 
+        v-model:extendConfig="extendConfig"
+        :title="'扩展信息'"
+        :tips="''"
+        :name="'extendConfigSetting'"
+        :modulesChoose="modulesChoose"
+        @save-config="saveConfig"
+      />
+    </div>
 
     <!-- 循环计量信息 -->
-    <MeterConfigLoopMeterSetting 
-      v-model:loopMeterInfo="loopMeterInfo"
-      :title="'循环计量信息'"
-      :tips="''"
-      :name="'loopMeterSetting'"
-      :paramOptions="paramOptions"
-      @save-config="saveConfig"
-    />
-
+    <div id="loop-meter-info">
+      <MeterConfigLoopMeterSetting 
+        v-model:loopMeterInfo="loopMeterInfo"
+        :title="'循环计量信息'"
+        :tips="''"
+        :name="'loopMeterSetting'"
+        :paramOptions="paramOptions"
+        @save-config="saveConfig"
+      />
+    </div>
+    
   </div>
+   <!-- 快速导航菜单 -->
+    <div class="quick-nav">
+      <div class="nav-content">
+        <span class="nav-title">快速导航：</span>
+        <el-scrollbar wrap-class="nav-scroll-wrap" max-height="80">
+          <div class="nav-links">
+            <div 
+              v-for="item in navItems" 
+              :key="item.id"
+              class="nav-item"
+              :class="{'nav-active': item.id === activeId}"
+              @click="scrollToSection(item.id)"
+            >
+              {{ item.title }}
+            </div>
+          </div>
+        </el-scrollbar>
+        <el-button 
+          type="text" 
+          class="back-top-btn"
+          @click="scrollToTop"
+          title="返回顶部"
+        >
+          <el-icon><top /></el-icon>
+        </el-button>
+      </div>
+    </div>
+
 </template>
 
 <script>
-import { Setting, Collection, Plus, Check ,RefreshRight} from '@element-plus/icons-vue'
+import { Setting, Collection, Plus, Check ,RefreshRight, Top} from '@element-plus/icons-vue'
 import MeterConfigStartStopSetting from './MeterConfigChild/MeterConfigStartStopSetting.vue'
 import MeterConfigDeviceStatusSetting from './MeterConfigChild/MeterConfigDeviceStatusSetting.vue'
 import MeterConfigMeterTongDaoSetting from './MeterConfigChild/MeterConfigMeterTongDaoSetting.vue'
@@ -267,11 +327,12 @@ import { getAuthPermission } from '@/api/login/auth'
 export default {
   name: 'MeterConfig',
   components: {
-    RefreshRight,
     Setting,
     Collection,
     Plus,
     Check,
+    RefreshRight,
+    Top,
     MeterConfigStartStopSetting,
     MeterConfigDeviceStatusSetting,
     MeterConfigMeterTongDaoSetting,
@@ -293,6 +354,26 @@ export default {
   },
   data() {
     return {
+      // 快速导航菜单配置
+      activeId: '',
+      navItems: [
+        { id: 'start-parameters', title: '启动设备参数设置' },
+        { id: 'check-start-parameters', title: '启动检查参数设置' },
+        { id: 'stop-parameters', title: '停止设备参数设置' },
+        { id: 'check-stop-parameters', title: '停止检查参数设置' },
+        { id: 'device-status-config', title: '设备状态枚举配置' },
+        { id: 'wn-channel-number', title: '当前计量通道号' },
+        { id: 'wm-channel-number', title: '上次计量通道号' },
+        { id: 'plan-data-config', title: '计划数据配置' },
+        { id: 'init-device-setting', title: '初始化设备数据设置' },
+        { id: 'result-config', title: '计量结果配置' },
+        { id: 'check-result', title: '出结果判断' },
+        { id: 'param-uncompress', title: '参数解压设置' },
+        { id: 'change-param', title: '可修改参数选择' },
+        { id: 'secondary-measurement', title: '二次计量' },
+        { id: 'extend-info', title: '扩展信息' },
+        { id: 'loop-meter-info', title: '循环计量信息' }
+      ],
       PromiseWrite: getAuthPermission('config:write'),
       PromiseRead: getAuthPermission('config:read'),
       //基础信息
@@ -956,6 +1037,34 @@ export default {
       }
     },
 
+    // 快速导航 - 滚动到指定部分
+    scrollToSection(id) {
+      // 更新当前激活项
+      this.activeId = id
+      const element = document.getElementById(id)
+      if (element) {
+        const offsetTop = element.offsetTop
+        const meterConfigElement = document.querySelector('.meter-config')
+        if (meterConfigElement) {
+          meterConfigElement.scrollTo({
+            top: offsetTop - 20,
+            behavior: 'smooth'
+          })
+        }
+      }
+    },
+
+    // 快速导航 - 返回顶部
+    scrollToTop() {
+      const meterConfigElement = document.querySelector('.meter-config')
+      if (meterConfigElement) {
+        meterConfigElement.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
+      }
+    },
+
   }
 }
 </script>
@@ -968,6 +1077,78 @@ export default {
   max-height: 85vh;
   overflow-y: auto;
 }
+
+/* 快速导航菜单样式 */
+.quick-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ebf8fd;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  padding: 12px 16px;
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-title {
+  font-weight: 600;
+  color: #303133;
+  white-space: nowrap;
+}
+
+.nav-scroll-wrap {
+  flex: 2;
+  overflow: visible;
+}
+
+.nav-links {
+  height: auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+}
+
+.nav-item {
+  padding: 6px 12px;
+  background: #f5f7fa;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #606266;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  background: #ecf5ff;
+  color: #409eff;
+}
+
+.nav-active {
+  background: #ecf5ff;
+  color: #2793ff;
+}
+
+
+
+.back-top-btn {
+  color: #606266;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.back-top-btn:hover {
+  color: #409eff;
+}
+
+/* 导航项自动换行，不再需要滚动条 */
 
 .meter-config::-webkit-scrollbar {
   width: 0;
