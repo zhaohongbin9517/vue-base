@@ -1,17 +1,9 @@
 <template>
-  <MenuIndex />
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
-<script>
-import MenuIndex from './components/MenuIndex.vue'
-
-export default {
-  name: 'App',
-  components: {
-    MenuIndex
-  }
-}
-</script>
 
 <style>
 #app {

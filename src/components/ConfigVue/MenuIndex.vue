@@ -1,9 +1,5 @@
 <template>
   <div class="page-wrapper">
-    <div class="page-title">
-      <img src="@/assets/logo.png" alt="logo" class="title-logo" />
-      <span>计量配置管理</span>
-    </div>
     <el-container class="layout-container">
       <el-aside width="200px" class="aside">
         <el-menu

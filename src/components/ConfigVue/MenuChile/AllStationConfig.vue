@@ -90,7 +90,7 @@
 import { Delete,Document ,Setting,Edit} from '@element-plus/icons-vue'
 import { getAllStationConfig } from '@/api/config'
 import {} from '@/api/cacheData'
-import AllStationConfigEdit from './AllStationConfigEdit.vue'
+import AllStationConfigEdit from './AllStationConfigChild/AllStationConfigEdit.vue'
 
 export default {
   name: 'AllStationConfig',
