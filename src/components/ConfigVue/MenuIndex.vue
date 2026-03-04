@@ -16,10 +16,10 @@
                 <span class="menu-text">通用配置</span>
               </div>
             </template>
-            <el-menu-item index="/plan" class="sub-menu-item">
+            <el-menu-item index="/home/plan" class="sub-menu-item">
               <span class="sub-menu-text">计划配置</span>
             </el-menu-item>
-            <el-menu-item index="/result" class="sub-menu-item">
+            <el-menu-item index="/home/result" class="sub-menu-item">
               <span class="sub-menu-text">结果配置</span>
             </el-menu-item>
           </el-sub-menu>
@@ -30,16 +30,16 @@
                 <span class="menu-text">计量配置</span>
               </div>
             </template>
-            <el-menu-item index="/all-station" class="sub-menu-item">
+            <el-menu-item index="/home/all-station" class="sub-menu-item">
               <span class="sub-menu-text">计量站一览</span>
             </el-menu-item>
-            <el-menu-item index="/all-meter" class="sub-menu-item">
+            <el-menu-item index="/home/all-meter" class="sub-menu-item">
               <span class="sub-menu-text">配置一览</span>
             </el-menu-item>
-            <el-menu-item index="/meter" class="sub-menu-item">
+            <el-menu-item index="/home/meter" class="sub-menu-item">
               <span class="sub-menu-text">修改配置</span>
             </el-menu-item>
-            <el-menu-item index="/vue-test-temp" class="sub-menu-item">
+            <el-menu-item index="/home/vue-test-temp" class="sub-menu-item">
               <span class="sub-menu-text">Vue测试组件</span>
             </el-menu-item>
           </el-sub-menu>
