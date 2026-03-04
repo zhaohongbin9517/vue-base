@@ -53,7 +53,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Lock, User } from '@element-plus/icons-vue'
 import logo from '../assets/logo.png'
-import { loginByPassword } from '@/api/userUtils/auth'
+import { loginByPassword } from '@/api/login/auth'
 import { getRememberedUser, hasAuthSession, setAuthSession, setRememberedUser } from '@/api/userUtils/auth'
 import { getFirstAuthorizedPath, refreshAuthPermissions } from '@/api/userUtils/access-control'
 
@@ -78,7 +78,7 @@ const getRedirectPath = () => {
   if (typeof redirect === 'string' && redirect.startsWith('/')) {
     return redirect
   }
-  return '/license'
+  return '/config'
 }
 
 const submitLogin = async () => {
@@ -129,7 +129,8 @@ const submitLogin = async () => {
     ElMessage({
       message: '登录请求失败，请稍后重试',
       type: 'error'
-    })
+    }),
+    console.error(error)
   } finally {
     loading.value = false
   }
@@ -152,16 +153,12 @@ onMounted(async () => {
 .login-page {
   width: 100%;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(58, 123, 213, 0.35), transparent 45%),
-    radial-gradient(circle at 85% 15%, rgba(27, 188, 155, 0.25), transparent 40%),
-    linear-gradient(135deg, #132036 0%, #1d2d44 45%, #0f1724 100%);
+  background: #ffffff;
 }
 
 .login-overlay {
   width: 100%;
   min-height: 100vh;
-  background: rgba(8, 12, 20, 0.45);
   display: grid;
   place-items: center;
   padding: 20px;
@@ -172,10 +169,9 @@ onMounted(async () => {
   width: min(480px, 92vw);
   border-radius: 18px;
   padding: 26px 28px 22px;
-  background: rgba(21, 29, 43, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(8px);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.1);
 }
 
 .login-brand {
@@ -192,14 +188,14 @@ onMounted(async () => {
 
 .login-brand__title {
   margin: 0;
-  color: #eef3fb;
+  color: #303133;
   font-size: 20px;
   line-height: 1.2;
 }
 
 .login-brand__subtitle {
   margin: 4px 0 0;
-  color: rgba(238, 243, 251, 0.75);
+  color: rgba(48, 49, 51, 0.75);
   font-size: 13px;
 }
 
@@ -208,12 +204,12 @@ onMounted(async () => {
 }
 
 .login-form :deep(.el-input__wrapper) {
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
 .login-form :deep(.el-input__inner) {
-  color: #fff;
+  color: #303133;
 }
 
 .login-form__extra {
@@ -223,7 +219,7 @@ onMounted(async () => {
 }
 
 .login-form__extra :deep(.el-checkbox__label) {
-  color: rgba(255, 255, 255, 0.86);
+  color: rgba(48, 49, 51, 0.86);
 }
 
 .login-form__submit {

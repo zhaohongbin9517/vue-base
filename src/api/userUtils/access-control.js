@@ -1,4 +1,4 @@
-import { acGetUserAccess } from '../api/userCenter'
+import { acGetUserAccess } from '@/api/userUtils/userCenter'
 import {
   getAuthPermissionKeys,
   getAuthUser,
@@ -34,7 +34,7 @@ export const getFirstAuthorizedPath = () => {
   const permissions = new Set(getAuthPermissionKeys())
 
   if (permissions.has('license:read')) {
-    return '/license'
+    return '/config/blank'
   }
 
   if (permissions.has('user_manage:read')) {

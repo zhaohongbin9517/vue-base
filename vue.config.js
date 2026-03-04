@@ -14,6 +14,10 @@ module.exports = defineConfig({
       '/ac': {
         target: 'http://127.0.0.1:8169',
         changeOrigin: true
+      },
+      '/login': {
+        target: 'http://127.0.0.1:8169',
+        changeOrigin: true
       }
     }
   }

@@ -19,43 +19,17 @@ import UserChangePassword from '../components/UserCenter/MenuChile/UserChangePas
 import UserAuth from '../components/UserCenter/MenuChile/UserAuth.vue'
 import UserRoles from '../components/UserCenter/MenuChile/UserRoles.vue'
 
+//登录路由
+import Login from '../components/LoginView.vue'
+
+// 无权限路由
+import ForbiddenView from '../components/ForbiddenView.vue'
 
 const routes = [
   {
-    path: '/user-center',
-    name: 'UserCenter',
-    component: MainLayout,
-    redirect: '/user-center/users',
-    children: [
-      {
-        path: '',
-        name: 'UserCenterMenu',
-        component: UserCenterMenu,
-        redirect: '/user-center/users',
-        children: [
-          {
-            path: 'users',
-            name: 'UserManager',
-            component: UserManager
-          },
-          {
-            path: 'change-password',
-            name: 'UserChangePassword',
-            component: UserChangePassword
-          },
-          {
-            path: 'auth',
-            name: 'UserAuth',
-            component: UserAuth
-          },
-          {
-            path: 'roles',
-            name: 'UserRoles',
-            component: UserRoles
-          }
-        ]
-      }
-    ]
+    path: '/login',
+    name: 'Login',
+    component: Login
   },
   {
     path: '/',
@@ -63,10 +37,16 @@ const routes = [
     redirect: '/config',
     children: [
       {
+        path: '403',
+        name: 'Forbidden',
+        component: ForbiddenView,
+        meta: { title: '无权限' }
+      },
+      {
         path: 'config',
         name: 'config',
         component: MenuIndex,
-        redirect: '/config/blank',
+        redirect: '/config/plan',
         children: [
           {
             path: 'blank',
@@ -108,6 +88,34 @@ const routes = [
             path: 'vue-test-temp',
             name: 'VueTestTemp',
             component: VueTestTemp
+          }
+        ]
+      },
+      {
+        path: 'user-center',
+        name: 'UserCenterMenu',
+        component: UserCenterMenu,
+        redirect: '/user-center/users',
+        children: [
+          {
+            path: 'users',
+            name: 'UserManager',
+            component: UserManager
+          },
+          {
+            path: 'change-password',
+            name: 'UserChangePassword',
+            component: UserChangePassword
+          },
+          {
+            path: 'auth',
+            name: 'UserAuth',
+            component: UserAuth
+          },
+          {
+            path: 'roles',
+            name: 'UserRoles',
+            component: UserRoles
           }
         ]
       }

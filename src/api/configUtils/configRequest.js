@@ -2,18 +2,9 @@
  * API 请求基础配置
  * 封装 fetch 请求，统一处理请求和响应
  */
+import {getAuthToken, clearAuthSession } from '@/api/userUtils/auth'
 
 const BASE_URL = ''
-
-/**
- * 获取认证 Token
- * @returns {string|null}
- */
-function getAuthToken() {
-  // return localStorage.getItem('token') || sessionStorage.getItem('token')
-  const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX25hbWUiOls5OSwxMTEsMTEwLDEwMiwxMDUsMTAzLDExNiw5NywxMjIsMTA0XX0.rmC9hAtDRlfqKTAdQEOUWQebMt7aUMA90Cm2L8dDCYQ'
-  return token
-}
 
 /**
  * 基础请求函数
@@ -31,7 +22,7 @@ async function request(url, options = {}) {
   }
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`
+    headers['Authorization'] = token
   }
 
   const defaultOptions = {
@@ -41,7 +32,12 @@ async function request(url, options = {}) {
   const response = await fetch(fullUrl, { ...defaultOptions, ...options })
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
+    if (response.status === 401) {
+      clearAuthSession()
+      if (window.location.hash !== '#/login') {
+        window.location.hash = '#/login'
+      }
+    }
   }
 
   const data = await response.json()
