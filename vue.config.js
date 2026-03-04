@@ -10,6 +10,10 @@ module.exports = defineConfig({
       '/meter_general': {
         target: 'http://127.0.0.1:8169',
         changeOrigin: true
+      },
+      '/ac': {
+        target: 'http://127.0.0.1:8169',
+        changeOrigin: true
       }
     }
   }

@@ -1,4 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+
+import MainLayout from '../components/MainLayout.vue'
+
+// 配置路由
 import MenuIndex from '../components/ConfigVue/MenuIndex.vue'
 import BlankConfig from '../components/ConfigVue/MenuChile/BlankConfig.vue'
 import PlanConfig from '../components/ConfigVue/MenuChile/PlanConfig.vue'
@@ -8,9 +12,51 @@ import AllMeterConfig from '../components/ConfigVue/MenuChile/AllMeterConfig.vue
 import AllStationConfig from '../components/ConfigVue/MenuChile/AllStationConfig.vue'
 import VueTestTemp from '../components/ConfigVue/MenuChile/VueTestTemp.vue'
 
-import MainLayout from '../components/MainLayout.vue'
+// 用户中心路由
+import UserCenterMenu from '../components/UserCenter/UserMenu.vue'
+import UserManager from '../components/UserCenter/MenuChile/UserManager.vue'
+import UserChangePassword from '../components/UserCenter/MenuChile/UserChangePassword.vue'
+import UserAuth from '../components/UserCenter/MenuChile/UserAuth.vue'
+import UserRoles from '../components/UserCenter/MenuChile/UserRoles.vue'
+
 
 const routes = [
+  {
+    path: '/user-center',
+    name: 'UserCenter',
+    component: MainLayout,
+    redirect: '/user-center/users',
+    children: [
+      {
+        path: '',
+        name: 'UserCenterMenu',
+        component: UserCenterMenu,
+        redirect: '/user-center/users',
+        children: [
+          {
+            path: 'users',
+            name: 'UserManager',
+            component: UserManager
+          },
+          {
+            path: 'change-password',
+            name: 'UserChangePassword',
+            component: UserChangePassword
+          },
+          {
+            path: 'auth',
+            name: 'UserAuth',
+            component: UserAuth
+          },
+          {
+            path: 'roles',
+            name: 'UserRoles',
+            component: UserRoles
+          }
+        ]
+      }
+    ]
+  },
   {
     path: '/',
     component: MainLayout,
