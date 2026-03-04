@@ -203,13 +203,13 @@
 
     <!-- 按钮区域 -->
     <div class="button-area">
-      <el-button type="primary" plain @click="addItem" :icon="Plus">
+      <el-button v-if="PromiseWrite" type="primary" plain @click="addItem" :icon="Plus">
         添加导入项
       </el-button>
       <el-button type="primary" plain @click="resetItem" :icon="RefreshLeft">
         重置
       </el-button>
-      <el-button type="success" @click="onSubmit" :icon="Check">
+      <el-button v-if="PromiseWrite" type="success" @click="onSubmit" :icon="Check">
         保存配置
       </el-button>
     </div>
@@ -223,6 +223,7 @@ import {
    RefreshLeft
   } from '@element-plus/icons-vue'
 import { getAllTableName, getTableColumn, getTmmsConfig, updateTmmsConfigPlan } from '@/api/configUtils/config'
+import { getAuthPermission } from '@/api/login/auth'
 
 export default {
   name: 'PlanConfig',
@@ -259,7 +260,9 @@ export default {
       optionalItems: [
         // { dbField: '', excelHeader: '', dataType: 'int', step: null, minValue: null, maxValue: null }
       ],
-      tableColumnOptions: [{column_name:''}]
+      tableColumnOptions: [{column_name:''}],
+      PromiseWrite: getAuthPermission('config:write'),
+      PromiseRead: getAuthPermission('config:read')
     }
   },
   mounted() {

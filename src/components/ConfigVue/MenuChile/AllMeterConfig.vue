@@ -9,7 +9,7 @@
     </div>
 
     <!-- 按钮区域 -->
-    <div class="button-area">
+    <div v-if="PromiseWrite" class="button-area">
       <el-button type="primary" @click="openAddConfigDialog" :icon="Plus">
         新增配置
       </el-button>
@@ -28,7 +28,7 @@
         <el-table-column prop="config_id" label="配置ID" min-width="200" />
         <el-table-column prop="name" label="配置名称" min-width="200" />
         <el-table-column prop="meter_station_name" label="参数模板" min-width="150" />
-        <el-table-column label="操作" width="120" align="center" fixed="right">
+        <el-table-column v-if="PromiseWrite" label="操作" width="120" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="danger" size="small" circle @click="handleDelete(row.config_id)" :icon="Delete">
             </el-button>
@@ -54,6 +54,7 @@ import { Delete, Plus, Setting, Document,Edit } from '@element-plus/icons-vue'
 import MeterConfigAddConfig from './MeterConfigChild/MeterConfigAddConfig.vue'
 import {getAllMeterConfig, getAllStationTagKey,updateMeterConfig,deleteMeterConfig} from '@/api/configUtils/config'
 import {getAllObjectInfoMap} from '@/api/configUtils/cacheData'
+import { getAuthPermission } from '@/api/login/auth'
 
 export default {
   name: 'AllMeterConfig',
@@ -74,7 +75,9 @@ export default {
       addConfigVisible: false,
       configList: [],
       stationOptions: [],
-      templateOptions: []
+      templateOptions: [],
+      PromiseWrite: getAuthPermission('config:write'),
+      PromiseRead: getAuthPermission('config:read')
     }
   },
   mounted() {

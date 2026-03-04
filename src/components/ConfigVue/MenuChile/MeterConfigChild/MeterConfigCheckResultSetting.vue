@@ -5,10 +5,7 @@
         <el-icon class="header-icon"><tools /></el-icon>
         <span>{{ title }}<span class="tips-text">{{ tips }}</span></span>
       
-        <el-button type="success" size="small" @click="saveConfig" class="save-param-btn">
-          <el-icon><check /></el-icon>
-          保存配置
-        </el-button>
+        <save-config-button @save="saveConfig"></save-config-button>
       </div>
     </template>
 
@@ -75,15 +72,15 @@
 </template>
 
 <script>
-import { Tools, Plus, Delete, Check, InfoFilled } from '@element-plus/icons-vue'
-
+import { Tools, Plus, Delete, InfoFilled } from '@element-plus/icons-vue'
+import SaveConfigButton from '@/components/ConfigVue/MenuChile/MeterConfigChild/Common/SaveConfigButton'
 export default {
   name: 'MeterConfigCheckResultSetting',
   components: {
+    SaveConfigButton,
     Tools,
     Plus,
     Delete,
-    Check,
     InfoFilled
   },
   props: {
@@ -190,9 +187,6 @@ export default {
   margin-left: auto;
 }
 
-.save-param-btn {
-  margin-left: auto;
-}
 
 .check-card {
   margin-bottom: 16px;

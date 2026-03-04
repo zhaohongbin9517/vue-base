@@ -39,16 +39,16 @@
           <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span> 
         </el-option>
         </el-select>
-        <el-button type="primary" @click="addConfig">
+        <el-button v-if="PromiseWrite" type="primary" @click="addConfig">
           <el-icon><plus /></el-icon>
           新增配置
         </el-button>
-        <el-button type="primary" @click="resetConfig">
+        <el-button v-if="PromiseWrite" type="primary" @click="resetConfig">
           <el-icon><refresh-right /></el-icon>
           取消修改
         </el-button>
     
-        <el-button type="success" @click="saveAllConfig">
+        <el-button v-if="PromiseWrite" type="success" @click="saveAllConfig">
           <el-icon><check /></el-icon>
           保存配置
         </el-button>
@@ -262,6 +262,7 @@ import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeter
 import MeterConfigAddConfig from './MeterConfigChild/MeterConfigAddConfig.vue'
 import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName,updateMeterConfig,getExtendConfigEnum} from '@/api/configUtils/config'
 import { getAllObjectInfoMap } from '@/api/configUtils/cacheData'
+import { getAuthPermission } from '@/api/login/auth'
 
 export default {
   name: 'MeterConfig',
@@ -292,6 +293,8 @@ export default {
   },
   data() {
     return {
+      PromiseWrite: getAuthPermission('config:write'),
+      PromiseRead: getAuthPermission('config:read'),
       //基础信息
       baseData:{
         name:'',

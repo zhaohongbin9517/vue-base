@@ -116,13 +116,13 @@
 
     <!-- 按钮区域 -->
     <div class="button-area">
-      <el-button type="primary" plain @click="addItem" :icon="Plus">
+      <el-button v-if="PromiseWrite" type="primary" plain @click="addItem" :icon="Plus">
         添加导出项
       </el-button>
       <el-button type="primary" plain @click="resetItem" :icon="RefreshLeft">
         重置
       </el-button>
-      <el-button type="success" @click="onSubmit">
+      <el-button v-if="PromiseWrite" type="success" @click="onSubmit">
         <el-icon><check /></el-icon>
         保存配置
       </el-button>
@@ -136,6 +136,7 @@ import {
   ArrowDown, Plus, Warning, QuestionFilled, Check,RefreshLeft
  } from '@element-plus/icons-vue'
 import { getAllTableName, getTableColumn, getTmmsConfig, updateTmmsConfigResult } from '@/api/configUtils/config'
+import { getAuthPermission } from '@/api/login/auth'
 
 export default {
   name: 'ResultConfig',
@@ -169,7 +170,9 @@ export default {
         // { dbField: '', excelHeader: ''}
       ],
 
-      tableColumnOptions: [{column_name:''}]
+      tableColumnOptions: [{column_name:''}],
+      PromiseWrite: getAuthPermission('config:write'),
+      PromiseRead: getAuthPermission('config:read')
     }
   },
   mounted() {

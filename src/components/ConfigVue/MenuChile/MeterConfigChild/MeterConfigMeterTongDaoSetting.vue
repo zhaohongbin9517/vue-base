@@ -4,10 +4,7 @@
       <div class="card-header">
         <el-icon class="header-icon"><tools /></el-icon>
         <span>{{ title }}<span class="tips-text">{{ tips }}</span></span>
-        <el-button type="success" size="small" @click="saveConfig" class="save-param-btn">
-          <el-icon><check /></el-icon>
-          保存配置
-        </el-button>
+        <save-config-button @save="saveConfig"></save-config-button>
       </div>
     </template>
     
@@ -59,14 +56,15 @@
 </template>
 
 <script>
-import { Tools, InfoFilled, Check } from '@element-plus/icons-vue'
+import { Tools, InfoFilled } from '@element-plus/icons-vue'
+import SaveConfigButton from '@/components/ConfigVue/MenuChile/MeterConfigChild/Common/SaveConfigButton'
 
 export default {
   name: 'MeterConfigMeterTongDaoSetting',
   components: {
     Tools,
     InfoFilled,
-    Check
+    SaveConfigButton
   },
   props: {
     channelNumber: {
@@ -223,9 +221,6 @@ export default {
   gap: 12px;
 }
 
-.save-param-btn {
-  margin-left: auto;
-}
 
 .placeholder-label {
   font-size: 13px;

@@ -8,10 +8,7 @@
           <el-icon><plus /></el-icon>
           添加结果组
         </el-button>
-        <el-button type="success" size="small" @click="saveConfig" class="save-param-btn">
-          <el-icon><check /></el-icon>
-          保存配置
-        </el-button>
+        <save-config-button @save="saveConfig"></save-config-button>
       </div>
     </template>
 
@@ -113,7 +110,8 @@
 </template>
 
 <script>
-import { Tools, Plus, Delete, Check } from '@element-plus/icons-vue'
+import { Tools, Plus, Delete } from '@element-plus/icons-vue'
+import SaveConfigButton from '@/components/ConfigVue/MenuChile/MeterConfigChild/Common/SaveConfigButton'
 import { getTableColumn } from '@/api/configUtils/config'
 
 export default {
@@ -122,7 +120,7 @@ export default {
     Tools,
     Plus,
     Delete,
-    Check
+    SaveConfigButton
   },
   props: {
     title: {
@@ -300,9 +298,6 @@ export default {
   min-width: 300px;
 }
 
-.save-param-btn {
-  margin-left: 8px;
-}
 
 .result-group {
   margin-bottom: 16px;

@@ -8,10 +8,7 @@
           <el-icon><plus /></el-icon>
           新增参数
         </el-button>
-        <el-button type="success" size="small" @click="saveConfig">
-          <el-icon><check /></el-icon>
-          保存配置
-        </el-button>
+        <save-config-button @save="saveConfig"></save-config-button>
       </div>
     </template>
     <el-table :data="parameters" border class="config-table" stripe>
@@ -54,7 +51,8 @@
 </template>
 
 <script>
-import { Tools, Plus, Delete, Check } from '@element-plus/icons-vue'
+import { Tools, Plus, Delete } from '@element-plus/icons-vue'
+import SaveConfigButton from '@/components/ConfigVue/MenuChile/MeterConfigChild/Common/SaveConfigButton'
 
 export default {
   name: 'MeterConfigStartStopSetting',
@@ -62,7 +60,7 @@ export default {
     Tools,
     Plus,
     Delete,
-    Check
+    SaveConfigButton 
   },
   props: {
     parameters: {

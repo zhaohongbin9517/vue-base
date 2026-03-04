@@ -62,7 +62,7 @@
           </el-table-column>
         </template>
         <!-- 操作列始终显示 -->
-        <el-table-column label="操作" width="120" align="center" fixed="right">
+        <el-table-column v-if="PromiseWrite" label="操作" width="120" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="danger" size="small" circle @click="handleDelete(row.config_id)" :icon="Delete">
             </el-button>
@@ -91,6 +91,7 @@ import { Delete,Document ,Setting,Edit} from '@element-plus/icons-vue'
 import { getAllStationConfig } from '@/api/configUtils/config'
 import {} from '@/api/configUtils/cacheData'
 import AllStationConfigEdit from './AllStationConfigChild/AllStationConfigEdit.vue'
+import { getAuthPermission } from '@/api/login/auth'
 
 export default {
   name: 'AllStationConfig',
@@ -145,7 +146,9 @@ export default {
       selectOptions: {
         behavior_tree: [],
         config_id: []
-      }
+      },
+      PromiseWrite: getAuthPermission('config:write'),
+      PromiseRead: getAuthPermission('config:read')
     }
   },
   mounted() {
