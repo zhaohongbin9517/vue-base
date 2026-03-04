@@ -4,11 +4,13 @@
       <div class="card-header">
         <el-icon class="header-icon"><tools /></el-icon>
         <span>{{ title }}<span class="tips-text">{{ tips }}</span></span>
-        <el-button type="primary" size="small" @click="addParameter" class="add-param-btn">
-          <el-icon><plus /></el-icon>
-          新增参数
-        </el-button>
-        <save-config-button @save="saveConfig"></save-config-button>
+        <div class="param-btn">
+          <el-button type="primary" size="small" @click="addParameter" class="add-param-btn">
+            <el-icon><plus /></el-icon>
+            新增参数
+          </el-button>
+          <save-config-button @save="saveConfig"></save-config-button>
+        </div>
       </div>
     </template>
     <el-table :data="parameters" border class="config-table" stripe>
@@ -139,8 +141,14 @@ export default {
   margin-left: 8px;
 }
 
-.add-param-btn {
+.param-btn {
   margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.add-param-btn {
+  /* margin-left: auto; */
 }
 
 .config-table {

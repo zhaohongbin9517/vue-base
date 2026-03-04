@@ -4,11 +4,13 @@
       <div class="card-header">
         <el-icon class="header-icon"><tools /></el-icon>
         <span>{{ title }}<span class="tips-text">{{ tips }}</span></span>
-        <el-button type="primary" size="small" @click="addResultGroup" class="add-param-btn">
-          <el-icon><plus /></el-icon>
-          添加结果组
-        </el-button>
-        <save-config-button @save="saveConfig"></save-config-button>
+        <div class="param-btn">
+          <el-button type="primary" size="small" @click="addResultGroup" class="add-param-btn">
+            <el-icon><plus /></el-icon>
+            添加结果组
+          </el-button>
+          <save-config-button @save="saveConfig"></save-config-button>
+        </div>
       </div>
     </template>
 
@@ -382,5 +384,11 @@ export default {
 
 .el-form :deep(.el-select.is-error .el-select__selected-item) {
   color: #f56c6c !important;
+}
+
+.param-btn {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
 }
 </style>
