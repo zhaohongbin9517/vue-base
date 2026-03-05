@@ -88,7 +88,7 @@
 
 <script>
 import { Delete,Document ,Setting,Edit} from '@element-plus/icons-vue'
-import { getAllStationConfig } from '@/api/configUtils/config'
+import { getAllStationConfig,updateStationConfig } from '@/api/configUtils/config'
 import {} from '@/api/configUtils/cacheData'
 import AllStationConfigEdit from './AllStationConfigChild/AllStationConfigEdit.vue'
 import { getAuthPermission } from '@/api/login/auth'
@@ -135,6 +135,7 @@ export default {
       // 控制字段是否可编辑
       isEditable: {
         object_id: true,
+        object_type: true,
         // is_valid: true,
         // behavior_tree: true,
         // config_id: true,
@@ -223,17 +224,17 @@ export default {
     },
     
     // 处理保存编辑
-    handleEditSave(data) {
-      // 这里可以添加保存逻辑，比如调用API更新配置
-      console.log('保存编辑数据:', data)
-      
-      // 模拟保存成功，更新本地列表
-      const index = this.configList.findIndex(item => item.config_id === data.config_id)
-      if (index !== -1) {
-        this.configList[index] = { ...this.configList[index], ...data }
+    async handleEditSave(data) {
+      const res = await updateStationConfig(data)
+      if(res.result === 1){
+        const index = this.configList.findIndex(item => item.config_id === data.config_id)
+        if (index !== -1) {
+          this.configList[index] = { ...this.configList[index], ...data }
+        }
+        this.$message.success('配置更新成功')
+      }else{
+        this.$message.success('配置更新失败：' + res.result)
       }
-      
-      this.$message.success('配置更新成功')
     }
   }
 }

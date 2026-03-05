@@ -20,7 +20,7 @@
                     <span>用户管理</span>
                 </el-dropdown-item>
                 <el-dropdown-item command="logout" divided>
-                    <el-icon><logout /></el-icon>
+                    <el-icon><back /></el-icon>
                     <span>退出登录</span>
                 </el-dropdown-item>
                 </el-dropdown-menu>
@@ -35,16 +35,15 @@
 </template>
 
 <script>
-import { User, Setting, Logout, ArrowDown } from '@element-plus/icons-vue'
+import { User, Setting,Back,  ArrowDown } from '@element-plus/icons-vue'
 import { getDisplayName, clearAuthSession } from '@/api/userUtils/auth'
-// import { useRouter } from 'vue-router'
 
 export default {
   name: 'MainLayout',
   components: {
     User,
     Setting,
-    Logout,
+    Back,
     ArrowDown
   },
   data() {
@@ -63,7 +62,10 @@ export default {
       console.log('关闭:', key, keyPath)
     },
     handleTitleClick() {
-      this.$router.push('/')
+      // 判断当前路由是否在config下
+      if (!this.$route.path.startsWith('/config')) {
+        this.$router.push('/')
+      }
     },
     handleUserMenuCommand(command) {
       switch (command) {

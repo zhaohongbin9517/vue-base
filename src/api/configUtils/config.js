@@ -86,6 +86,16 @@ export function updateMeterConfig(data) {
   return post('/tmms_config/update_meter_config', data)
 }
 
+
+/**
+ * 保存站相关配置
+ * @param {Object} data - 配置数据
+ * @returns {Promise}
+ */
+export function updateStationConfig(data) {
+  return post('/tmms_config/updata_station_config', data)
+}
+
 /**
  * 删除配置
  * @param {string} configId - 配置id
