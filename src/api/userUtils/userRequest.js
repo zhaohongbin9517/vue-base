@@ -44,9 +44,11 @@ service.interceptors.request.use(
     }
 
     if (!isLoginRequest && token) {
+      // 确保Authorization头包含"Bearer "前缀
+      const authToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`
       nextConfig.headers = {
         ...nextConfig.headers,
-        Authorization: token
+        Authorization: authToken
       }
     }
 

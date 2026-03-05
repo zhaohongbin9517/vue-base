@@ -84,6 +84,7 @@
 
 <script>
 import { Menu as IconMenu, Setting } from '@element-plus/icons-vue'
+import { getAuthToken, getAuthUser, getAuthAlias, getAuthPermissionKeys } from '@/api/userUtils/auth'
 import { getWebPort } from '@/api/configUtils/config'
 
 export default {
@@ -108,7 +109,30 @@ export default {
     handleJumpHtml(pageName) {
       //获取ip
       let ip = window.location.hostname
+      
+      // 获取本地缓存的认证信息
+      const authToken = getAuthToken()
+      const authUser = getAuthUser()
+      const authAlias = getAuthAlias()
+      const authPermissionKeys = getAuthPermissionKeys()
+      
+      // 构建包含认证信息的URL参数
       let url = `http://${ip}:${this.webPort}/#/${pageName}`
+      if (authToken) {
+        // 处理token，删除前缀"Bearer "
+        const processedToken = authToken.replace(/^Bearer\s+/i, '')
+        
+        // 在URL中添加认证信息参数
+        const authInfo = encodeURIComponent(JSON.stringify({
+          token: processedToken,
+          user: authUser,
+          alias: authAlias,
+          permissionKeys: authPermissionKeys
+        }))
+        url = `${url}?authInfo=${authInfo}`
+      }
+      console.log(url)
+      // 打开新窗口
       window.open(url, '_blank')
     },
     handleOpen(key, keyPath) {
