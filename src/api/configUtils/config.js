@@ -114,6 +114,15 @@ export function getExtendConfigEnum() {
 }
 
 /**
+ * 获取额外参数枚举
+ * @returns {Promise<Array>} 额外参数枚举列表
+ */
+export function getWebPort() {
+  return get('/tmms_config/get_web_port')
+}
+
+
+/**
  * 获取对象关系
  * @returns {Promise<Array>} 对象关系列表
  */

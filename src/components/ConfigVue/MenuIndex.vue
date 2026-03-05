@@ -40,7 +40,7 @@
               <span class="sub-menu-text">修改配置</span>
             </el-menu-item>
           </el-sub-menu>
-          <el-sub-menu index="3" popper-class="custom-submenu">
+          <!-- <el-sub-menu index="3" popper-class="custom-submenu">
             <template #title>
               <div class="menu-title-wrapper">
                 <el-icon class="menu-icon"><icon-menu /></el-icon>
@@ -49,6 +49,26 @@
             </template>
             <el-menu-item index="/config/vue-test-temp" class="sub-menu-item">
               <span class="sub-menu-text">Vue测试组件</span>
+            </el-menu-item>
+          </el-sub-menu> -->
+          <el-sub-menu index="4" popper-class="custom-submenu">
+            <template #title>
+              <div class="menu-title-wrapper">
+                <el-icon class="menu-icon"><icon-menu /></el-icon>
+                <span class="menu-text">导航</span>
+              </div>
+            </template>
+            <el-menu-item @click="handleJumpHtml('measure-manage')" class="sub-menu-item">
+              <span class="sub-menu-text">计量站监控</span>
+            </el-menu-item>
+            <el-menu-item @click="handleJumpHtml('batch-operator')" class="sub-menu-item">
+              <span class="sub-menu-text">计划管理</span>
+            </el-menu-item>
+            <el-menu-item  @click="handleJumpHtml('measure-control')"  class="sub-menu-item">
+              <span class="sub-menu-text">计量监控</span>
+            </el-menu-item>
+            <el-menu-item @click="handleJumpHtml('history-data-splitpanes')" class="sub-menu-item">
+              <span class="sub-menu-text">结果监控</span>
             </el-menu-item>
           </el-sub-menu>
         </el-menu>
@@ -64,6 +84,7 @@
 
 <script>
 import { Menu as IconMenu, Setting } from '@element-plus/icons-vue'
+import { getWebPort } from '@/api/configUtils/config'
 
 export default {
   name: 'MenuIndex',
@@ -71,9 +92,25 @@ export default {
     IconMenu,
     Setting
   },
+  data() {
+    return {
+      webPort: '',
+      configWebPort: ''
+    }
+  },
   mounted() {
+    getWebPort().then(res => {
+      this.webPort = res.measure_web
+      this.configWebPort = res.config_web
+    })
   },
   methods: {
+    handleJumpHtml(pageName) {
+      //获取ip
+      let ip = window.location.hostname
+      let url = `http://${ip}:${this.webPort}/#/${pageName}`
+      window.open(url, '_blank')
+    },
     handleOpen(key, keyPath) {
       console.log('打开:', key, keyPath)
     },
