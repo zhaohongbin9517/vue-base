@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrapper">
     <div class="page-title">
-        <div class="page-content">
+        <div class="page-content" @click="handleTitleClick">
             <img src="@/assets/logo.png" alt="logo" class="title-logo" />
             <span>计量配置管理</span>
         </div>
@@ -62,6 +62,9 @@ export default {
     handleClose(key, keyPath) {
       console.log('关闭:', key, keyPath)
     },
+    handleTitleClick() {
+      this.$router.push('/')
+    },
     handleUserMenuCommand(command) {
       switch (command) {
         case 'userManager':
@@ -115,6 +118,7 @@ export default {
 
 .user-avatar {
   display: flex;
+  margin-top: 5px;
   align-items: center;
   gap: 8px;
   cursor: pointer;
@@ -124,7 +128,7 @@ export default {
 }
 
 .user-avatar:hover {
-  background-color: rgba(64, 158, 255, 0.1);
+  /*background-color: rgba(64, 158, 255, 0.1); */
 }
 
 .avatar-icon {
