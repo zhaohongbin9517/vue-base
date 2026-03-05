@@ -1,8 +1,32 @@
 <template>
   <div class="page-wrapper">
     <div class="page-title">
-      <img src="@/assets/logo.png" alt="logo" class="title-logo" />
-      <span>计量配置管理</span>
+        <div class="page-content">
+            <img src="@/assets/logo.png" alt="logo" class="title-logo" />
+            <span>计量配置管理</span>
+        </div>
+        <!-- 用户管理，显示在页面右上角 --> 
+        <div class="user-management">
+            <el-dropdown trigger="click" @command="handleUserMenuCommand">
+            <span class="user-avatar">
+                <el-icon class="avatar-icon"><user /></el-icon>
+                <span class="user-name">{{ userName }}</span>
+                <el-icon class="arrow-icon"><arrow-down /></el-icon>
+            </span>
+            <template #dropdown>
+                <el-dropdown-menu>
+                <el-dropdown-item command="userManager">
+                    <el-icon><setting /></el-icon>
+                    <span>用户管理</span>
+                </el-dropdown-item>
+                <el-dropdown-item command="logout" divided>
+                    <el-icon><logout /></el-icon>
+                    <span>退出登录</span>
+                </el-dropdown-item>
+                </el-dropdown-menu>
+            </template>
+            </el-dropdown>
+        </div>
     </div>
     <div>
         <router-view />
@@ -11,14 +35,25 @@
 </template>
 
 <script>
-// import { Menu as IconMenu, Setting } from '@element-plus/icons-vue'
+import { User, Setting, Logout, ArrowDown } from '@element-plus/icons-vue'
+import { getDisplayName, clearAuthSession } from '@/api/userUtils/auth'
+// import { useRouter } from 'vue-router'
 
 export default {
   name: 'MainLayout',
   components: {
-
+    User,
+    Setting,
+    Logout,
+    ArrowDown
+  },
+  data() {
+    return {
+      userName: ''
+    }
   },
   mounted() {
+    this.userName = getDisplayName() || '未登录用户'
   },
   methods: {
     handleOpen(key, keyPath) {
@@ -26,6 +61,19 @@ export default {
     },
     handleClose(key, keyPath) {
       console.log('关闭:', key, keyPath)
+    },
+    handleUserMenuCommand(command) {
+      switch (command) {
+        case 'userManager':
+          console.log('点击了用户管理')
+          this.$router.push('/user-center/users')
+          break
+        case 'logout':
+          console.log('点击了退出登录')
+          clearAuthSession()
+          this.$router.push('/login')
+          break
+      }
     }
   }
 }
@@ -38,6 +86,12 @@ export default {
   flex-direction: column;
 }
 
+.page-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .page-title {
   height: 50px;
   line-height: 50px;
@@ -45,13 +99,48 @@ export default {
   color: #000000;
   font-size: 18px;
   font-weight: bold;
-  text-align: center;
+  text-align: left;
   border-radius: 8px;
-  margin: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin: 10px;
+}
+
+/* 用户管理样式 */
+.user-management {
+  margin: 0;
+}
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+  background-color: rgba(64, 158, 255, 0.1);
+}
+
+.avatar-icon {
+  font-size: 24px;
+  color: #409eff;
+}
+
+.user-name {
+  font-size: 14px;
+  color: #303133;
+  font-weight: 500;
+}
+
+.arrow-icon {
+  font-size: 12px;
+  color: #909399;
 }
 
 .title-logo {
