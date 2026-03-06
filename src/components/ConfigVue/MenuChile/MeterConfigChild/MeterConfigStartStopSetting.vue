@@ -97,7 +97,7 @@ export default {
       this.$emit('add-parameter', this.name)
     },
     printParameter() {
-      console.log(this.parameters)  
+      // console.log(this.parameters)  
     },
     removeParameter(index) {
       this.$emit('remove-parameter', this.name, index)

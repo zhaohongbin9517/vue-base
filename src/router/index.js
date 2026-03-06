@@ -104,6 +104,34 @@ const routes = [
         ]
       },
       {
+        path: 'custom-submenu',
+        name: 'CustomSubmenu',
+        component: MenuIndex,
+        redirect: '/custom-submenu/measure-manage',
+        children: [
+          {
+            path: 'measure-manage',
+            name: 'MeasureManage',
+            component: BlankConfig
+          },
+          {
+            path: 'batch-operator',
+            name: 'BatchOperator',
+            component: BlankConfig
+          },
+          {
+            path: 'measure-control',
+            name: 'MeasureControl',
+            component: BlankConfig
+          },
+          {
+            path: 'history-data-splitpanes',
+            name: 'HistoryDataSplitpanes',
+            component: BlankConfig
+          }
+        ]
+      },
+      {
         path: 'user-center',
         name: 'UserCenterMenu',
         component: UserCenterMenu,

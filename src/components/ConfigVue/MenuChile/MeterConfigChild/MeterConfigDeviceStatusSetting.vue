@@ -339,7 +339,6 @@ export default {
       this.handleParamNameChange()
     },
     saveConfig() {
-      console.log(this.config)
       this.$emit('save-config',this.name)
     }
   }

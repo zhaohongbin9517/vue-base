@@ -240,7 +240,6 @@ export default {
           }, {})
         }
         await updateTmmsConfigResult(data)
-        console.log(data)
         this.$message.success('保存成功')
       } catch (error) {
         console.error('保存失败:', error)
@@ -290,7 +289,6 @@ export default {
                 })
               })
             }
-            console.log(this.optionalItems)
           }
         }
       } catch (error) {

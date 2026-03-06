@@ -124,7 +124,6 @@ export default {
       this.$message.success('配置更新成功')
     },
     async handleSave() {
-      console.log(this.jsonContent)
       this.errorMessage = ''
       try {
         // 验证 JSON 格式

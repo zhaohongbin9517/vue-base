@@ -115,8 +115,6 @@ export default {
         this.saving = false
         this.$message.success('保存成功')
       } catch (error) {
-        console.log('保存配置', this.jsonContent)
-
         this.errorMessage = `JSON 格式错误：${error.message}`
         this.$message.error(this.errorMessage)
         this.saving = false
@@ -124,10 +122,6 @@ export default {
     },
     handleJsonChange(value) {
       this.jsonContent = value
-      console.log('JSON 数据变更:', value)
-    },
-    handleTest(){
-      console.log('测试按钮点击',this.jsonContent)
     }
   }
 }

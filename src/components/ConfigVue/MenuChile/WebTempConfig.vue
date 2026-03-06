@@ -128,7 +128,6 @@ export default {
         }
     },
     async handleSave() {
-      console.log(this.jsonContent)
       this.errorMessage = ''
       try {
         // 验证 JSON 格式

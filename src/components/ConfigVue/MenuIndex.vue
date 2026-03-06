@@ -62,16 +62,16 @@
                 <span class="menu-text">导航</span>
               </div>
             </template>
-            <el-menu-item @click="handleJumpHtml('measure-manage')" class="sub-menu-item">
+            <el-menu-item index="/custom-submenu/measure-manage" @click="handleJumpHtml('measure-manage')" class="sub-menu-item">
               <span class="sub-menu-text">计量站监控</span>
             </el-menu-item>
-            <el-menu-item @click="handleJumpHtml('batch-operator')" class="sub-menu-item">
+            <el-menu-item index="/custom-submenu/batch-operator" @click="handleJumpHtml('batch-operator')" class="sub-menu-item">
               <span class="sub-menu-text">计划管理</span>
             </el-menu-item>
-            <el-menu-item  @click="handleJumpHtml('measure-control')"  class="sub-menu-item">
+            <el-menu-item index="/custom-submenu/measure-control" @click="handleJumpHtml('measure-control')"  class="sub-menu-item">
               <span class="sub-menu-text">计量监控</span>
             </el-menu-item>
-            <el-menu-item @click="handleJumpHtml('history-data-splitpanes')" class="sub-menu-item">
+            <el-menu-item index="/custom-submenu/history-data-splitpanes" @click="handleJumpHtml('history-data-splitpanes')" class="sub-menu-item">
               <span class="sub-menu-text">结果监控</span>
             </el-menu-item>
           </el-sub-menu>

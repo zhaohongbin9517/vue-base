@@ -128,7 +128,6 @@ export default {
   },
   methods: {
     handleChange(){
-      console.log('change',this.formData)
     },
     resetForm() {
       // 生成唯一配置ID，这里可以根据实际需求调整生成逻辑
@@ -144,7 +143,6 @@ export default {
     },
     // 处理保存配置
     handleSave() {
-      console.log('保存',this.formData)
       this.$emit('save', this.formData)
     }
   }

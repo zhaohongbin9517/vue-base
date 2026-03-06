@@ -70,11 +70,11 @@ export default {
     handleUserMenuCommand(command) {
       switch (command) {
         case 'userManager':
-          console.log('点击了用户管理')
+          // console.log('点击了用户管理')
           this.$router.push('/user-center/users')
           break
         case 'logout':
-          console.log('点击了退出登录')
+          // console.log('点击了退出登录')
           clearAuthSession()
           this.$router.push('/login')
           break

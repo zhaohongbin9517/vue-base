@@ -25,7 +25,6 @@ export const loginByPassword = ({ username, password }) => request({
  * @returns {boolean} - 是否有该权限
  */
 export function getAuthPermission(permission) {
-  console.log(permission)
-  const canLicenseWrite = computed(() => hasAuthPermission('config:write'))
+  const canLicenseWrite = computed(() => hasAuthPermission(permission))
   return canLicenseWrite
 }
