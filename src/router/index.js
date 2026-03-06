@@ -11,6 +11,8 @@ import MeterConfig from '../components/ConfigVue/MenuChile/MeterConfig.vue'
 import AllMeterConfig from '../components/ConfigVue/MenuChile/AllMeterConfig.vue'
 import AllStationConfig from '../components/ConfigVue/MenuChile/AllStationConfig.vue'
 import VueTestTemp from '../components/ConfigVue/MenuChile/VueTestTemp.vue'
+import WebWsConfig from '../components/ConfigVue/MenuChile/WebWsConfig.vue'
+import WebTempConfig from '../components/ConfigVue/MenuChile/WebTempConfig.vue'
 
 // 用户中心路由
 import UserCenterMenu from '../components/UserCenter/UserMenu.vue'
@@ -88,6 +90,16 @@ const routes = [
             path: 'vue-test-temp',
             name: 'VueTestTemp',
             component: VueTestTemp
+          },
+          {
+            path: 'measure-web-ws',
+            name: 'MeasureWebWs',
+            component: WebWsConfig
+          },
+          {
+            path: 'measure-web-temp',
+            name: 'MeasureWebTemp',
+            component: WebTempConfig
           }
         ]
       },

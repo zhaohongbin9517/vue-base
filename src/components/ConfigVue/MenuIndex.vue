@@ -40,17 +40,21 @@
               <span class="sub-menu-text">修改配置</span>
             </el-menu-item>
           </el-sub-menu>
-          <!-- <el-sub-menu index="3" popper-class="custom-submenu">
+      
+          <el-sub-menu index="3" popper-class="custom-submenu">
             <template #title>
               <div class="menu-title-wrapper">
                 <el-icon class="menu-icon"><icon-menu /></el-icon>
-                <span class="menu-text">测试</span>
+                <span class="menu-text">web配置</span>
               </div>
             </template>
-            <el-menu-item index="/config/vue-test-temp" class="sub-menu-item">
-              <span class="sub-menu-text">Vue测试组件</span>
+            <el-menu-item index="/config/measure-web-ws" class="sub-menu-item">
+              <span class="sub-menu-text">ws配置</span>
             </el-menu-item>
-          </el-sub-menu> -->
+            <el-menu-item index="/config/measure-web-temp" class="sub-menu-item">
+              <span class="sub-menu-text">显示模板配置</span>
+            </el-menu-item>
+          </el-sub-menu>
           <el-sub-menu index="4" popper-class="custom-submenu">
             <template #title>
               <div class="menu-title-wrapper">
@@ -71,6 +75,19 @@
               <span class="sub-menu-text">结果监控</span>
             </el-menu-item>
           </el-sub-menu>
+          
+          <el-sub-menu index="5" popper-class="custom-submenu">
+            <template #title>
+              <div class="menu-title-wrapper">
+                <el-icon class="menu-icon"><icon-menu /></el-icon>
+                <span class="menu-text">测试</span>
+              </div>
+            </template>
+            <el-menu-item index="/config/vue-test-temp" class="sub-menu-item">
+              <span class="sub-menu-text">Vue测试组件</span>
+            </el-menu-item>
+          </el-sub-menu>
+
         </el-menu>
       </el-aside>
       <el-container>

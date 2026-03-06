@@ -121,7 +121,6 @@ export function getWebPort() {
   return get('/tmms_config/get_web_port')
 }
 
-
 /**
  * 获取对象关系
  * @returns {Promise<Array>} 对象关系列表
@@ -138,3 +137,60 @@ export function getAllStationConfig() {
   return get('/tmms_config/get_station_config')
 }
 
+
+/**
+ * 获取额外ws配置
+ * @returns {Promise<Object>} ws配置数据
+ */
+export function getWebWsConfig() {
+  return get('/tmms_config/get_web_ws_config')
+}
+
+/**
+ * 获取额外ws配置
+ * @returns {Promise} ws配置数据
+ */
+export function updateWebWsConfig() {
+  return get('/tmms_config/update_web_ws_config')
+}
+
+/**
+ * 获取额外ws配置
+ * @returns {Promise} ws配置数据
+ */
+export function changeWebWsConfig(Data) {
+  return post('/tmms_config/change_web_ws_config',Data)
+}
+
+
+/**
+ * 获取额外web temp配置
+ * @returns {Promise<Object>} web temp配置数据
+ */
+export function getWebTempConfig() {
+  return get('/tmms_config/get_web_temp_config')
+}
+
+/**
+ * 获取额外web temp配置
+ * @returns {Promise} web temp配置数据
+ */
+export function resetWebTempConfig() {
+  return get('/tmms_config/reset_web_temp_config')
+}
+
+/**
+ * 获取额外web temp配置
+ * @returns {Promise} web temp配置数据
+ */
+export function changeWebTempConfig(Data) {
+  return post('/tmms_config/change_web_temp_config',Data)
+}
+
+/**
+ * 获取额外web temp配置
+ * @returns {Promise} web temp配置数据
+ */
+export function changeWebTempFilename(Data) {
+  return post('/tmms_config/change_web_temp_filename',Data)
+}

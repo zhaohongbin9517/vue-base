@@ -10,6 +10,9 @@
 // 引入 Vue3 核心 API
 import { Plus } from '@element-plus/icons-vue'
 import { getAllObjectInfoMap } from '@/api/configUtils/cacheData'
+import { getWebWsConfig } from '@/api/configUtils/config'
+
+
 
 export default {
   name: 'VueTestTemp',
@@ -30,6 +33,8 @@ export default {
   },
   methods: {
     async handleButtonClick() {
+      const res = await getWebWsConfig()
+      console.log(res)
       console.log('按钮被点击了')
       console.log(await getAllObjectInfoMap())
     }
