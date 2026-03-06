@@ -17,18 +17,18 @@
       <div class="base-config">
         <label for="webTempFileName">当前模板：
           <span style="color: #409eff;">{{webTempFileName}}</span></label>
-        <el-input v-model="changeFileName" placeholder="请输入需要修改的模板文件名" class="file-input">
+        <el-input v-if="PromiseWrite" v-model="changeFileName" placeholder="请输入需要修改的模板文件名" class="file-input">
             <template #prefix>
               <el-icon><office-building /></el-icon>
             </template>
         </el-input>
-        <el-button type="primary" @click="changFileName" :loading="loading" :icon="Refresh">
+        <el-button v-if="PromiseWrite" type="primary" @click="changFileName" :loading="loading" :icon="Refresh">
           修改配置文件
         </el-button>
-        <el-button type="primary" @click="handleUpdate" :loading="loading" :icon="Refresh">
+        <el-button v-if="PromiseWrite" type="primary" @click="handleUpdate" :loading="loading" :icon="Refresh">
           文件加载配置
         </el-button>
-        <el-button type="success" @click="handleSave" :loading="saving" :icon="Check">
+        <el-button v-if="PromiseWrite" type="success" @click="handleSave" :loading="saving" :icon="Check">
           保存配置
         </el-button>
       </div>
@@ -66,6 +66,7 @@
 import { Document,Collection ,OfficeBuilding} from '@element-plus/icons-vue'
 import { Vue3JsonEditor } from 'vue3-json-editor'
 import { getWebTempConfig, resetWebTempConfig , changeWebTempConfig , changeWebTempFilename} from '@/api/configUtils/config'
+import { getAuthPermission } from '@/api/login/auth'
 
 export default {
   name: 'WebTempConfig',
@@ -83,7 +84,9 @@ export default {
       jsonContent: {},
       loading: false,
       saving: false,
-      errorMessage: ''
+      errorMessage: '',
+      PromiseWrite: getAuthPermission('config:write'),
+      PromiseRead: getAuthPermission('config:read')
     }
   },
   props: {

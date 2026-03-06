@@ -9,7 +9,7 @@
     </div>
 
     <!-- 按钮区域 -->
-    <div class="button-area">
+    <div v-if="canLicenseWrite" class="button-area">
       <el-button type="primary" @click="openAddRoleDialog" :icon="Plus">
         新增角色
       </el-button>
@@ -26,7 +26,7 @@
 
       <el-table v-loading="loading" stripe :data="tableData" style="width: 100%" border>
         <el-table-column prop="role" min-width="160" label="角色" />
-        <el-table-column label="操作" align="center" width="260">
+        <el-table-column v-if="canLicenseWrite" label="操作" align="center" width="260">
           <template #default="{ row }">
             <el-button-group>
               <el-button size="small" type="primary" :disabled="isSystemRole(row)" @click="openAuthRoleDialog(row)">
@@ -100,6 +100,10 @@ import {
   isOkResult,
   treeProps
 } from '@/utils/permission-utils'
+
+import { computed } from 'vue'
+import { hasAuthPermission } from '@/api/userUtils/auth'
+const canLicenseWrite = computed(() => hasAuthPermission('role:write'))
 
 const loading = ref(false)
 const saving = ref(false)

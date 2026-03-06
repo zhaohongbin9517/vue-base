@@ -10,10 +10,10 @@
 
     <!-- 按钮区域 -->
     <div class="button-area">
-      <el-button type="primary" @click="handleUpdate" :loading="loading" :icon="Refresh">
+      <el-button v-if="PromiseWrite" type="primary" @click="handleUpdate" :loading="loading" :icon="Refresh">
         文件加载配置
       </el-button>
-      <el-button type="success" @click="handleSave" :loading="saving" :icon="Check">
+      <el-button v-if="PromiseWrite" type="success" @click="handleSave" :loading="saving" :icon="Check">
         保存配置
       </el-button>
     </div>
@@ -48,7 +48,10 @@
 <script>
 import { Setting, Document, Refresh, Check } from '@element-plus/icons-vue'
 import { getWebWsConfig, updateWebWsConfig, changeWebWsConfig } from '@/api/configUtils/config'
+import { getAuthPermission } from '@/api/login/auth'
 import { Vue3JsonEditor } from 'vue3-json-editor'
+
+
 
 export default {
   name: 'WebWsConfig',
@@ -76,7 +79,9 @@ export default {
       jsonContent: {},
       loading: false,
       saving: false,
-      errorMessage: ''
+      errorMessage: '',
+      PromiseWrite: getAuthPermission('config:write'),
+      PromiseRead: getAuthPermission('config:read')
     }
   },
   mounted() {

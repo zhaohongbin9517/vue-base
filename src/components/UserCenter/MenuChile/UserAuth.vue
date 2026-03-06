@@ -34,7 +34,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" width="240">
+        <el-table-column v-if="canLicenseWrite" label="操作" align="center" width="240">
           <template #default="{ row }">
             <el-button-group>
               <el-button size="small" type="primary" :disabled="isSystemUser(row)" @click="openAssignRoleDialog(row)">
@@ -127,6 +127,10 @@ import {
   acSetUserRole
 } from '@/api/userUtils/userCenter'
 import { accessItemsToCheckedKeys, asArray, deepClone, isOkResult, treeProps } from '@/utils/permission-utils'
+
+import { computed } from 'vue'
+import { hasAuthPermission } from '@/api/userUtils/auth'
+const canLicenseWrite = computed(() => hasAuthPermission('auth:write'))
 
 const loading = ref(false)
 const saving = ref(false)

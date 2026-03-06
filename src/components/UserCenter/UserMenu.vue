@@ -14,7 +14,7 @@
                 <span class="menu-text">用户管理</span>
               </div>
             </template>
-            <el-menu-item index="/user-center/users" class="sub-menu-item">
+            <el-menu-item v-if="canRead1" index="/user-center/users" class="sub-menu-item">
               <span class="sub-menu-text">用户管理</span>
             </el-menu-item>
             <el-menu-item index="/user-center/change-password" class="sub-menu-item">
@@ -22,7 +22,7 @@
             </el-menu-item>
           </el-sub-menu>
 
-          <el-sub-menu index="role-manage" popper-class="custom-submenu">
+          <el-sub-menu v-if="canRead2" index="role-manage" popper-class="custom-submenu">
             <template #title>
               <div class="menu-title-wrapper">
                 <el-icon class="menu-icon"><UserFilled /></el-icon>
@@ -33,7 +33,7 @@
               <span class="sub-menu-text">角色管理</span>
             </el-menu-item>
           </el-sub-menu>
-          <el-sub-menu index="auth-manage" popper-class="custom-submenu">
+          <el-sub-menu v-if="canRead3" index="auth-manage" popper-class="custom-submenu">
             <template #title>
               <div class="menu-title-wrapper">
                 <el-icon class="menu-icon"><Key /></el-icon>
@@ -59,6 +59,11 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { User, UserFilled, Key } from '@element-plus/icons-vue'
+import { hasAuthPermission } from '@/api/userUtils/auth'
+
+const canRead1 = computed(() => hasAuthPermission('user_manage:read'))
+const canRead2 = computed(() => hasAuthPermission('role:read'))
+const canRead3 = computed(() => hasAuthPermission('auth:read'))
 
 const route = useRoute()
 

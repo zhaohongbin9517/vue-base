@@ -9,7 +9,7 @@
     </div>
 
     <!-- 按钮区域 -->
-    <div class="button-area">
+    <div v-if="canLicenseWrite" class="button-area">
       <el-button type="primary" @click="openAddDialog" :icon="Plus">
         新增用户
       </el-button>
@@ -27,7 +27,7 @@
       <el-table v-loading="loading" :data="tableData" border class="config-table" stripe>
         <el-table-column prop="user_name" label="用户名" min-width="200" />
         <el-table-column prop="alias" label="用户别名" min-width="200" />
-        <el-table-column label="操作" width="280" align="center">
+        <el-table-column v-if="canLicenseWrite" label="操作" width="280" align="center">
           <template #default="{ row }">
             <el-button-group>
               <el-button size="small" type="info" :disabled="isSystemUser(row)" @click="openEditDialog(row)">
@@ -101,6 +101,9 @@ import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { User, Document, Plus } from '@element-plus/icons-vue'
 import { acAddUser, acDelUser, acGetAllUsers, acResetPasswd, acUpdateUser } from '@/api/userUtils/userCenter'
+import { computed } from 'vue'
+import { hasAuthPermission } from '@/api/userUtils/auth'
+const canLicenseWrite = computed(() => hasAuthPermission('user_manage:write'))
 
 const loading = ref(false)
 const saving = ref(false)
