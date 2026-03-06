@@ -1,6 +1,6 @@
 <template>
   <div class="user-roles-config">
-    <div class="page-header">
+    <div v-if=false class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><User /></el-icon>
         角色管理

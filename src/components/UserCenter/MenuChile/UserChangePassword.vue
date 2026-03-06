@@ -1,6 +1,6 @@
 <template>
   <div class="user-password-config">
-    <div class="page-header">
+    <div v-if=false class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><Lock /></el-icon>
         密码修改

@@ -75,7 +75,7 @@
               <span class="sub-menu-text">结果监控</span>
             </el-menu-item>
           </el-sub-menu>
-          
+<!--           
           <el-sub-menu index="5" popper-class="custom-submenu">
             <template #title>
               <div class="menu-title-wrapper">
@@ -86,7 +86,7 @@
             <el-menu-item index="/config/vue-test-temp" class="sub-menu-item">
               <span class="sub-menu-text">Vue测试组件</span>
             </el-menu-item>
-          </el-sub-menu>
+          </el-sub-menu> -->
 
         </el-menu>
       </el-aside>
