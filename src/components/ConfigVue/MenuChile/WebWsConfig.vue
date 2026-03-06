@@ -33,12 +33,14 @@
       <div class="editor-container">
         <label for="json-editor">WebSocket 配置 JSON：</label>
         <vue3-json-editor
+          :modes="modes"
           id="json-editor"
           v-model="jsonContent"
           class="json-editor"
           :indent="2"
           mode="code"
           placeholder="请输入 JSON 格式的配置数据"
+          @json-change="handleJsonChange"
         ></vue3-json-editor>
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
       </div>
@@ -66,6 +68,8 @@ export default {
   },
   data() {
     return {
+      // modes: ['tree','code','form','text','view'],
+      modes: ['code','tree'],
       jsonContent: {},
       loading: false,
       saving: false,
@@ -114,6 +118,10 @@ export default {
         this.$message.error(this.errorMessage)
         this.saving = false
       }
+    },
+    handleJsonChange(value) {
+      this.jsonContent = value
+      console.log('JSON 数据变更:', value)
     },
     handleTest(){
       console.log('测试按钮点击',this.jsonContent)

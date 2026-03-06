@@ -28,14 +28,17 @@
       </template>
 
       <div class="editor-container">
-        <label for="json-editor">模板配置 JSON：</label>
-        <vue-json-editor
-            v-model="jsonContent"
-            :show-btns="false"
-            :mode="'code'"
-            :error-handler="() => {}" 
-            class="json-editor"
-        ></vue-json-editor>
+        <label for="json-editor">WebSocket 配置 JSON：</label>
+        <vue3-json-editor
+          id="json-editor"
+          :modes="modes"
+          v-model="jsonContent"
+          class="json-editor"
+          :indent="2"
+          mode="code"
+          placeholder="请输入 JSON 格式的配置数据"
+          @json-change="handleJsonChange"
+        ></vue3-json-editor>
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
       </div>
     </el-card>
@@ -44,6 +47,7 @@
 
 <script>
 import { Setting, Document } from '@element-plus/icons-vue'
+import { Vue3JsonEditor } from 'vue3-json-editor'
 import { getWebTempConfig, resetWebTempConfig , changeWebTempConfig
     // , changeWebTempFilename
  } from '@/api/configUtils/config'
@@ -52,12 +56,14 @@ export default {
   name: 'WebTempConfig',
   components: {
     Setting,
-    Document
+    Document,
+    Vue3JsonEditor
   },
   data() {
     return {
+      modes: ['code','tree'],
       webTempFileName: '',
-      jsonContent: '',
+      jsonContent: {},
       loading: false,
       saving: false,
       errorMessage: ''
@@ -73,7 +79,7 @@ export default {
       try {
         const response = await getWebTempConfig()
         if (response && response.temp) {
-          this.jsonContent = JSON.stringify(response.temp, null, 2)
+          this.jsonContent = response.temp
         } else {
           this.errorMessage = '获取配置数据失败：未找到 temp 配置'
         }
@@ -187,8 +193,11 @@ label {
 }
 
 .json-editor {
+  display: auto;
   width: 100%;
-  padding: 12px;
+  /* min-height: 400px;
+  max-height: 100px; */
+  height: auto;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   font-family: 'Courier New', Courier, monospace;
@@ -198,11 +207,17 @@ label {
   transition: border-color 0.3s;
 }
 
+/* 确保编辑器内部内容区域有合适的内边距 */
+.json-editor :deep(.vue-json-editor) {
+  padding: 12px;
+}
+
 .json-editor:focus {
   outline: none;
   border-color: #409eff;
   box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
 }
+
 
 .error-message {
   margin-top: 8px;
