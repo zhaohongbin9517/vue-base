@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { Setting, Document } from '@element-plus/icons-vue'
+import { Setting, Document, Refresh, Check } from '@element-plus/icons-vue'
 import { getWebWsConfig, updateWebWsConfig, changeWebWsConfig } from '@/api/configUtils/config'
 
 export default {
@@ -51,6 +51,12 @@ export default {
   components: {
     Setting,
     Document
+  },
+  setup() {
+    return {
+      Refresh,
+      Check
+    }
   },
   data() {
     return {
