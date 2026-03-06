@@ -16,6 +16,9 @@
       <el-button type="success" @click="handleSave" :loading="saving" :icon="Check">
         保存配置
       </el-button>
+      <el-button type="success" @click="handleTest" :loading="saving" :icon="Check">
+        测按钮
+      </el-button>
     </div>
 
     <!-- 配置编辑卡片 -->
@@ -29,13 +32,14 @@
 
       <div class="editor-container">
         <label for="json-editor">WebSocket 配置 JSON：</label>
-        <textarea
+        <vue3-json-editor
           id="json-editor"
           v-model="jsonContent"
           class="json-editor"
-          rows="20"
+          :indent="2"
+          mode="code"
           placeholder="请输入 JSON 格式的配置数据"
-        ></textarea>
+        ></vue3-json-editor>
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
       </div>
     </el-card>
@@ -45,12 +49,14 @@
 <script>
 import { Setting, Document, Refresh, Check } from '@element-plus/icons-vue'
 import { getWebWsConfig, updateWebWsConfig, changeWebWsConfig } from '@/api/configUtils/config'
+import { Vue3JsonEditor } from 'vue3-json-editor'
 
 export default {
   name: 'WebWsConfig',
   components: {
     Setting,
-    Document
+    Document,
+    Vue3JsonEditor
   },
   setup() {
     return {
@@ -60,7 +66,7 @@ export default {
   },
   data() {
     return {
-      jsonContent: '',
+      jsonContent: {},
       loading: false,
       saving: false,
       errorMessage: ''
@@ -76,7 +82,7 @@ export default {
       try {
         const response = await getWebWsConfig()
         if (response && response.ws) {
-          this.jsonContent = JSON.stringify(response.ws, null, 2)
+          this.jsonContent = response.ws
         } else {
           this.errorMessage = '获取配置数据失败：未找到 ws 配置'
         }
@@ -95,16 +101,22 @@ export default {
       this.errorMessage = ''
       try {
         // 验证 JSON 格式
-        JSON.parse(this.jsonContent)
+        // JSON.parse(this.jsonContent)
         this.saving = true
         // 这里应该调用保存接口，暂时用模拟实现
-        await changeWebWsConfig({ws: JSON.parse(this.jsonContent)})
+        await changeWebWsConfig({ws: this.jsonContent})
         this.saving = false
         this.$message.success('保存成功')
       } catch (error) {
+        console.log('保存配置', this.jsonContent)
+
         this.errorMessage = `JSON 格式错误：${error.message}`
         this.$message.error(this.errorMessage)
+        this.saving = false
       }
+    },
+    handleTest(){
+      console.log('测试按钮点击',this.jsonContent)
     }
   }
 }
@@ -190,7 +202,8 @@ label {
 
 .json-editor {
   width: 100%;
-  padding: 12px;
+  min-height: 400px;
+  max-height: 600px;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   font-family: 'Courier New', Courier, monospace;
@@ -198,6 +211,11 @@ label {
   line-height: 1.5;
   resize: vertical;
   transition: border-color 0.3s;
+}
+
+/* 确保编辑器内部内容区域有合适的内边距 */
+.json-editor :deep(.vue-json-editor) {
+  padding: 12px;
 }
 
 .json-editor:focus {
