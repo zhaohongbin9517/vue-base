@@ -164,7 +164,10 @@ export default {
 
 <style scoped>
 .page-wrapper {
-  height: 100vh;
+  /* height: 100vh; */
+  min-height: 85vh;
+  max-height: 85vh;
+  /* overflow-y: auto; */
   display: flex;
   flex-direction: column;
 }

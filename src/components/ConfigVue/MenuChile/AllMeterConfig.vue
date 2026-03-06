@@ -1,6 +1,6 @@
 <template>
   <div class="all-meter-config">
-    <div class="page-header">
+    <div v-if="isShowHeader" class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><Setting /></el-icon>
         全部配置管理
@@ -68,6 +68,12 @@ export default {
       Plus,
       Delete,
       Edit
+    }
+  },
+  props: {
+    isShowHeader: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

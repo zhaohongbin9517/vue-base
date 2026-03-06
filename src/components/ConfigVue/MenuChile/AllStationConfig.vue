@@ -1,6 +1,6 @@
 <template>
   <div class="all-meter-config">
-    <div class="page-header">
+    <div v-if="isShowHeader" class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><Setting /></el-icon>
         全部计量站管理
@@ -99,6 +99,12 @@ export default {
     Setting,
     Document,
     AllStationConfigEdit
+  },
+  props: {
+    isShowHeader: {
+      type: Boolean,
+      default: false
+    }
   },
   setup() {
     return {

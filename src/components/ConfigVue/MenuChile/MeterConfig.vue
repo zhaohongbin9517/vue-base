@@ -1,6 +1,6 @@
 <template>
   <div class="meter-config">
-    <div class="page-header">
+    <div v-if="isShowHeader" class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><setting /></el-icon>
         计量配置
@@ -1073,8 +1073,8 @@ export default {
 .meter-config {
   padding: 24px;
   background: #f5f7fa;
-  min-height: 85vh;
-  max-height: 85vh;
+  min-height: 74vh;
+  max-height: 74vh;
   overflow-y: auto;
 }
 
@@ -1086,7 +1086,7 @@ export default {
   background: #ebf8fd;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   padding: 12px 16px;
 }
 

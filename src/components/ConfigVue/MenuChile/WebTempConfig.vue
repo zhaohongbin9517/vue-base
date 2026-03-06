@@ -1,23 +1,40 @@
 <template>
   <div class="web-ws-config">
-    <div class="page-header">
+    <div v-if="isShowHeader" class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><Setting /></el-icon>
         模板配置管理
       </h2>
       <p class="page-desc">管理模板相关配置信息</p>
     </div>
-
-    <!-- 按钮区域 -->
-    <div class="button-area">
-      <el-button type="primary" @click="handleUpdate" :loading="loading" :icon="Refresh">
-        更新配置
-      </el-button>
-      <el-button type="success" @click="handleSave" :loading="saving" :icon="Check">
-        保存配置
-      </el-button>
-    </div>
-
+    <el-card>
+      <template #header>
+        <div class="card-header">
+          <el-icon class="header-icon"><collection /></el-icon>
+          <span>操作</span>
+        </div>
+      </template>
+      <div class="base-config">
+        <label for="webTempFileName">当前模板：
+          <span style="color: #409eff;">{{webTempFileName}}</span></label>
+        <el-input v-model="changeFileName" placeholder="请输入需要修改的模板文件名" class="file-input">
+            <template #prefix>
+              <el-icon><office-building /></el-icon>
+            </template>
+        </el-input>
+        <el-button type="primary" @click="changFileName" :loading="loading" :icon="Refresh">
+          修改配置文件
+        </el-button>
+        <el-button type="primary" @click="handleUpdate" :loading="loading" :icon="Refresh">
+          文件加载配置
+        </el-button>
+        <el-button type="success" @click="handleSave" :loading="saving" :icon="Check">
+          保存配置
+        </el-button>
+      </div>
+    </el-card>
+    
+    <p>&nbsp;</p>
     <!-- 配置编辑卡片 -->
     <el-card class="config-card" shadow="hover">
       <template #header>
@@ -28,7 +45,7 @@
       </template>
 
       <div class="editor-container">
-        <label for="json-editor">WebSocket 配置 JSON：</label>
+        <!-- <label for="json-editor">WebSocket 配置 JSON：</label> -->
         <vue3-json-editor
           id="json-editor"
           :modes="modes"
@@ -46,16 +63,15 @@
 </template>
 
 <script>
-import { Setting, Document } from '@element-plus/icons-vue'
+import { Document,Collection ,OfficeBuilding} from '@element-plus/icons-vue'
 import { Vue3JsonEditor } from 'vue3-json-editor'
-import { getWebTempConfig, resetWebTempConfig , changeWebTempConfig
-    // , changeWebTempFilename
- } from '@/api/configUtils/config'
+import { getWebTempConfig, resetWebTempConfig , changeWebTempConfig , changeWebTempFilename} from '@/api/configUtils/config'
 
 export default {
   name: 'WebTempConfig',
   components: {
-    Setting,
+    OfficeBuilding,
+    Collection,
     Document,
     Vue3JsonEditor
   },
@@ -63,10 +79,17 @@ export default {
     return {
       modes: ['code','tree'],
       webTempFileName: '',
+      changeFileName: '',
       jsonContent: {},
       loading: false,
       saving: false,
       errorMessage: ''
+    }
+  },
+  props: {
+    isShowHeader: {
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
@@ -80,6 +103,7 @@ export default {
         const response = await getWebTempConfig()
         if (response && response.temp) {
           this.jsonContent = response.temp
+          this.webTempFileName = response.fileName
         } else {
           this.errorMessage = '获取配置数据失败：未找到 temp 配置'
         }
@@ -94,27 +118,46 @@ export default {
       this.loadConfig()
       this.$message.success('配置更新成功')
     },
+    async changFileName() {
+      const res =  await changeWebTempFilename({fileName: this.changeFileName})
+        if (res && res.result === 'ok') {
+          this.$message.success('文件名修改成功'),
+          this.loadConfig()
+        } else {
+          this.$message.error(`文件名修改失败:${res.result}`)
+        }
+    },
     async handleSave() {
       console.log(this.jsonContent)
       this.errorMessage = ''
       try {
         // 验证 JSON 格式
-        JSON.parse(this.jsonContent)
         this.saving = true
         // 这里应该调用保存接口，暂时用模拟实现
-        await changeWebTempConfig({temp: JSON.parse(this.jsonContent)})
+        await changeWebTempConfig({temp: this.jsonContent})
         this.saving = false
         this.$message.success('保存成功')
       } catch (error) {
         this.errorMessage = `JSON 格式错误：${error.message}`
         this.$message.error(this.errorMessage)
       }
+    },
+    handleJsonChange(json) {
+      this.jsonContent = json
     }
   }
 }
 </script>
 
 <style scoped>
+
+.base-config {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .web-ws-config {
   padding: 24px;
   background: #f5f7fa;
@@ -186,18 +229,27 @@ export default {
 }
 
 label {
-  display: block;
-  margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
   font-weight: 500;
   color: #606266;
+  margin-right: 8px;
+}
+
+/* 针对base-config中的输入框单独设置宽度 */
+.base-config .el-input {
+  width: 300px;
+}
+
+/* 为文件输入框设置特定样式 */
+.file-input {
+  width: 300px;
+  margin-right: 8px;
 }
 
 .json-editor {
-  display: auto;
   width: 100%;
-  /* min-height: 400px;
-  max-height: 100px; */
-  height: auto;
+  height: 500px;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   font-family: 'Courier New', Courier, monospace;
@@ -207,9 +259,8 @@ label {
   transition: border-color 0.3s;
 }
 
-/* 确保编辑器内部内容区域有合适的内边距 */
-.json-editor :deep(.vue-json-editor) {
-  padding: 12px;
+.json-editor :deep(.jsoneditor-outer) {
+   height: 500px;
 }
 
 .json-editor:focus {

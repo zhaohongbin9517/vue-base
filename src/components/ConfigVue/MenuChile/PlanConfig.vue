@@ -1,6 +1,6 @@
 <template>
   <div class="plan-config">
-    <div class="page-header">
+    <div v-if="isShowHeader" class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><setting /></el-icon>
         计划配置
@@ -239,6 +239,12 @@ export default {
     ArrowDown,
     Warning,
     QuestionFilled
+  },
+  props: {
+    isShowHeader: {
+      type: Boolean,
+      default: false
+    }
   },
   setup() {
     return {

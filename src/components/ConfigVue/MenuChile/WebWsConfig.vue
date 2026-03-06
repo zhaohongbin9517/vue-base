@@ -1,6 +1,6 @@
 <template>
-  <div class="web-ws-config">
-    <div class="page-header">
+  <div  class="web-ws-config">
+    <div v-if="isShowHeader" class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><Setting /></el-icon>
         WebSocket 配置管理
@@ -11,13 +11,10 @@
     <!-- 按钮区域 -->
     <div class="button-area">
       <el-button type="primary" @click="handleUpdate" :loading="loading" :icon="Refresh">
-        更新配置
+        文件加载配置
       </el-button>
       <el-button type="success" @click="handleSave" :loading="saving" :icon="Check">
         保存配置
-      </el-button>
-      <el-button type="success" @click="handleTest" :loading="saving" :icon="Check">
-        测按钮
       </el-button>
     </div>
 
@@ -31,7 +28,7 @@
       </template>
 
       <div class="editor-container">
-        <label for="json-editor">WebSocket 配置 JSON：</label>
+        <!-- <label for="json-editor">WebSocket 配置 JSON：</label> -->
         <vue3-json-editor
           :modes="modes"
           id="json-editor"
@@ -64,6 +61,12 @@ export default {
     return {
       Refresh,
       Check
+    }
+  },
+  props: {
+    isShowHeader: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -210,8 +213,7 @@ label {
 
 .json-editor {
   width: 100%;
-  min-height: 400px;
-  max-height: 600px;
+  height: 590px;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   font-family: 'Courier New', Courier, monospace;
@@ -230,6 +232,10 @@ label {
   outline: none;
   border-color: #409eff;
   box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+.json-editor :deep(.jsoneditor-outer) {
+   height: 590px;
 }
 
 .error-message {

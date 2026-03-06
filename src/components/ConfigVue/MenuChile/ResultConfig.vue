@@ -1,6 +1,6 @@
 <template>
   <div class="result-config">
-    <div class="page-header">
+    <div v-if="isShowHeader" class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><setting /></el-icon>
         结果配置
@@ -151,6 +151,12 @@ export default {
     Warning,
     QuestionFilled,
     Check
+  },
+  props: {
+    isShowHeader: {
+      type: Boolean,
+      default: false
+    }
   },
   setup() {
     return {
