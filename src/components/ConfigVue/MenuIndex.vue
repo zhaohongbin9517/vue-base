@@ -124,6 +124,7 @@ export default {
   },
   methods: {
     handleJumpHtml(pageName) {
+      console.log(pageName)
       //获取ip
       let ip = window.location.hostname
       
@@ -135,6 +136,7 @@ export default {
       
       // 构建包含认证信息的URL参数
       let url = `http://${ip}:${this.webPort}/#/${pageName}`
+      // let url = `http://${ip}:${this.configWebPort}/#/config/blank`
       if (authToken) {
         // 处理token，删除前缀"Bearer "
         const processedToken = authToken.replace(/^Bearer\s+/i, '')

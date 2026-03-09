@@ -22,7 +22,8 @@ async function request(url, options = {}) {
   }
 
   if (token) {
-    headers['Authorization'] = token
+    const authToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`
+    headers['Authorization'] = authToken
   }
 
   const defaultOptions = {

@@ -1,3 +1,6 @@
+import { handleAuthInfoFromUrl } from '@/utils/authInfoProcessor'
+const authInfo = handleAuthInfoFromUrl()
+
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 import MainLayout from '../components/MainLayout.vue'
