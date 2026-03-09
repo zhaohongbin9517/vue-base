@@ -35,6 +35,10 @@ export default {
   align-items: center;
   /* 水平方向居中对齐 */
   justify-content: center;
+  
+  min-height: 85vh;
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
 /* 深度选择器：覆盖Element Plus的el-empty图片容器样式 */
