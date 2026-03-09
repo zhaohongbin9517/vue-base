@@ -26,7 +26,7 @@
           <el-sub-menu index="2" popper-class="custom-submenu">
             <template #title>
               <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><icon-menu /></el-icon>
+                <el-icon class="menu-icon"><Operation /></el-icon>
                 <span class="menu-text">计量配置</span>
               </div>
             </template>
@@ -44,7 +44,7 @@
           <el-sub-menu index="3" popper-class="custom-submenu">
             <template #title>
               <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><icon-menu /></el-icon>
+                <el-icon class="menu-icon"><DocumentCopy /></el-icon>
                 <span class="menu-text">web配置</span>
               </div>
             </template>
@@ -58,7 +58,7 @@
           <el-sub-menu index="4" popper-class="custom-submenu">
             <template #title>
               <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><icon-menu /></el-icon>
+                <el-icon class="menu-icon"><Position /></el-icon>
                 <span class="menu-text">导航</span>
               </div>
             </template>
@@ -100,15 +100,17 @@
 </template>
 
 <script>
-import { Menu as IconMenu, Setting } from '@element-plus/icons-vue'
+import { Setting, Position,Operation,DocumentCopy } from '@element-plus/icons-vue'
 import { getAuthToken, getAuthUser, getAuthAlias, getAuthPermissionKeys } from '@/api/userUtils/auth'
 import { getWebPort } from '@/api/configUtils/config'
 
 export default {
   name: 'MenuIndex',
   components: {
-    IconMenu,
-    Setting
+    Setting,
+    DocumentCopy,
+    Operation,
+    Position
   },
   data() {
     return {
