@@ -1,5 +1,5 @@
 import { handleAuthInfoFromUrl } from '@/utils/authInfoProcessor'
-const authInfo = handleAuthInfoFromUrl()
+handleAuthInfoFromUrl()
 
 import { createRouter, createWebHashHistory } from 'vue-router'
 

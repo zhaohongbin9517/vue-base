@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="dialogVisible"
-    :title="isEdit ? '编辑配置' : '新增配置'"
+    :title="'编辑配置'"
     width="800px"
     @close="handleClose"
   >

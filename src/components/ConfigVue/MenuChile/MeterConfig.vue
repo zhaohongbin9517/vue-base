@@ -346,6 +346,12 @@ export default {
     MeterConfigLoopMeterSetting,
     MeterConfigAddConfig
   },
+  props: {
+    isShowHeader: {
+      type: Boolean,
+      default: false
+    }
+  },
   setup() {
     return {
       Plus,

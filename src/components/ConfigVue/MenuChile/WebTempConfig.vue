@@ -51,6 +51,7 @@
           :modes="modes"
           v-model="jsonContent"
           class="json-editor"
+          :useWorker="false"
           :indent="2"
           mode="code"
           placeholder="请输入 JSON 格式的配置数据"
@@ -63,7 +64,7 @@
 </template>
 
 <script>
-import { Document,Collection ,OfficeBuilding} from '@element-plus/icons-vue'
+import { Document,Collection ,OfficeBuilding, Refresh, Check,Setting} from '@element-plus/icons-vue'
 import { Vue3JsonEditor } from 'vue3-json-editor'
 import { getWebTempConfig, resetWebTempConfig , changeWebTempConfig , changeWebTempFilename} from '@/api/configUtils/config'
 import { getAuthPermission } from '@/api/login/auth'
@@ -71,10 +72,17 @@ import { getAuthPermission } from '@/api/login/auth'
 export default {
   name: 'WebTempConfig',
   components: {
+    Setting,
     OfficeBuilding,
     Collection,
     Document,
     Vue3JsonEditor
+  },
+  setup() {
+    return {
+      Refresh,
+      Check
+    }
   },
   data() {
     return {

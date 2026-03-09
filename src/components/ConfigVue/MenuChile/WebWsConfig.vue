@@ -34,6 +34,7 @@
           id="json-editor"
           v-model="jsonContent"
           class="json-editor"
+          :useWorker="false"
           :indent="2"
           mode="code"
           placeholder="请输入 JSON 格式的配置数据"
