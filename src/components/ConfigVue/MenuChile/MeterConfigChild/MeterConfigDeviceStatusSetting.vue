@@ -281,6 +281,7 @@ export default {
       this.$emit('update:DeviceStatusEnums', this.enums)
     },
     updateDeviceStatusAllParam(){
+      this.localParamOptions = this.paramOptions.filter(item => this.localAllParam.includes(item.code_id)) || []
       this.$emit('update:DeviceStatusAllParam', this.localAllParam)
     },
     toggleRunStatus(status) {
