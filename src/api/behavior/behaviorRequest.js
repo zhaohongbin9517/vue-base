@@ -50,6 +50,44 @@ async function request(url, options = {}) {
   return data.data !== undefined ? data.data : data
 }
 
+async function requestFile(url, options = {}) {
+  const fullUrl = url.startsWith('http') ? url : `${BASE_URL}${url}`
+
+  const token = getAuthToken()
+  const headers = {
+    'Content-Type': 'multipart/form-data',
+    ...options.headers
+  }
+
+  if (token) {
+    const authToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`
+    headers['Authorization'] = authToken
+  }
+
+  const defaultOptions = {
+    headers
+  }
+
+  const response = await fetch(fullUrl, { ...defaultOptions, ...options })
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      clearAuthSession()
+      if (window.location.hash !== '#/login') {
+        window.location.hash = '#/login'
+      }
+    }
+  }
+
+  const data = await response.json()
+
+  if (data.code !== 200 && data.code !== undefined) {
+    throw new Error(data.message || '请求失败')
+  }
+
+  return data.data !== undefined ? data.data : data
+}
+
 /**
  * GET 请求
  * @param {string} url - 请求地址
@@ -69,10 +107,19 @@ export function get(url, params = {}) {
  * @returns {Promise}
  */
 export function post(url, data = {}) {
-  return request(url, {
-    method: 'POST',
-    body: JSON.stringify(data)
-  })
+  // 如果是 FormData 对象，直接发送，不进行 JSON 序列化
+  if (data instanceof FormData) {
+    return requestFile(url, {
+      method: 'POST',
+      body: data
+    })
+  } else {
+    // 普通 JSON 数据，进行序列化
+    return request(url, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  }
 }
 
 /**
@@ -82,10 +129,19 @@ export function post(url, data = {}) {
  * @returns {Promise}
  */
 export function put(url, data = {}) {
-  return request(url, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  })
+  // 如果是 FormData 对象，直接发送，不进行 JSON 序列化
+  if (data instanceof FormData) {
+    return requestFile(url, {
+      method: 'PUT',
+      body: data
+    })
+  } else {
+    // 普通 JSON 数据，进行序列化
+    return request(url, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    })
+  }
 }
 
 /**

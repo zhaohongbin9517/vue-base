@@ -44,6 +44,15 @@
         </el-table-column>
       </el-table>
     </el-card>
+    
+    <!-- 隐藏的文件选择输入 -->
+    <input
+      ref="fileInput"
+      type="file"
+      class="hidden-file-input"
+      @change="handleFileChange"
+      style="display: none;"
+    />
   </div>
 </template>
 
@@ -87,9 +96,21 @@ export default {
   },
   methods: {
     UploadSnapshot() {
-      console.log('上传快照')
+      // 点击按钮时触发文件选择框
+      this.$refs.fileInput.click()
     },
-    Upload(file) {
+    
+    handleFileChange(event) {
+      // 获取用户选择的文件
+      const file = event.target.files[0]
+      if (file) {
+        this.uploadFile(file)
+        // 清空文件输入，以便下次可以选择相同的文件
+        event.target.value = ''
+      }
+    },
+    
+    uploadFile(file) {
       const formData = new FormData()
       formData.append('file', file)
       snapshotUpload(formData).then(res => {
@@ -112,13 +133,25 @@ export default {
       })
     },
     handleDelete(filename){
-      delSnapshot(filename).then(res => {
-        if (res.code === 200) {
-          this.$message.success('删除成功')
-          this.getConfigList()
-        } else {
-          this.$message.error(res.msg || '删除失败')
-        }
+      // 确认删除
+      this.$confirm('确认删除选中的快照吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delSnapshot(filename).then(res => {
+          if (res.code === 200) {
+            this.$message.success('删除成功')
+            this.getConfigList()
+          } else {
+            this.$message.error(res.msg || '删除失败')
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     handleDownload(filename) {
@@ -128,12 +161,24 @@ export default {
       link.click()
     },
     handleRefresh(filename) {
-      restoreSnapshot({ filename }).then(res => {
-        if (res.code === 200) {
-          this.$message.success('还原成功')
-        } else {
-          this.$message.error(res.msg || '还原失败')
-        }
+      // 确认还原
+      this.$confirm('确认还原选中的快照吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        restoreSnapshot({ filename }).then(res => {
+          if (res.code === 200) {
+            this.$message.success('还原成功')
+          } else {
+            this.$message.error(res.msg || '还原失败')
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消还原'
+        })
       })
     },
 
