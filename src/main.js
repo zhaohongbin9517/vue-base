@@ -4,6 +4,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import router from './router'
 import './styles.css'
+import './assets/css/tailwind.css' // 引入 Tailwind 样式
 
 
 // 备份原生警告方法

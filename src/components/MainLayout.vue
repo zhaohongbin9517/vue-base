@@ -22,7 +22,7 @@
                 <el-icon class="arrow-icon"><arrow-down /></el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu>
+                <el-dropdown-menu class="custom-dropdown-menu">
                   <el-dropdown-item
                     v-for="child in item.children"
                     :key="child.name"
@@ -67,7 +67,6 @@
 <script>
 import { User,Setting,Back,ArrowDown,UserFilled,Key } from '@element-plus/icons-vue'
 import { getDisplayName, clearAuthSession } from '@/api/userUtils/auth'
-
 export default {
   name: 'MainLayout',
   components: {
@@ -290,6 +289,14 @@ export default {
 .sub-menu-text {
   font-size: 14px;
   color: #606266;
+}
+
+.custom-dropdown-menu {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
 }
 
 /* 子菜单项悬停效果 */
