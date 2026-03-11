@@ -17,7 +17,12 @@
         </div>
       </template>
       <div class="base-config">
-        <el-select v-model="baseData.configId" @change="handleConfigChange" placeholder="请选择配置" class="config-select">
+        <el-select 
+        v-model="baseData.configId" 
+        @change="handleConfigChange" 
+        placeholder="请选择配置" 
+        filterable
+        class="config-select">
           <el-option 
           v-for="item in allMeterConfig" 
           :key="item.config_id" 
@@ -28,7 +33,13 @@
             <span style="float: right; color: #8492a6; font-size: 13px">{{ item.config_id }}</span> 
           </el-option>
         </el-select>
-        <el-select v-model="baseData.stationId" @change="handleStationChange" placeholder="请选择站" class="station-select">
+        <el-select 
+        v-model="baseData.stationId" 
+        @change="handleStationChange" 
+        placeholder="请选择站" 
+        filterable
+        copyable
+        class="station-select">
           <el-option 
           v-for="item in allStations" 
           :key="item.value" 
@@ -653,7 +664,9 @@ export default {
           run_status: config.run_status || [],
           stop_status: config.stop_status || [] 
         }
-      }
+      };
+      console.log('设备状态枚举配置:', this.deviceStatusConfig)
+
     },
     //新增配置
     addConfig() {
