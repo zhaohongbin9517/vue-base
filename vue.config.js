@@ -27,6 +27,10 @@ module.exports = defineConfig({
       '/snapshot': {
         target: 'http://127.0.0.1:8326',
         changeOrigin: true
+      },
+      '/behavior': {
+        target: 'http://127.0.0.1:8326',
+        changeOrigin: true
       }
     }
   }

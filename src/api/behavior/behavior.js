@@ -49,3 +49,11 @@ export function snapshotUpload(Data) {
 export function delSnapshot(fileName) {
   return del(`/behavior_file/delete_snapshot?filename=${fileName}`)
 }
+
+/**
+ * 获取计量通用配置
+ * @returns {Promise<Object>} 配置数据
+ */
+export function getAllBehavior() {
+  return get('/behavior/get_all_behavior')
+}

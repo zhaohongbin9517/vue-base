@@ -43,8 +43,10 @@ async function request(url, options = {}) {
 
   const data = await response.json()
 
-  if (data.code !== 200 && data.code !== undefined) {
-    throw new Error(data.message || '请求失败')
+  if (data.code !== 0 && data.code !== undefined) {
+    if (data.code !== 200 && data.code !== undefined) {
+      throw new Error(data.message || '请求失败')
+    }
   }
 
   return data.data !== undefined ? data.data : data
@@ -81,8 +83,10 @@ async function requestFile(url, options = {}) {
 
   const data = await response.json()
 
-  if (data.code !== 200 && data.code !== undefined) {
-    throw new Error(data.message || '请求失败')
+    if (data.code !== 0 && data.code !== undefined) {
+    if (data.code !== 200 && data.code !== undefined) {
+      throw new Error(data.message || '请求失败')
+    }
   }
 
   return data.data !== undefined ? data.data : data

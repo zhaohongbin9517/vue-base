@@ -22,7 +22,8 @@ import ForbiddenView from '../components/ForbiddenView.vue'
 // 行为树路由
 import BehaviorTreeMenu from '../components/BehaviorTree/BehaviorTreeMenu.vue'
 import Snapshot from '../components/BehaviorTree/BTChild/Snapshot.vue'
-import VueTestTemp from '../components/BehaviorTree/BTChild/VueTestTemp.vue'
+// import VueTestTemp from '../components/BehaviorTree/BTChild/VueTestTemp.vue'
+import NodeManager from '../components/BehaviorTree/BTChild/NodeManager.vue'
 
 const routes = [
   {
@@ -79,7 +80,7 @@ const routes = [
           {
             path: 'node-manager',
             name: 'NodeManager',
-            component: VueTestTemp
+            component: NodeManager
           },
           {
             path: 'Snapshot',
