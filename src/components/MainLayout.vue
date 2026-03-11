@@ -5,20 +5,50 @@
             <img src="@/assets/logo.png" alt="logo" class="title-logo" />
             <span>后端管理</span>
         </div>
+        <!-- 导航菜单 显示在中间 -->
+        <div class="navigation-menu">
+          <div 
+          :class="{'is-active': isActive(item)}"
+          class="user-management" 
+          v-for="item in menuItem" 
+          :key="item.name"
+          >
+            <el-dropdown trigger="click" @command="handleUserMenuCommand">
+              <span class="user-avatar">
+                <el-icon class="avatar-icon">
+                  <component :is="item.icon" />
+                </el-icon>
+                <span class="user-name">{{ item.name }}</span>
+                <el-icon class="arrow-icon"><arrow-down /></el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item
+                    v-for="child in item.children"
+                    :key="child.name"
+                    @click="nowChooseItem = item.name"
+                    :command="child.command"
+                  >
+                    <el-icon>
+                      <component :is="child.icon" />
+                    </el-icon>
+                    <span>{{ child.name }}</span>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </div>
         <!-- 用户管理，显示在页面右上角 --> 
         <div class="user-management">
             <el-dropdown trigger="click" @command="handleUserMenuCommand">
             <span class="user-avatar">
-                <el-icon class="avatar-icon"><user /></el-icon>
-                <span class="user-name">{{ userName }}</span>
+                <el-icon class="avatar-icon"><User /></el-icon>
+                <span class="user-name">{{userName}}</span>
                 <el-icon class="arrow-icon"><arrow-down /></el-icon>
             </span>
             <template #dropdown>
                 <el-dropdown-menu>
-                <el-dropdown-item command="userManager">
-                    <el-icon><setting /></el-icon>
-                    <span>用户管理</span>
-                </el-dropdown-item>
                 <el-dropdown-item command="logout" divided>
                     <el-icon><back /></el-icon>
                     <span>退出登录</span>
@@ -35,7 +65,7 @@
 </template>
 
 <script>
-import { User, Setting,Back,  ArrowDown } from '@element-plus/icons-vue'
+import { User,Setting,Back,ArrowDown,UserFilled,Key } from '@element-plus/icons-vue'
 import { getDisplayName, clearAuthSession } from '@/api/userUtils/auth'
 
 export default {
@@ -44,34 +74,63 @@ export default {
     User,
     Setting,
     Back,
-    ArrowDown
+    ArrowDown,
+    UserFilled,
+    Key
   },
   data() {
     return {
-      userName: ''
+      userName: '',
+      nowChooseItem: '',
+      menuItem: [
+        // {
+        //   icon: User,
+        //   name: '点表管理',
+        //   children: [
+        //     { icon: Setting,  name: '用户管理' ,command: 'userManager' },
+        //     { icon: Setting,  name: '角色管理' ,command: 'roleManager' },
+        //     { icon: Setting,  name: '用户管理' ,command: 'userManager' }
+        //   ]
+        // },
+        {
+          icon: Setting,
+          name: '用户设置',
+          children: [
+            { icon: User,  name: '用户管理' ,command: 'userManager' },
+            { icon: UserFilled,  name: '角色管理' ,command: 'roleManager' },
+            { icon: Key,  name: '授权管理' ,command: 'authManager' }
+          ]
+        }
+      ]
     }
   },
   mounted() {
     this.userName = getDisplayName() || '未登录用户'
   },
   methods: {
+    // 判断是否为当前选中项
+    isActive(item) {
+      return this.nowChooseItem === item.name
+    },
     handleOpen(key, keyPath) {
       console.log('打开:', key, keyPath)
     },
     handleClose(key, keyPath) {
       console.log('关闭:', key, keyPath)
     },
-    handleTitleClick() {
-      // 判断当前路由是否在config下
-      if (!this.$route.path.startsWith('/config')) {
-        this.$router.push('/')
-      }
-    },
     handleUserMenuCommand(command) {
       switch (command) {
         case 'userManager':
           // console.log('点击了用户管理')
           this.$router.push('/user-center/users')
+          break
+        case 'roleManager':
+          // console.log('点击了角色管理')
+          this.$router.push('/user-center/roles')
+          break
+        case 'authManager':
+          // console.log('点击了授权管理')
+          this.$router.push('/user-center/auth')
           break
         case 'logout':
           // console.log('点击了退出登录')
@@ -89,6 +148,16 @@ export default {
   height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* 导航菜单样式 */
+.navigation-menu {
+  display: flex;
+  align-items: center;
+}
+
+.is-active {
+  background-color: rgba(64, 158, 255, 0.1);
 }
 
 .page-content {
