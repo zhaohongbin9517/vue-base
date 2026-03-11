@@ -665,7 +665,7 @@ export default {
           stop_status: config.stop_status || [] 
         }
       };
-      console.log('设备状态枚举配置:', this.deviceStatusConfig)
+      // console.log('设备状态枚举配置:', this.deviceStatusConfig)
 
     },
     //新增配置
