@@ -19,6 +19,11 @@ import Login from '../components/LoginView.vue'
 // 无权限路由
 import ForbiddenView from '../components/ForbiddenView.vue'
 
+// 行为树路由
+import BehaviorTreeMenu from '../components/BehaviorTree/BehaviorTreeMenu.vue'
+import Snapshot from '../components/BehaviorTree/BTChild/Snapshot.vue'
+import VueTestTemp from '../components/BehaviorTree/BTChild/VueTestTemp.vue'
+
 const routes = [
   {
     path: '/login',
@@ -61,6 +66,25 @@ const routes = [
             path: 'roles',
             name: 'UserRoles',
             component: UserRoles
+          }
+        ]
+      },
+      // 行为树路由
+      {
+        path: 'behavior-tree',
+        name: 'BehaviorTreeMenu',
+        component: BehaviorTreeMenu,
+        redirect: '/behavior-tree/node-manager',
+        children: [
+          {
+            path: 'node-manager',
+            name: 'NodeManager',
+            component: VueTestTemp
+          },
+          {
+            path: 'Snapshot',
+            name: 'Snapshot',
+            component: Snapshot
           }
         ]
       }

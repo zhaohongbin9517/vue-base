@@ -19,6 +19,14 @@ module.exports = defineConfig({
       '/login': {
         target: 'http://127.0.0.1:8267',
         changeOrigin: true
+      },
+      '/behavior_file': {
+        target: 'http://127.0.0.1:8326',
+        changeOrigin: true
+      },
+      '/snapshot': {
+        target: 'http://127.0.0.1:8326',
+        changeOrigin: true
       }
     }
   }

@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { User,Setting,Back,ArrowDown,UserFilled,Key } from '@element-plus/icons-vue'
+import { User,Setting,Back,ArrowDown,UserFilled,Key ,Coin,Histogram,Monitor} from '@element-plus/icons-vue'
 import { getDisplayName, clearAuthSession } from '@/api/userUtils/auth'
 export default {
   name: 'MainLayout',
@@ -75,22 +75,21 @@ export default {
     Back,
     ArrowDown,
     UserFilled,
-    Key
+    Key ,Coin,Histogram,Monitor
   },
   data() {
     return {
       userName: '',
       nowChooseItem: '',
       menuItem: [
-        // {
-        //   icon: User,
-        //   name: '点表管理',
-        //   children: [
-        //     { icon: Setting,  name: '用户管理' ,command: 'userManager' },
-        //     { icon: Setting,  name: '角色管理' ,command: 'roleManager' },
-        //     { icon: Setting,  name: '用户管理' ,command: 'userManager' }
-        //   ]
-        // },
+        {
+          icon: Coin,
+          name: '行为树',
+          children: [
+            { icon: Monitor,  name: '行为树管理' ,command: 'BTManager' },
+            { icon: Histogram,  name: '数据管理' ,command: 'BTdataManager' }
+          ]
+        },
         {
           icon: Setting,
           name: '用户设置',
@@ -130,6 +129,14 @@ export default {
         case 'authManager':
           // console.log('点击了授权管理')
           this.$router.push('/user-center/auth')
+          break
+        case 'BTManager':
+          // console.log('点击了行为树管理')
+          this.$router.push('/behavior-tree/node-manager')
+          break
+        case 'BTdataManager':
+          // console.log('点击了行为树数据管理')
+          this.$router.push('/behavior-tree/snapshot')
           break
         case 'logout':
           // console.log('点击了退出登录')
