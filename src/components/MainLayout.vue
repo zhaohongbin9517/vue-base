@@ -299,6 +299,16 @@ export default {
   padding: 10px;
 }
 
+/* 下拉菜单项宽度铺满父容器 */
+:deep(.el-dropdown-menu__item) {
+  width: 100%;
+  font-size: 16px; /* 扩大字号 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 /* 子菜单项悬停效果 */
 .sub-menu-item:hover {
   background-color: #ecf5ff !important;
