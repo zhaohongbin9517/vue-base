@@ -1,74 +1,75 @@
 <template>
-  <el-card class="config-card" shadow="hover">
-    <template #header>
-      <div class="card-header">
-        <el-icon class="header-icon"><tools /></el-icon>
-        <span>节点管理<span class="tips-text">(基础分组+自定义分组)</span></span>
-        <div class="param-btn">
-          <el-button type="primary" size="large" @click="addResultGroup" class="add-param-btn">
-            <el-icon><plus /></el-icon>
-            添加分组
-          </el-button>
-        </div>
+  <div class="config-card">
+    <div class="config-card-header">
+      <span>
+        <el-icon><Tools /></el-icon> 行为节点管理器
+      </span>
+      <div class="header-actions">
+        <el-button type="primary" size="small" @click="addResultGroup">
+          <el-icon><Plus /></el-icon> 新建分组
+        </el-button>
       </div>
-    </template>
-
-    <!-- 分组卡片展示 -->
-    <div class="group-container">
-      <div v-for="group in behaviorGroupList" :key="group.id" class="group-item">
-        <!-- 分组头部 -->
-        <div class="group-header" @click="toggleGroup(group)">
-          <el-icon class="group-icon"><Folder /></el-icon>
-          <span class="group-name">{{ group.group_name }}</span>
-          <span class="node-count">{{ group.behaviors.length }}个节点</span>
-          
-          <div v-if="group.id != -1" class="group-actions">
-            <el-button type="success" size="small" @click.stop="addNode(group.id)">
-              <el-icon><Plus /></el-icon>
-              添加节点
-            </el-button>
-            <el-button type="primary" size="small" @click.stop="editGroup(group)">
-              <el-icon><Edit /></el-icon>
-            </el-button>
-            <el-button type="danger" size="small" @click.stop="deleteGroup(group.id)">
-              <el-icon><Delete /></el-icon>
-            </el-button>
-            <el-button type="warning" size="small" @click.stop="toggleGroup(group)" :title="group.expanded ? '收起分组' : '展开分组'">
-              <el-icon >
-                <Expand v-if="group.expanded" />
-                <Fold v-else />
-              </el-icon>
-            </el-button>
+    </div>
+    <div class="config-card-content">
+      <div class="group-container">
+        <div v-for="group in behaviorGroupList" :key="group.id" class="group-item">
+          <!-- 分组头部 -->
+          <div class="group-header" @click="toggleGroup(group)">
+            <el-icon size="16" class="folder-icon"><Folder /></el-icon>
+            <div class="group-info">
+              <span class="group-name">{{ group.group_name }}</span>
+              <span class="node-count">({{ group.behaviors.length }})</span>
+            </div>
+            <div class="group-actions">
+              <el-button size="small" @click.stop="editGroup(group)">
+                <el-icon><Edit /></el-icon> 编辑
+              </el-button>
+              <el-button size="small" type="danger" @click.stop="deleteGroup(group.id)">
+                <el-icon><Delete /></el-icon> 删除
+              </el-button>
+            </div>
+            <el-icon class="expand-icon">
+              <Expand v-if="group.expanded" />
+              <Fold v-else />
+            </el-icon>
           </div>
-        </div>
-        
-        <!-- 节点列表 -->
-        <transition name="slide-fade">
-          <div v-if="group.expanded" class="node-list">
-            <div v-for="node in group.behaviors" :key="node.id" class="node-item">
-              <el-icon class="node-icon"><CircleCheck /></el-icon>
-              <div class="node-info">
-                <span class="node-name">{{ node.name }}</span>
-                <span class="node-desc">{{ node.desc }}</span>
+          
+          <!-- 节点列表 -->
+          <transition name="slide-fade">
+            <div v-if="group.expanded" class="node-list">
+              <div class="node-item" v-for="node in group.behaviors" :key="node.id">
+                <div class="node-left">
+                  <el-icon size="16"><CircleCheck /></el-icon>
+                  <div class="node-info">
+                    <span class="node-name">{{ node.name }}</span>
+                    <span class="node-desc">{{ node.desc }}</span>
+                  </div>
+                </div>
+                <div class="node-actions">
+                  <el-button size="small" @click.stop="viewNodeInfo(node)">
+                    <el-icon><InfoFilled /></el-icon> 查看
+                  </el-button>
+                  <el-button size="small" @click.stop="editNode(node)">
+                    <el-icon><Edit /></el-icon> 编辑
+                  </el-button>
+                  <el-button size="small" type="danger" @click.stop="deleteNode(node.id)">
+                    <el-icon><Delete /></el-icon> 删除
+                  </el-button>
+                </div>
               </div>
-              <div v-if="group.id != -1" class="node-actions">
-                <el-button type="primary" size="small" circle @click="viewNodeInfo(node)">
-                  <el-icon><InfoFilled /></el-icon>
-                </el-button>
-                <el-button type="success" size="small" circle @click="editNode(node)">
-                  <el-icon><Edit /></el-icon>
-                </el-button>
-                <el-button type="danger" size="small" circle @click="deleteNode(node.id)">
-                  <el-icon><Delete /></el-icon>
+              <!-- 添加节点按钮 -->
+              <div class="add-node-button">
+                <el-button type="primary" size="small" @click="addNode(group.id)">
+                  <el-icon><Plus /></el-icon> 添加节点
                 </el-button>
               </div>
             </div>
-          </div>
-        </transition>
+          </transition>
+        </div>
       </div>
     </div>
-  </el-card>
-
+  </div>
+  
   <!-- 添加/修改分组弹窗 -->
   <el-dialog
     :title="isEditGroup ? '修改分组' : '添加分组'"
@@ -99,7 +100,7 @@
   
   <!-- 添加/修改节点弹窗 -->
   <el-dialog
-    :title="nodeOperationTitle[nodeOperationType]"
+    :title="isEditNode ? '修改节点' : '添加节点'"
     v-model="nodeDialogVisible"
     width="600px"
     destroy-on-close
@@ -120,6 +121,7 @@
         <el-select
           v-model="nodeForm.module"
           placeholder="请选择模块名称"
+          @change="handleModuleChange"
         >
           <el-option
             v-for="option in moduleOptions"
@@ -135,73 +137,59 @@
           placeholder="请选择函数名称"
         >
           <el-option
-            v-for="option in funcOptions[nodeForm.module]"
+            v-for="option in funcOptions"
             :key="option.value"
             :label="option.label"
             :value="option.value"
           />
         </el-select>
       </el-form-item>
-      <el-card class="param-card" shadow="hover">
-        <template #header>
-          <div class="param-card-header">
-            <el-icon class="param-header-icon"><tools /></el-icon>
-            <span>参数</span>
-            <div class="param-btn">
-              <el-button type="primary" size="small" @click="addParam">
-                  <el-icon><Plus /></el-icon> 添加参数
-              </el-button>
-            </div>
-          </div>
-        </template>
-        <el-table :data="nodeForm.args" border class="config-table" stripe>
-              <el-table-column prop="type" label="参数类型" min-width="200">
-                <template #default="{ row }">
-                  <el-select 
-                    v-model="row.type" 
-                    placeholder="请选择参数类型"
-                    filterable
-                  >
-                      <el-option 
-                        v-for="option in paramTypeOptions" 
-                        :key="option.value"
-                        :label="option.label"
-                        :value="option.value"
-                      />
-                    </el-select>
-                </template>
-              </el-table-column>
-              <el-table-column prop="name" label="参数值" min-width="200">
-                <template #default="{ row }">
-                  <el-input 
-                    v-model="row.value" 
-                    placeholder="请输入参数名称" 
-                    controls-position="right"
-                  />
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" width="100" align="center" fixed="right">
-                <template #default="{ $index }">
-                  <el-button type="danger" size="small" circle @click="removeParam($index)" >
-                    <el-icon><delete /></el-icon>
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-      </el-card>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="nodeDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="saveNode">确定</el-button>
-        </span>
-      </template>
+      <el-form-item label="参数配置">
+        <div v-for="(arg, index) in nodeForm.args" :key="index" class="param-item">
+          <el-input
+            v-model="arg.name"
+            placeholder="参数名称"
+            style="width: 150px; margin-right: 10px"
+          />
+          <el-select
+            v-model="arg.type"
+            placeholder="参数类型"
+            style="width: 100px; margin-right: 10px"
+          >
+            <el-option
+              v-for="option in paramTypeOptions"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            />
+          </el-select>
+          <el-button
+            type="danger"
+            size="small"
+            @click="removeParam(index)"
+            :disabled="nodeForm.args.length <= 1"
+          >
+            <el-icon><Delete /></el-icon>
+          </el-button>
+        </div>
+        <el-button type="primary" size="small" @click="addParam" style="margin-top: 10px">
+          <el-icon><Plus /></el-icon> 添加参数
+        </el-button>
+      </el-form-item>
     </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="nodeDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveNode">确定</el-button>
+      </span>
+    </template>
   </el-dialog>
 </template>
 
 <script>
 import { Tools, Plus, Edit, Delete, Folder, CircleCheck, InfoFilled, Expand, Fold } from '@element-plus/icons-vue'
-import { ElDialog, ElForm, ElFormItem, ElInput, ElSelect, ElOption, ElButton } from 'element-plus'
+import { ElDialog, ElForm, ElFormItem, ElInput, ElSelect, ElOption, ElButton, ElMessage } from 'element-plus'
+
 // 暂时注释掉未使用的API导入
 import { getAllBehavior } from '@/api/behavior/behavior'
 
@@ -239,6 +227,7 @@ export default {
   },
   data() {
     return {
+      // 分组相关
       behaviorGroupList: [
         {
             id:-1,
@@ -258,7 +247,7 @@ export default {
             ]
         }
       ],
-
+      
       // 分组弹窗相关
       groupDialogVisible: false,
       isEditGroup: false,
@@ -276,12 +265,6 @@ export default {
       
       // 节点弹窗相关
       nodeDialogVisible: false,
-      nodeOperationType: "add", // add, edit, view
-      nodeOperationTitle: {
-        add: '添加节点',
-        edit: '修改节点',
-        view: '查看节点信息'
-      },
       isEditNode: false,
       currentNode: null,
       currentGroupId: null,
@@ -336,7 +319,7 @@ export default {
               ...group,
               expanded: false
             }))
-        )})
+        )})        
     },
     
     // 切换分组展开/收起状态
@@ -344,7 +327,7 @@ export default {
       group.expanded = !group.expanded
     },
     
-     // 打开添加分组弹窗
+    // 打开添加分组弹窗
     addResultGroup() {
       this.isEditGroup = false
       this.groupForm = {
@@ -365,24 +348,51 @@ export default {
       this.groupDialogVisible = true
     },
     
-    deleteGroup(groupId) {
-      console.log('删除分组:', groupId)
-      // 实现删除分组逻辑
+    // 保存分组
+    saveGroup() {
+      this.$refs.groupForm.validate((valid) => {
+        if (valid) {
+          if (this.isEditGroup) {
+            // 修改分组
+            this.currentGroup.group_name = this.groupForm.group_name
+            this.currentGroup.group_desc = this.groupForm.group_desc
+            ElMessage.success('分组修改成功')
+          } else {
+            // 添加分组
+            const newGroup = {
+              id: Date.now(),
+              group_name: this.groupForm.group_name,
+              group_desc: this.groupForm.group_desc,
+              expanded: true,
+              behaviors: []
+            }
+            this.behaviorGroupList.push(newGroup)
+            ElMessage.success('分组添加成功')
+          }
+          this.groupDialogVisible = false
+        }
+      })
     },
     
-    // 查看节点信息
-    viewNodeInfo(node) {
-      this.nodeOperationType = "view"
-      console.log('查看节点信息:', node)
-      // 实现查看节点信息逻辑
-      this.currentGroupId = node.group_id
-      this.nodeForm = node
-      this.nodeDialogVisible = true
+    // 删除分组
+    deleteGroup(groupId) {
+      this.$confirm('确定要删除该分组吗？删除后该分组下的所有节点也将被删除。', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const index = this.behaviorGroupList.findIndex(group => group.id === groupId)
+        if (index !== -1) {
+          this.behaviorGroupList.splice(index, 1)
+          ElMessage.success('分组删除成功')
+        }
+      }).catch(() => {
+        // 取消删除
+      })
     },
-
+    
     // 打开添加节点弹窗
     addNode(groupId) {
-      this.nodeOperationType = "add"
       this.isEditNode = false
       this.currentGroupId = groupId
       this.nodeForm = {
@@ -398,6 +408,89 @@ export default {
       this.nodeDialogVisible = true
     },
     
+    // 打开编辑节点弹窗
+    editNode(node) {
+      this.isEditNode = true
+      this.currentNode = node
+      this.currentGroupId = node.group_id
+      this.nodeForm = {
+        name: node.name,
+        desc: node.desc,
+        module: node.module,
+        func: node.func,
+        args: JSON.parse(JSON.stringify(node.args))
+      }
+      this.nodeDialogVisible = true
+    },
+    
+    // 保存节点
+    saveNode() {
+      this.$refs.nodeForm.validate((valid) => {
+        if (valid) {
+          // 过滤掉空参数
+          const validArgs = this.nodeForm.args.filter(arg => arg.name.trim() !== '')
+          
+          if (this.isEditNode) {
+            // 修改节点
+            this.currentNode.name = this.nodeForm.name
+            this.currentNode.desc = this.nodeForm.desc
+            this.currentNode.module = this.nodeForm.module
+            this.currentNode.func = this.nodeForm.func
+            this.currentNode.args = validArgs
+            ElMessage.success('节点修改成功')
+          } else {
+            // 添加节点
+            const newNode = {
+              id: Date.now(),
+              name: this.nodeForm.name,
+              desc: this.nodeForm.desc,
+              module: this.nodeForm.module,
+              func: this.nodeForm.func,
+              group_id: this.currentGroupId,
+              args: validArgs,
+              sort: 0
+            }
+            
+            // 找到对应的分组并添加节点
+            const group = this.behaviorGroupList.find(g => g.id === this.currentGroupId)
+            if (group) {
+              group.behaviors.push(newNode)
+              ElMessage.success('节点添加成功')
+            }
+          }
+          this.nodeDialogVisible = false
+        }
+      })
+    },
+    
+    // 删除节点
+    deleteNode(nodeId) {
+      this.$confirm('确定要删除该节点吗？', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 在所有分组中查找并删除节点
+        for (const group of this.behaviorGroupList) {
+          const index = group.behaviors.findIndex(node => node.id === nodeId)
+          if (index !== -1) {
+            group.behaviors.splice(index, 1)
+            ElMessage.success('节点删除成功')
+            return
+          }
+        }
+      }).catch(() => {
+        // 取消删除
+      })
+    },
+    
+    // 查看节点信息
+    viewNodeInfo(node) {
+      console.log('查看节点信息:', node)
+      // 可以实现查看节点详情的弹窗
+      ElMessage.info('节点详情：' + node.name + ' - ' + node.desc)
+    },
+    
     // 添加参数
     addParam() {
       this.nodeForm.args.push({
@@ -410,20 +503,18 @@ export default {
     removeParam(index) {
       this.nodeForm.args.splice(index, 1)
     },
-
-    editNode(node) {
-      this.nodeOperationType = "edit"
-      console.log('编辑节点:', node)
-      // 实现编辑节点逻辑
-      this.isEditNode = false
-      this.currentGroupId = node.group_id
-      this.nodeForm = node
-      this.nodeDialogVisible = true
-    },
     
-    deleteNode(nodeId) {
-      console.log('删除节点:', nodeId)
-      // 实现删除节点逻辑
+    // 模块变化时更新函数选项（模拟）
+    handleModuleChange() {
+      // 根据选择的模块模拟函数选项
+      this.funcOptions = []
+      if (this.nodeForm.module) {
+        this.funcOptions = [
+          { label: this.nodeForm.module + '_func1', value: this.nodeForm.module + '_func1' },
+          { label: this.nodeForm.module + '_func2', value: this.nodeForm.module + '_func2' },
+          { label: this.nodeForm.module + '_func3', value: this.nodeForm.module + '_func3' }
+        ]
+      }
     }
   }
 }
@@ -446,6 +537,7 @@ export default {
   display: none;
 }
 
+
 .card-header {
   display: flex;
   align-items: center;
@@ -454,22 +546,6 @@ export default {
   font-weight: 600;
   color: #303133;
 }
-
-.param-card-header {
-  display: flex;
-  height: 14px;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: auto;
-  color: #303133;
-}
-
-.param-header-icon {
-  font-size: 16px;
-  color: #409eff;
-}
-
 
 .header-icon {
   font-size: 20px;
