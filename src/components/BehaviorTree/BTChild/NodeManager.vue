@@ -5,7 +5,7 @@
         <el-icon class="header-icon"><tools /></el-icon>
         <span>节点管理<span class="tips-text">(基础分组+自定义分组)</span></span>
         <div class="param-btn">
-          <el-button type="primary" size="large" @click="addResultGroup" class="add-param-btn">
+          <el-button type="primary" size="large" @click="addResultGroup">
             <el-icon><plus /></el-icon>
             添加分组
           </el-button>

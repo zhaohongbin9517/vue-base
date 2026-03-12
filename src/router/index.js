@@ -24,6 +24,7 @@ import BehaviorTreeMenu from '../components/BehaviorTree/BehaviorTreeMenu.vue'
 import Snapshot from '../components/BehaviorTree/BTChild/Snapshot.vue'
 // import VueTestTemp from '../components/BehaviorTree/BTChild/VueTestTemp.vue'
 import NodeManager from '../components/BehaviorTree/BTChild/NodeManager.vue'
+import BehaviorTreeManager from '../components/BehaviorTree/BTChild/BehaviorTreeManager.vue'
 
 const routes = [
   {
@@ -81,6 +82,11 @@ const routes = [
             path: 'node-manager',
             name: 'NodeManager',
             component: NodeManager
+          },
+          {
+            path: 'tree-manager',
+            name: 'BehaviorTreeManager',
+            component: BehaviorTreeManager
           },
           {
             path: 'Snapshot',
