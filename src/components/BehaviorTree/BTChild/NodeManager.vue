@@ -33,9 +33,9 @@
             <el-button type="danger" size="small" @click.stop="deleteGroup(group.id)">
               <el-icon><Delete /></el-icon>
             </el-button>
-            <el-button type="warning" size="small" @click.stop="toggleGroup(group)" :title="group.expanded ? '收起分组' : '展开分组'">
+            <el-button type="warning" size="small" @click.stop="toggleGroup(group)" :title="expandedGroups[group.id] ? '收起分组' : '展开分组'">
               <el-icon >
-                <Expand v-if="group.expanded" />
+                <Expand v-if="expandedGroups[group.id]" />
                 <Fold v-else />
               </el-icon>
             </el-button>
@@ -44,7 +44,7 @@
         
         <!-- 节点列表 -->
         <transition name="slide-fade">
-          <div v-if="group.expanded" class="node-list">
+          <div v-if="expandedGroups[group.id]" class="node-list">
             <div v-for="node in group.behaviors" :key="node.id" class="node-item">
               <el-icon class="node-icon"><CircleCheck /></el-icon>
               <div class="node-info">
@@ -189,21 +189,22 @@
               </el-table-column>
             </el-table>
       </el-card>
-      <template #footer>
+    </el-form>
+    <template #footer>
         <span class="dialog-footer">
           <el-button @click="nodeDialogVisible = false">取消</el-button>
           <el-button type="primary" @click="saveNode">确定</el-button>
         </span>
       </template>
-    </el-form>
   </el-dialog>
 </template>
 
 <script>
 import { Tools, Plus, Edit, Delete, Folder, CircleCheck, InfoFilled, Expand, Fold } from '@element-plus/icons-vue'
-import { ElDialog, ElForm, ElFormItem, ElInput, ElSelect, ElOption, ElButton } from 'element-plus'
+import { ElDialog, ElForm, ElFormItem, ElInput, ElSelect, ElOption, ElButton,ElMessage } from 'element-plus'
 // 暂时注释掉未使用的API导入
-import { getAllBehavior } from '@/api/behavior/behavior'
+import { getAllBehavior,addBehaviorGroup,updateBehaviorGroup,addBehavior,updateBehavior } from '@/api/behavior/behavior'
+import { deleteBehaviorGroup,deleteBehavior } from '@/api/behavior/behavior'
 
 export default {
   name: 'MeterConfigResultSetting',
@@ -239,12 +240,12 @@ export default {
   },
   data() {
     return {
-      behaviorGroupList: [
+      behaviorGroupList:[],
+      BasebehaviorGroupList: [
         {
             id:-1,
             group_name:'基础分组',
             group_desc:'基础行为节点',
-            expanded: true, // 添加展开状态标志
             behaviors:[
                 {id: -2,name: "根节点", desc: "基础节点，包含一个子节点",group_id: -1, sort: 0 },
                 {id: -3,name: "永真节点", desc: "无论子节点执行结果如何，本节点都返回success",group_id: -1, sort: 1 },
@@ -258,7 +259,7 @@ export default {
             ]
         }
       ],
-
+      expandedGroups: {},
       // 分组弹窗相关
       groupDialogVisible: false,
       isEditGroup: false,
@@ -282,10 +283,9 @@ export default {
         edit: '修改节点',
         view: '查看节点信息'
       },
-      isEditNode: false,
-      currentNode: null,
       currentGroupId: null,
       nodeForm: {
+        id: null,
         name: '',
         desc: '',
         module: '',
@@ -312,7 +312,17 @@ export default {
         { label: 'report_behavior', value: 'report_behavior' }
       ],
       
-      funcOptions: [],
+      funcOptions: {
+        measure_behavior_base: [
+          { label: 'measure_behavior_base', value: 'measure_behavior_base' },
+        ],
+        control_behavior: [
+          { label: 'control_behavior', value: 'control_behavior' },
+        ],
+        report_behavior: [
+          { label: 'report_behavior', value: 'report_behavior' },
+        ],
+      },
       
       // 参数类型选项
       paramTypeOptions: [
@@ -324,7 +334,6 @@ export default {
   },
   mounted() {
     this.initData()
-    console.log('分组列表:', this.behaviorGroupList)
   },
   
   methods: {
@@ -332,16 +341,18 @@ export default {
         // 注释掉实际API调用，使用本地模拟数据
         getAllBehavior().then(res => {
             // 为API返回的数据添加展开状态
-            this.behaviorGroupList = this.behaviorGroupList.concat(res.map(group => ({
-              ...group,
-              expanded: false
-            }))
-        )})
+            this.behaviorGroupList = structuredClone(this.BasebehaviorGroupList.concat(res)),
+            console.log(this.behaviorGroupList),
+            // 初始化展开状态
+            this.behaviorGroupList.forEach(group => {
+                this.expandedGroups[group.id] = this.expandedGroups[group.id] ? this.expandedGroups[group.id] : false
+            })
+        })
     },
     
     // 切换分组展开/收起状态
     toggleGroup(group) {
-      group.expanded = !group.expanded
+      this.expandedGroups[group.id] = !this.expandedGroups[group.id]
     },
     
      // 打开添加分组弹窗
@@ -366,8 +377,25 @@ export default {
     },
     
     deleteGroup(groupId) {
-      console.log('删除分组:', groupId)
-      // 实现删除分组逻辑
+      // 确认删除
+      this.$confirm('确认删除选中的分组吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 实现删除分组逻辑
+        deleteBehaviorGroup(groupId).then(res => {
+          if(res.code == 200 || res.code == 0){
+            ElMessage.success('分组删除成功')
+            this.initData()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除分组'
+        })
+      })
     },
     
     // 查看节点信息
@@ -383,17 +411,14 @@ export default {
     // 打开添加节点弹窗
     addNode(groupId) {
       this.nodeOperationType = "add"
-      this.isEditNode = false
       this.currentGroupId = groupId
       this.nodeForm = {
+        id: null,
         name: '',
         desc: '',
         module: '',
         func: '',
-        args: [{
-          name: '',
-          type: 'int'
-        }]
+        args: []
       }
       this.nodeDialogVisible = true
     },
@@ -415,15 +440,126 @@ export default {
       this.nodeOperationType = "edit"
       console.log('编辑节点:', node)
       // 实现编辑节点逻辑
-      this.isEditNode = false
       this.currentGroupId = node.group_id
       this.nodeForm = node
       this.nodeDialogVisible = true
     },
     
     deleteNode(nodeId) {
-      console.log('删除节点:', nodeId)
-      // 实现删除节点逻辑
+      // 确认还原
+      this.$confirm('确认还原选中的节点吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteBehavior(nodeId).then(res => {
+          if(res.code == 200 || res.code == 0){
+            ElMessage.success('节点删除成功')
+            this.initData()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除节点'
+        })
+      })
+    },
+
+    // 保存节点
+    saveNode() {
+      this.$refs.nodeForm.validate((valid) => {
+        if (valid) {
+          // 过滤掉空参数
+        
+          switch (this.nodeOperationType) {
+            case 'add': {
+              // 添加节点
+              const validArgs = this.nodeForm.args.filter(arg => arg.name.trim() !== '')
+              const newNode = {
+                name: this.nodeForm.name,
+                desc: this.nodeForm.desc,
+                module: this.nodeForm.module,
+                func: this.nodeForm.func,
+                group_id: this.currentGroupId,
+                args: validArgs,
+                sort: 0
+              }
+              addBehavior(newNode).then(res => {
+                console.log(res)
+                if(res.id !== undefined && res.id > null){
+                    ElMessage.success('节点添加成功')
+                    this.initData()
+                }
+              })
+              break;
+            }
+            case 'edit': {
+              // 修改节点
+              const validArgs = this.nodeForm.args.filter(arg => arg.name.trim() !== '')
+              const data = {
+                id: this.nodeForm.id,
+                name: this.nodeForm.name,
+                desc: this.nodeForm.desc,
+                module: this.nodeForm.module,
+                func: this.nodeForm.func,
+                group_id: this.currentGroupId,
+                args: validArgs,
+                sort: 0
+              }
+              updateBehavior(data).then(res => {
+                if(res.id === this.nodeForm.id){
+                    ElMessage.success('节点修改成功')
+                    this.initData()
+                }
+              })
+              break;
+            }
+            case 'view':
+              // 查看节点信息
+              break;
+          }
+          this.nodeDialogVisible = false
+        }
+      })
+    },
+
+    // 保存分组
+    saveGroup() {
+      this.$refs.groupForm.validate((valid) => {
+        if (valid) {
+          if (this.isEditGroup) {
+            // 修改分组
+            this.currentGroup.group_name = this.groupForm.group_name
+            this.currentGroup.group_desc = this.groupForm.group_desc
+            const data = {
+              id: this.currentGroup.id,
+              group_name: this.groupForm.group_name,
+              group_desc: this.groupForm.group_desc,
+            }
+            updateBehaviorGroup(data).then(res => {
+                if(res.code == 200 || res.code == 0){
+                    ElMessage.success('分组修改成功')
+                    this.initData()
+                }
+            })  
+          } else {
+            // 添加分组
+            const newGroup = {
+              group_name: this.groupForm.group_name,
+              group_desc: this.groupForm.group_desc,
+            }
+            addBehaviorGroup(newGroup).then(res => {
+              console.log(res)
+                if(res.id !== undefined && res.id > 0){
+                    ElMessage.success('分组添加成功')
+                    this.initData()
+                }
+            })
+          }
+          this.groupDialogVisible = false
+        }
+      })
     }
   }
 }
@@ -431,8 +567,8 @@ export default {
 
 <style scoped>
 .config-card {
-  min-height: 85vh;
-  max-height: 85vh;
+  min-height: 83vh;
+  max-height: 83vh;
   overflow-y: auto;
   margin-bottom: 20px;
   border-radius: 8px;
