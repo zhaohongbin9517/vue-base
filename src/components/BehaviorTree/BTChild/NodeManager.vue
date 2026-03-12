@@ -47,7 +47,10 @@
           <div v-if="group.expanded" class="node-list">
             <div v-for="node in group.behaviors" :key="node.id" class="node-item">
               <el-icon class="node-icon"><CircleCheck /></el-icon>
-              <span class="node-name">{{ node.name }}</span>
+              <div class="node-info">
+                <span class="node-name">{{ node.name }}</span>
+                <span class="node-desc">{{ node.desc }}</span>
+              </div>
               <div v-if="group.id != -1" class="node-actions">
                 <el-button type="primary" size="small" circle @click="viewNodeInfo(node)">
                   <el-icon><InfoFilled /></el-icon>
@@ -328,10 +331,28 @@ export default {
   margin-right: 12px;
 }
 
+/* 节点信息容器 */
+.node-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+/* 节点名称 */
 .node-name {
   font-size: 16px;
-  color: #303133;
-  margin-right: auto;
+  color: #2ea300;
+  line-height: 1.4;
+}
+
+/* 节点描述 */
+.node-desc {
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.2;
+  margin-top: 2px;
 }
 
 .node-actions {
