@@ -25,6 +25,7 @@ const BUILDER_EXECUTABLE_TREE_URL = '/behavior/builder_executable_tree'
 const DELETE_BEHAVIOR_GROUP_URL = '/behavior/delete_behavior_group'
 const DELETE_BEHAVIOR_URL = '/behavior/delete_behavior'
 const DELETE_BEHAVIOR_TREE_URL = '/behavior/delete_behavior_tree'
+const GET_BEHAVIOR_MFA_URL = '/behavior/get_behavior_mfa'
 
 
 // 快照相关接口
@@ -48,3 +49,4 @@ export function builderExecutableTree(data) { return post(BUILDER_EXECUTABLE_TRE
 export function deleteBehaviorGroup(groupId) { return del(`${DELETE_BEHAVIOR_GROUP_URL}?id=${groupId}`)}
 export function deleteBehavior(behaviorId) { return del(`${DELETE_BEHAVIOR_URL}?id=${behaviorId}`)}
 export function deleteBehaviorTree(treeId) { return del(`${DELETE_BEHAVIOR_TREE_URL}?id=${treeId}`)}
+export function getBehaviorMFA(behaviorId) { return get(`${GET_BEHAVIOR_MFA_URL}?id=${behaviorId}`)}

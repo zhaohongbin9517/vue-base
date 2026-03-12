@@ -119,6 +119,7 @@
       <el-form-item label="模块名称" prop="module">
         <el-select
           v-model="nodeForm.module"
+          filterable
           placeholder="请选择模块名称"
         >
           <el-option
@@ -126,12 +127,16 @@
             :key="option.value"
             :label="option.label"
             :value="option.value"
-          />
+          >
+            <span style="float: left">{{ option.label }}</span>
+            <span style="float: right; color: #8492a6; font-size: 13px">{{option.value }}</span> 
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="函数名称" prop="func">
         <el-select
           v-model="nodeForm.func"
+          filterable
           placeholder="请选择函数名称"
         >
           <el-option
@@ -139,7 +144,10 @@
             :key="option.value"
             :label="option.label"
             :value="option.value"
-          />
+          >
+          <span style="float: left">{{ option.label }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">{{option.value }}</span> 
+        </el-option>
         </el-select>
       </el-form-item>
       <el-card class="param-card" shadow="hover">
@@ -201,10 +209,11 @@
 
 <script>
 import { Tools, Plus, Edit, Delete, Folder, CircleCheck, InfoFilled, Expand, Fold } from '@element-plus/icons-vue'
-import { ElDialog, ElForm, ElFormItem, ElInput, ElSelect, ElOption, ElButton,ElMessage } from 'element-plus'
+import { ElDialog, ElForm, ElFormItem, ElInput, ElSelect, ElOption, ElButton, ElMessage } from 'element-plus'
+import baseData from '@/assets/json/baseData.json'
+
 // 暂时注释掉未使用的API导入
-import { getAllBehavior,addBehaviorGroup,updateBehaviorGroup,addBehavior,updateBehavior } from '@/api/behavior/behavior'
-import { deleteBehaviorGroup,deleteBehavior } from '@/api/behavior/behavior'
+import {getBehaviorMFA, getAllBehavior, addBehaviorGroup, updateBehaviorGroup, addBehavior, updateBehavior, deleteBehaviorGroup, deleteBehavior } from '@/api/behavior/behavior'
 
 export default {
   name: 'MeterConfigResultSetting',
@@ -240,25 +249,9 @@ export default {
   },
   data() {
     return {
-      behaviorGroupList:[],
-      BasebehaviorGroupList: [
-        {
-            id:-1,
-            group_name:'基础分组',
-            group_desc:'基础行为节点',
-            behaviors:[
-                {id: -2,name: "根节点", desc: "基础节点，包含一个子节点",group_id: -1, sort: 0 },
-                {id: -3,name: "永真节点", desc: "无论子节点执行结果如何，本节点都返回success",group_id: -1, sort: 1 },
-                {id: -4,name: "ifelse节点", desc: "根据check节点的返回结果决定执行success或fail节点",group_id: -1, sort: 2 },
-                {id: -5,name: "循环节点（次数）", desc: "循环执行子节点指定次数",group_id: -1, sort: 3 },
-                {id: -6,name: "循环节点（判断结果）", desc: "循环执行子节点直到返回结果与设定值相同",group_id: -1, sort: 4 },
-                {id: -7,name: "选择节点", desc: "从左到右执行子节点，遇到第一个success即停止并返回success",group_id: -1, sort: 5 },
-                {id: -8,name: "顺序节点", desc: "从左到右执行子节点，遇到第一个fail即停止并返回fail",group_id: -1, sort: 6 },
-                {id: -9,name: "取反节点", desc: "对子节点的结果取反并作为本节点的结果返回",group_id: -1, sort: 7 },
-                {id: -10,name: "平行节点", desc: "执行所有子节点，将最后一个节点的结果作为本节点的结果返回",group_id: -1, sort: 8 }
-            ]
-        }
-      ],
+      behaviorGroupList: [],
+      // 从JSON文件导入基础分组数据
+      BasebehaviorGroupList: baseData.BasebehaviorGroupList,
       expandedGroups: {},
       // 分组弹窗相关
       groupDialogVisible: false,
@@ -307,21 +300,21 @@ export default {
       
       // 模块和函数选项（模拟数据）
       moduleOptions: [
-        { label: 'measure_behavior_base', value: 'measure_behavior_base' },
-        { label: 'control_behavior', value: 'control_behavior' },
-        { label: 'report_behavior', value: 'report_behavior' }
+        // { label: 'measure_behavior_base', value: 'measure_behavior_base' },
+        // { label: 'control_behavior', value: 'control_behavior' },
+        // { label: 'report_behavior', value: 'report_behavior' }
       ],
       
       funcOptions: {
-        measure_behavior_base: [
-          { label: 'measure_behavior_base', value: 'measure_behavior_base' },
-        ],
-        control_behavior: [
-          { label: 'control_behavior', value: 'control_behavior' },
-        ],
-        report_behavior: [
-          { label: 'report_behavior', value: 'report_behavior' },
-        ],
+        // measure_behavior_base: [
+        //   { label: 'measure_behavior_base', value: 'measure_behavior_base' },
+        // ],
+        // control_behavior: [
+        //   { label: 'control_behavior', value: 'control_behavior' },
+        // ],
+        // report_behavior: [
+        //   { label: 'report_behavior', value: 'report_behavior' },
+        // ],
       },
       
       // 参数类型选项
@@ -333,10 +326,28 @@ export default {
     }
   },
   mounted() {
+    this.initBehaviorMFA()
     this.initData()
   },
   
   methods: {
+    initBehaviorMFA(){
+
+      getBehaviorMFA().then(res => {
+        // 处理MFA数据
+        this.moduleOptions = res.map(item => ({
+          label: item.desc,
+          value: item.module
+        }))
+        this.funcOptions = res.reduce((acc, item) => {
+          acc[item.module] = item.func.map(fItem => ({
+            label: fItem.desc,
+            value: fItem.func
+          }))
+          return acc
+        }, {})
+      })
+    },
     initData(){
         // 注释掉实际API调用，使用本地模拟数据
         getAllBehavior().then(res => {
