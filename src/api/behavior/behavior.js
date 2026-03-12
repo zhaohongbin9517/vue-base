@@ -43,7 +43,9 @@ export function addBehaviorGroup(data) { return post(ADD_BEHAVIOR_GROUP_URL, dat
 export function updateBehaviorGroup(data) { return post(UPDATE_BEHAVIOR_GROUP_URL, data)}
 export function addBehavior(data) { return post(ADD_BEHAVIOR_URL, data)}
 export function updateBehavior(data) { return post(UPDATE_BEHAVIOR_URL, data)}
-export function addBehaviorTree(data) { return post(ADD_BEHAVIOR_TREE_URL, data)}
+export function addBehaviorTree(data) { 
+  console.log('1添加行为树请求数据:',data)
+  return post(ADD_BEHAVIOR_TREE_URL, data)}
 export function updateBehaviorTree(data) { return post(UPDATE_BEHAVIOR_TREE_URL, data)}
 export function builderExecutableTree(data) { return post(BUILDER_EXECUTABLE_TREE_URL, data)}
 export function deleteBehaviorGroup(groupId) { return del(`${DELETE_BEHAVIOR_GROUP_URL}?id=${groupId}`)}
