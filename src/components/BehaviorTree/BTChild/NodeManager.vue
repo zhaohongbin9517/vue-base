@@ -22,19 +22,18 @@
           <span class="group-name">{{ group.group_name }}</span>
           <span class="node-count">{{ group.behaviors.length }}个节点</span>
           
-          <div class="group-actions">
+          <div v-if="group.id != -1" class="group-actions">
             <el-button type="success" size="small" @click.stop="addNode(group.id)">
               <el-icon><Plus /></el-icon>
               添加节点
             </el-button>
-            <el-button type="info" size="small" @click.stop="editGroup(group)">
+            <el-button type="primary" size="small" @click.stop="editGroup(group)">
               <el-icon><Edit /></el-icon>
             </el-button>
             <el-button type="danger" size="small" @click.stop="deleteGroup(group.id)">
               <el-icon><Delete /></el-icon>
             </el-button>
-
-            <el-button type="danger" size="small" @click.stop="deleteGroup(group.id)" :title="group.expanded ? '收起分组' : '展开分组'">
+            <el-button type="warning" size="small" @click.stop="toggleGroup(group)" :title="group.expanded ? '收起分组' : '展开分组'">
               <el-icon >
                 <Expand v-if="group.expanded" />
                 <Fold v-else />
@@ -49,11 +48,11 @@
             <div v-for="node in group.behaviors" :key="node.id" class="node-item">
               <el-icon class="node-icon"><CircleCheck /></el-icon>
               <span class="node-name">{{ node.name }}</span>
-              <div class="node-actions">
+              <div v-if="group.id != -1" class="node-actions">
                 <el-button type="primary" size="small" circle @click="viewNodeInfo(node)">
                   <el-icon><InfoFilled /></el-icon>
                 </el-button>
-                <el-button type="warning" size="small" circle @click="editNode(node)">
+                <el-button type="success" size="small" circle @click="editNode(node)">
                   <el-icon><Edit /></el-icon>
                 </el-button>
                 <el-button type="danger" size="small" circle @click="deleteNode(node.id)">
@@ -103,56 +102,20 @@ export default {
     return {
       behaviorGroupList: [
         {
-            id:2562,
-            group_name:'计量基础',
-            group_desc:'计量基础行为',
+            id:-1,
+            group_name:'基础分组',
+            group_desc:'基础行为节点',
             expanded: true, // 添加展开状态标志
             behaviors:[
-                {
-                    args: [
-                        {
-                            name: "time_cd",
-                            type: "int"
-                        }
-                    ],
-                    desc: "设置下发计划",
-                    func: "set_child_step_init_plan_tag",
-                    group_id: 2562,
-                    id: 3074,
-                    module: "measure_behavior_base",
-                    name: "设置下发计划",
-                    sort: 0
-                },
-                {
-                    args: [],
-                    desc: "是否重置计量检查",
-                    func: "check_reset_measure",
-                    group_id: 2562,
-                    id: 3075,
-                    module: "measure_behavior_base",
-                    name: "是否重置计量检查",
-                    sort: 1
-                },
-                {
-                    args: [],
-                    desc: "是否下发计划",
-                    func: "check_send_plan",
-                    group_id: 2562,
-                    id: 3076,
-                    module: "measure_behavior_base",
-                    name: "是否下发计划",
-                    sort: 2
-                },
-                {
-                    args: [],
-                    desc: "是否下发计划重试",
-                    func: "check_retry_send_plan",
-                    group_id: 2562,
-                    id: 3077,
-                    module: "measure_behavior_base",
-                    name: "是否下发计划重试",
-                    sort: 3
-                }
+                {id: -2,name: "根节点", desc: "基础节点，包含一个子节点",group_id: -1, sort: 0 },
+                {id: -3,name: "永真节点", desc: "无论子节点执行结果如何，本节点都返回success",group_id: -1, sort: 1 },
+                {id: -4,name: "ifelse节点", desc: "根据check节点的返回结果决定执行success或fail节点",group_id: -1, sort: 2 },
+                {id: -5,name: "循环节点（次数）", desc: "循环执行子节点指定次数",group_id: -1, sort: 3 },
+                {id: -6,name: "循环节点（判断结果）", desc: "循环执行子节点直到返回结果与设定值相同",group_id: -1, sort: 4 },
+                {id: -7,name: "选择节点", desc: "从左到右执行子节点，遇到第一个success即停止并返回success",group_id: -1, sort: 5 },
+                {id: -8,name: "顺序节点", desc: "从左到右执行子节点，遇到第一个fail即停止并返回fail",group_id: -1, sort: 6 },
+                {id: -9,name: "取反节点", desc: "对子节点的结果取反并作为本节点的结果返回",group_id: -1, sort: 7 },
+                {id: -10,name: "平行节点", desc: "执行所有子节点，将最后一个节点的结果作为本节点的结果返回",group_id: -1, sort: 8 }
             ]
         }
       ]
@@ -167,13 +130,12 @@ export default {
     initData(){
         // 注释掉实际API调用，使用本地模拟数据
         getAllBehavior().then(res => {
-            console.log('API返回数据:', res)
             // 为API返回的数据添加展开状态
-            this.behaviorGroupList = res.map(group => ({
+            this.behaviorGroupList = this.behaviorGroupList.concat(res.map(group => ({
               ...group,
               expanded: false
             }))
-        })
+        )})
     },
     
     // 切换分组展开/收起状态
@@ -235,6 +197,15 @@ export default {
   margin-bottom: 20px;
   border-radius: 8px;
 }
+:deep(.el-card__body) {
+  /* 隐藏滚动条 - Chrome, Safari, Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.group-container:-webkit-scrollbar {
+  display: none;
+}
+
 
 .card-header {
   display: flex;
@@ -358,7 +329,7 @@ export default {
 }
 
 .node-name {
-  font-size: 14px;
+  font-size: 16px;
   color: #303133;
   margin-right: auto;
 }
