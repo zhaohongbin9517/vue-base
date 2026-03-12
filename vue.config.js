@@ -31,6 +31,10 @@ module.exports = defineConfig({
       '/behavior': {
         target: 'http://127.0.0.1:8326',
         changeOrigin: true
+      },
+      '/behavior_tree': {
+        target: 'http://127.0.0.1:8326',
+        changeOrigin: true
       }
     }
   }
