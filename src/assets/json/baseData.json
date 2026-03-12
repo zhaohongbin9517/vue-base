@@ -18,7 +18,7 @@
     }
   ],
   "BehaviorTreeList": [
-    {"id": -1, "name": "基础行为树", "desc": "基础行为树"}
+    {"id": -1, "name": "base_tree", "desc": "基础行为树"}
   ],
   "baseBehaviorTree":{
         "node_type":"root",
