@@ -22,10 +22,10 @@
             <span class="tree-id">ID: {{ tree.id }}</span>
           </div>
           <div class="tree-actions">
-            <el-button type="danger" size="small" @click="deleteTree(tree.id)">
+            <el-button type="danger" size="small" @click="deleteTree(tree.id)" :disabled="tree.id == -1">
               <el-icon><Delete /></el-icon> 删除
             </el-button>
-            <el-button type="success" size="small" @click="buildTree(tree.id)">
+            <el-button type="success" size="small" @click="buildTree(tree.id)" :disabled="tree.id == -1">
               <el-icon><VideoPlay /></el-icon> 构建
             </el-button>
           </div>
@@ -36,7 +36,7 @@
             <span class="value">{{ tree.desc || '无描述' }}</span>
           </div>
           <div class="tree-status">
-            <el-button  @click="editTree(tree.id)" style="width: 100%;">
+            <el-button  @click="editTree(tree.id)" style="width: 100%;" :disabled="tree.id == -1">
               <el-icon><Edit /></el-icon> 设计编辑
             </el-button>
           </div>
