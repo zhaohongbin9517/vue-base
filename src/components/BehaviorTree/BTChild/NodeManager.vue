@@ -17,49 +17,59 @@
     <div class="group-container">
       <div v-for="group in behaviorGroupList" :key="group.id" class="group-item">
         <!-- 分组头部 -->
-        <div class="group-header">
+        <div class="group-header" @click="toggleGroup(group)">
           <el-icon class="group-icon"><Folder /></el-icon>
           <span class="group-name">{{ group.group_name }}</span>
           <span class="node-count">{{ group.behaviors.length }}个节点</span>
+          
           <div class="group-actions">
-            <el-button type="success" size="small" @click="addNode(group.id)">
+            <el-button type="success" size="small" @click.stop="addNode(group.id)">
               <el-icon><Plus /></el-icon>
               添加节点
             </el-button>
-            <el-button type="info" size="small" @click="editGroup(group)">
+            <el-button type="info" size="small" @click.stop="editGroup(group)">
               <el-icon><Edit /></el-icon>
             </el-button>
-            <el-button type="danger" size="small" @click="deleteGroup(group.id)">
+            <el-button type="danger" size="small" @click.stop="deleteGroup(group.id)">
               <el-icon><Delete /></el-icon>
+            </el-button>
+
+            <el-button type="danger" size="small" @click.stop="deleteGroup(group.id)" :title="group.expanded ? '收起分组' : '展开分组'">
+              <el-icon >
+                <Expand v-if="group.expanded" />
+                <Fold v-else />
+              </el-icon>
             </el-button>
           </div>
         </div>
         
         <!-- 节点列表 -->
-        <div class="node-list">
-          <div v-for="node in group.behaviors" :key="node.id" class="node-item">
-            <el-icon class="node-icon"><CircleCheck /></el-icon>
-            <span class="node-name">{{ node.name }}</span>
-            <div class="node-actions">
-              <el-button type="primary" size="small" circle @click="viewNodeInfo(node)">
-                <el-icon><InfoFilled /></el-icon>
-              </el-button>
-              <el-button type="warning" size="small" circle @click="editNode(node)">
-                <el-icon><Edit /></el-icon>
-              </el-button>
-              <el-button type="danger" size="small" circle @click="deleteNode(node.id)">
-                <el-icon><Delete /></el-icon>
-              </el-button>
+        <transition name="slide-fade">
+          <div v-if="group.expanded" class="node-list">
+            <div v-for="node in group.behaviors" :key="node.id" class="node-item">
+              <el-icon class="node-icon"><CircleCheck /></el-icon>
+              <span class="node-name">{{ node.name }}</span>
+              <div class="node-actions">
+                <el-button type="primary" size="small" circle @click="viewNodeInfo(node)">
+                  <el-icon><InfoFilled /></el-icon>
+                </el-button>
+                <el-button type="warning" size="small" circle @click="editNode(node)">
+                  <el-icon><Edit /></el-icon>
+                </el-button>
+                <el-button type="danger" size="small" circle @click="deleteNode(node.id)">
+                  <el-icon><Delete /></el-icon>
+                </el-button>
+              </div>
             </div>
           </div>
-        </div>
+        </transition>
       </div>
     </div>
   </el-card>
 </template>
 
 <script>
-import { Tools, Plus, Edit, Delete, Folder, CircleCheck, InfoFilled } from '@element-plus/icons-vue'
+import { Tools, Plus, Edit, Delete, Folder, CircleCheck, InfoFilled, Expand, Fold } from '@element-plus/icons-vue'
 
 // 暂时注释掉未使用的API导入
 import { getAllBehavior } from '@/api/behavior/behavior'
@@ -73,7 +83,9 @@ export default {
     Delete,
     Folder,
     CircleCheck,
-    InfoFilled
+    InfoFilled,
+    Expand,
+    Fold
   },
   setup() {
     return {
@@ -82,7 +94,9 @@ export default {
       Delete,
       Folder,
       CircleCheck,
-      InfoFilled
+      InfoFilled,
+      Expand,
+      Fold
     }
   },
   data() {
@@ -92,6 +106,7 @@ export default {
             id:2562,
             group_name:'计量基础',
             group_desc:'计量基础行为',
+            expanded: true, // 添加展开状态标志
             behaviors:[
                 {
                     args: [
@@ -153,13 +168,30 @@ export default {
         // 注释掉实际API调用，使用本地模拟数据
         getAllBehavior().then(res => {
             console.log('API返回数据:', res)
-            this.behaviorGroupList = res
+            // 为API返回的数据添加展开状态
+            this.behaviorGroupList = res.map(group => ({
+              ...group,
+              expanded: false
+            }))
         })
+    },
+    
+    // 切换分组展开/收起状态
+    toggleGroup(group) {
+      group.expanded = !group.expanded
     },
     
     addResultGroup() {
       console.log('添加分组')
-      // 实现添加分组逻辑
+      // 实现添加分组逻辑，新分组默认展开
+      const newGroup = {
+        id: Date.now(),
+        group_name: '新分组',
+        group_desc: '',
+        expanded: true,
+        behaviors: []
+      }
+      this.behaviorGroupList.push(newGroup)
     },
     
     addNode(groupId) {
@@ -256,6 +288,12 @@ export default {
   padding: 12px 16px;
   background-color: #f5f7fa;
   border-bottom: 1px solid #e4e7ed;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.group-header:hover {
+  background-color: #ecf5ff;
 }
 
 .group-icon {
@@ -275,6 +313,15 @@ export default {
   font-size: 12px;
   color: #909399;
   margin-right: auto;
+}
+
+.expand-icon {
+  font-size: 20px;
+  color: #909399;
+  margin-right: auto;
+  margin-top: auto;
+  margin-left: auto;
+  transition: transform 0.3s ease;
 }
 
 .group-actions {
@@ -319,11 +366,22 @@ export default {
 .node-actions {
   display: flex;
   gap: 4px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  opacity: 1;
+  margin-right: 30px;
 }
 
-.node-item:hover .node-actions {
-  opacity: 1;
+/* 展开收起动画 */
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  opacity: 0;
+  max-height: 0;
+  padding: 0 16px;
 }
 </style>
