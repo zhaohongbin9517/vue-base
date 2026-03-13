@@ -109,19 +109,21 @@ export default {
     return {
       MarkerType,
       nodes: [
-        {id: '1', position: { x: 50, y: 50 },data: { label: 'Node 1' } },
-        {id: '2', type: 'root', position: { x: 400, y: 50 },  data: { label: 'root' } },
+        { id: '2', type: 'root', position: { x: 400, y: 50 },  data: { label: 'root' } },
         { id: '3', type: 'alwaysTrueNode', position: { x: 200, y: 200 },  data: { label: '永真节点' } },
         { id: '4', type: 'ifElseNode', position: { x: 400, y: 200 },   data: { label: 'ifelse节点' }  },
-        {  id: '5',type: 'loopBoolNode',  position: { x: 50, y: 200 }, data: { label: '循环节点判断结果' }},
+        { id: '5',type: 'loopBoolNode',  position: { x: 50, y: 200 }, data: { label: '循环节点判断结果' }},
         { id: '6',  type: 'loopNumNode', position: { x: 50, y: 400 },  data: { label: '循环节点判断次数' } },
-        {id: '7', type: 'selectorNode', position: { x: 200, y: 400 },  data: { label: '选择节点' } },
-        {  id: '8', type: 'sequenceNode',  position: { x: 400, y: 400 },  data: { label: '顺序节点' } },
-        {  id: '9',  type: 'negationNode',  position: { x: 600, y: 400 },  data: { label: '取反节点' } },
-        {  id: '10', type: 'parallelNode',   position: { x: 800, y: 400 }, data: { label: '平行节点' } },
+        { id: '7', type: 'selectorNode', position: { x: 200, y: 400 },  data: { label: '选择节点' } },
+        { id: '8', type: 'sequenceNode',  position: { x: 400, y: 400 },  data: { label: '顺序节点' } },
+        { id: '9',  type: 'negationNode',  position: { x: 600, y: 400 },  data: { label: '取反节点' } },
+        { id: '10', type: 'parallelNode',   position: { x: 800, y: 400 }, data: { label: '平行节点' } },
         { id: '11', type: 'leaf', position: { x: 1000, y: 400 }, data: { label: '叶子节点' } }
       ],
-      edges: [ ]
+      edges: [ 
+        { id: 'e3', source: '4', target: '5', type: 'custom', data: { label: '边3' } },
+        { id: 'e4', source: '4', target: '6', type: 'custom', data: { label: '边4' ,handle:'if-else-success'} }
+      ]
     }
   }
 }

@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
     <VueFlow :nodes="nodes" :edges="edges" fit-view-on-init class="behavior-tree-edit"> 
 
       <template #node-root>
@@ -178,4 +178,4 @@ export default {
   margin-bottom: 20px;
   border-radius: 8px;
 }
-</style> -->
+</style>

@@ -36,7 +36,8 @@ const routes = [
   {
     path: '/',
     component: MainLayout,
-    redirect: '/user-center',
+    // redirect: '/user-center',
+    redirect: '/behavior-tree/edit-tree?id=2178',
     children: [
       {
         path: '403',
