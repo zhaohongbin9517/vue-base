@@ -17,7 +17,6 @@
 
 <script>
 import { BaseEdge, getBezierPath } from '@vue-flow/core'
-// 移除未使用的 computed 导入
 export default {
   name: 'CustomEdge',
   inheritAttrs: false,

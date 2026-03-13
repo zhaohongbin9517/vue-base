@@ -36,3 +36,27 @@ body,
   transition: all ease .5s; /* 所有属性变化使用 0.5 秒的平滑过渡 */
   box-shadow: 0 0 0 2px #10b98180, 0 0 0 4px #10b981; /* 添加双层绿色阴影效果 */
 }
+
+/* Vue-Flow 节点基础样式 */
+.vue-flow__node {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: white;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #222;
+  text-align: center;
+  min-width: 80px;
+}
+
+/* 输入节点样式 */
+.vue-flow__node-input {
+  border-color: #10b981;
+  background: #d1fae5;
+}
+
+/* 输出节点样式 */
+.vue-flow__node-output {
+  border-color: #ef4444;
+  background: #fee2e2;
+}

@@ -1,5 +1,9 @@
 <template>
     <VueFlow :nodes="nodes" :edges="edges" fit-view-on-init class="behavior-tree-edit"> 
+    <template #node-root>
+      <rootNode />
+    </template>
+
     <template #edge-button="buttonEdgeProps">
       <EdgeWithButton
         :id="buttonEdgeProps.id"
@@ -28,7 +32,7 @@
         :style="customEdgeProps.style"
       />
     </template>
-
+    <InteractionControls />
     <Background />
   </VueFlow>
 </template>
@@ -40,6 +44,9 @@ import { MarkerType, VueFlow } from '@vue-flow/core'
 import EdgeWithButton from './BehaviorTreeEditChile/EdgeWithButton.vue'
 import CustomEdge from './BehaviorTreeEditChile/CustomEdge.vue'
 import CustomEdgeLabel from './BehaviorTreeEditChile/CustomEdgeLabel.vue'  // 仍然需要导入用于 h 函数
+import InteractionControls from './BehaviorTreeEditChile/InteractionControls.vue'
+
+import rootNode from './BehaviorTreeEditChile/nodes/root.vue'
 
 export default {
   name: 'BehaviorTreeEdit',
@@ -47,14 +54,18 @@ export default {
     VueFlow,
     Background,
     EdgeWithButton,
-    CustomEdge
+    CustomEdge,
+    InteractionControls,
     // 移除未在模板中直接使用的 CustomEdgeLabel
+
+    // 注册节点组件
+    rootNode
   },
   data() {
     return {
       MarkerType,
       nodes: [
-        { id: '1', type: 'input', label: 'Start', position: { x: 50, y: 0 }, style: { borderColor: '#10b981' } },
+        { id: '1',  label: 'Start',type: 'root', position: { x: 50, y: 0 }, style: { borderColor: '#10b981' } },
         { id: '2', label: 'Node 2', position: { x: 150, y: 100 } },
         { id: '2a', label: 'Node 2a', position: { x: 0, y: 180 } },
         { id: '3', label: 'Node 3', position: { x: 250, y: 200 } },
