@@ -6,6 +6,12 @@ export default {
   components: {
     Handle
   },
+  props: {
+    label: {
+      type: String,
+      default: '叶子节点'
+    }
+  },
   setup() {
     const handleConnectable = (node, connectedEdges) => {
       // only allow connections if the node has less than 3 connections
@@ -20,9 +26,9 @@ export default {
 </script>
 
 <template>
-    <div class="w-24 h-24 border-2 bg-transparent border-green-500 rounded-full flex items-center justify-center">
+    <div class="w-24 h-12 border-2 border-green-500 rounded-lg flex items-center justify-center">
         <Handle type="target" :position="Position.Top" />
-        <h1 class="bg-transparent">叶子节点</h1>
+        <h1 class="bg-transparent">{{label}}</h1>
     </div>
 </template>
 

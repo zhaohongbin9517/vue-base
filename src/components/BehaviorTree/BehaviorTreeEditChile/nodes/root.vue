@@ -1,10 +1,10 @@
 <script>
-import { Handle, Position } from '@vue-flow/core'
+import {Handle, Position } from '@vue-flow/core'
 
 export default {
   name: 'RootNode',
   components: {
-    Handle
+      Handle
   },
   setup() {
     return {
@@ -21,6 +21,6 @@ export default {
     </div>
 </template>
 
-<style lang="css" scoped>
+<style>
 
 </style>

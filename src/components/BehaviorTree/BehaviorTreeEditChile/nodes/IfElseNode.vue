@@ -19,14 +19,14 @@ export default {
         <Handle type="target" :position="Position.Top" />
         <h1>if else节点</h1>
         <!-- 黄色 check -->
-        <Handle id="if-else-check" type="source" :position="Position.Bottom" class="left-[7%]! bg-yellow-400!" />
+        <Handle id="if-else-check" type="source" :position="Position.Bottom" class="!left-[7%] !bg-yellow-400" />
         <!-- 绿色 handle -->
-        <Handle id="if-else-success" type="source" :position="Position.Bottom" class="left-[35%]! bg-green-400!" />
+        <Handle id="if-else-success" type="source" :position="Position.Bottom" class="!left-[35%] !bg-green-400" />
 
         <!-- 红色 handle -->
-        <Handle id="if-else-fail" type="source" :position="Position.Bottom" class="left-[60%]! bg-red-400!" />
+        <Handle id="if-else-fail" type="source" :position="Position.Bottom" class="!left-[60%] !bg-red-400" />
 
         <!-- 灰色 handle -->
-        <Handle id="if-else-error" type="source" :position="Position.Bottom" class="left-[90%]! " />
+        <Handle id="if-else-error" type="source" :position="Position.Bottom" class="!left-[90%] !bg-gray-400" />
     </div>
 </template>

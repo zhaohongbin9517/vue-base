@@ -4,12 +4,11 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import router from './router'
 import './styles.css'
-import './assets/css/tailwind.css' // 引入 Tailwind 样式
 import './assets/css/main.css' // 引入 main 样式
 import '@vue-flow/core/dist/style.css' // 核心样式
-// import 'vue-flow/controls/dist/style.css'
-// import 'vue-flow/minimap/dist/style.css'
-// import 'vue-flow/node-resizer/dist/style.css'
+import '@vue-flow/controls/dist/style.css'
+import '@vue-flow/minimap/dist/style.css'
+// import '@vue-flow/node-resizer/dist/style.css'
 
 
 // 备份原生警告方法
