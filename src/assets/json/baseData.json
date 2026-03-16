@@ -23,5 +23,45 @@
   "baseBehaviorTree":{
         "node_type":"root",
         "node":{}
+  },
+  "baseTree":{
+    "node_name":"root",
+    "child":[
+      {
+        "node_name":"ifelse",
+        "child":[
+          {
+            "node_name":"check",
+            "child":[
+              {
+                "node_name":"check1",
+                "child":[]
+              },
+              {
+                "node_name":"check2",
+                "child":[]
+              }
+            ]
+          },
+          {
+            "node_name":"success",
+            "child":[
+              {
+                "node_name":"success1",
+                "child":[]
+              },
+              {
+                "node_name":"success2",
+                "child":[]
+              }
+            ]
+          },
+          {
+            "node_name":"fail",
+            "child":[]
+          }
+        ]
+      }
+    ]
   }
 }
