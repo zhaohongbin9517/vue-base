@@ -6,12 +6,14 @@
   <el-button type="primary" @click="setEdgesType('straight')">直线</el-button>
   <el-button type="primary" @click="unfold()">全部展开</el-button>
   <el-button type="primary" @click="fold()">全部收起</el-button>
+     <el-button type="primary" @click="initViewport()">定位root节点</el-button>
 
   <VueFlow 
     v-model:edges="edges"
     v-model:nodes="nodes"
     :min-zoom="0.5"
     :max-zoom="0.5"
+    @viewport-change="syncFlowToViewport"
     fit-view-on-init class="behavior-tree-edit"> 
 
     <template #node-root>
@@ -45,7 +47,7 @@
       <leaf-node />
     </template>
     <Background />
-    <InteractionControls />
+    <!-- <InteractionControls /> -->
      <MiniMap />
   </VueFlow>
 </template>
@@ -65,7 +67,7 @@ import sequenceNode from './BehaviorTreeEditChile/nodes/SequenceNode.vue'
 import negationNode from './BehaviorTreeEditChile/nodes/NegationNode.vue'
 import parallelNode from './BehaviorTreeEditChile/nodes/ParallelNode.vue'
 import leafNode from './BehaviorTreeEditChile/nodes/LeafNode.vue'
-import InteractionControls from './BehaviorTreeEditChile/InteractionControls.vue'
+// import InteractionControls from './BehaviorTreeEditChile/InteractionControls.vue'
 import { MiniMap } from '@vue-flow/minimap'
 
 import baseData from '@/assets/json/baseData.json'
@@ -92,7 +94,7 @@ export default {
     negationNode,
     parallelNode,
     leafNode,
-    InteractionControls,
+    // InteractionControls,
     MiniMap
   },
   setup() {
@@ -120,17 +122,46 @@ export default {
       xPointIndex: 0,
       nodes: [],
       edges: [],
-      localPosition :{x: 100, y: 100,zoom: 0.5},
+      // 根节点坐标
+      rootNodePosition :{x: 100, y: 100}, 
       // 新增：临时存储边数据，避免直接操作v-model绑定的edges
       tempEdges: [],
+      // 当前画布位置
+      viewport: { x: 0,    y: 0,  zoom: 0.5 },
+
+      flowMethods: null
     }
   },
+  created() {
+    // 初始化 VueFlow 方法（在 created 中解构，保证时机）
+    this.flowMethods = useVueFlow()
+  },
   mounted() {
-    this.addIsUnfoldToTree(baseData.baseTree, false)
+    this.addIsUnfoldToTree(baseData.baseTree, true)
     this.init()
     this.edges = [...this.tempEdges]
+    setTimeout(() => {
+      this.initViewport()
+    }, 100);
   },
   methods: {
+    // 初始化画布位置
+    initViewport(){
+      const containerEl = document.querySelector('.vue-flow')
+      this.flowMethods.setViewport({
+        x: -this.rootNodePosition.x/2 + containerEl.clientWidth/2, 
+        y: this.rootNodePosition.y, 
+        zoom: this.viewport.zoom
+      })
+    },
+    // 使用当前画布位置更新根节点坐标
+    useViewportPosition(){
+      this.flowMethods.setViewport(this.viewport)
+    },
+    // 同步画布位置到数据
+    syncFlowToViewport(newViewport) {
+      this.viewport = newViewport
+    },
     // 全部展开
     async unfold() {
       nodeIndex = 0
@@ -141,6 +172,9 @@ export default {
       await this.init()
       await nextTick()
       this.edges = [...this.tempEdges]
+      setTimeout(() => {
+        this.initViewport()
+      }, 100);
     },
     // 全部收起
     async fold() {
@@ -152,6 +186,9 @@ export default {
       await this.init()
       await nextTick()
       this.edges = [...this.tempEdges]
+      setTimeout(() => {
+        this.initViewport()
+      }, 100);
     },
     // 初始化节点展开状态
     addIsUnfoldToTree(node, bool = false) {
@@ -215,6 +252,10 @@ export default {
           node.data.behaviorId = treeNode.behavior_id
         }
         this.nodes.push(node)
+        //缓存根节点位置
+        if(treeNode.node_type === 'root'){
+          this.rootNodePosition = { x: node.position.x, y: 100 }
+        }
         return { node: node, nextX: startX + 150 }
       }
 
@@ -272,7 +313,7 @@ export default {
 
       //缓存根节点位置
       if(treeNode.node_type === 'root'){
-        this.rootNodePosition = { x: currentX, y: 100 }
+        this.rootNodePosition = { x: node.position.x, y: 100 }
       }
 
       return { node: node, nextX: currentX }
@@ -325,10 +366,15 @@ export default {
     },
     // 打印树信息
     printTree() {
-      console.log('当前连线类型:', this.edgesType)
-      console.log('生成的节点数:', this.nodes.length)
-      console.log('生成的边数:', this.edges.length)
-      console.log('当前视图位置:', this.position.value)
+      // console.log('当前连线类型:', this.edgesType)
+      // console.log('生成的节点数:', this.nodes.length)
+      // console.log('生成的边数:', this.edges.length)
+      // console.log('当前视图位置:', this.position.value)
+      console.log('this.rootNodePosition',this.rootNodePosition)
+      console.log('this.viewport',this.viewport)
+      const containerEl = document.querySelector('.vue-flow')
+      console.log('this.containerEl',containerEl.clientWidth )
+      console.log('this.containerEl',containerEl.clientHeight  )
     }
   }
 }
