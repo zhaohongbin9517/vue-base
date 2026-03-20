@@ -228,8 +228,14 @@ export default {
               default: sourceHandle = null
             }
           }
+          // let canChangeEdgesType = true
+          // let localEdgesType = this.edgesType
+          // if(treeNode.node_type === 'ifelse_node' && (sourceHandleIndex === 2 || sourceHandleIndex === 3)){
+          //   canChangeEdgesType = false
+          //   localEdgesType = 'straight'
+          // }
+          // console.log('sourceHandleIndex', localEdgesType)
           sourceHandleIndex++
-
           // 修复2：边存入临时数组，而非直接push到v-model的edges
           this.tempEdges.push({
             id: `e${nodeId}-${result.node.id}`,
