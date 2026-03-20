@@ -1,10 +1,11 @@
 <script>
 import { Handle, Position } from '@vue-flow/core'
-
+import NodeActionButtons from './NodePublicTemp/NodeActionButtons.vue'
 export default {
   name: 'AlwaysTrueNode',
   components: {
-    Handle
+    Handle,
+    NodeActionButtons
   },
   setup() {
     const handleConnectable = (node, connectedEdges) => {
@@ -25,5 +26,6 @@ export default {
         <Handle type="target" :position="Position.Top" :connectable="handleConnectable" />
         <h1>永真节点</h1>
         <Handle type="source" :position="Position.Bottom" :connectable="handleConnectable" />
+        <NodeActionButtons />
     </div>
 </template>

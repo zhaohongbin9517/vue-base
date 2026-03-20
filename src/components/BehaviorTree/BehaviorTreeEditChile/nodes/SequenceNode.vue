@@ -1,10 +1,12 @@
 <script>
 import { Handle, Position } from '@vue-flow/core'
+import NodeActionButtons from './NodePublicTemp/NodeActionButtons.vue'
 
 export default {
   name: 'SequenceNode',
   components: {
-    Handle
+    Handle,
+    NodeActionButtons
   },
   setup() {
     const handleConnectable = (node, connectedEdges) => {
@@ -25,5 +27,6 @@ export default {
         <Handle type="target" :position="Position.Top" :connectable="handleConnectable" />
         <h1>顺序节点</h1>
         <Handle type="source" :position="Position.Bottom" :connectable="handleConnectable" />
+        <NodeActionButtons />
     </div>
 </template>

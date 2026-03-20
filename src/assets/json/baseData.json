@@ -25,43 +25,1391 @@
         "node":{}
   },
   "baseTree":{
-    "node_name":"root",
-    "child":[
-      {
-        "node_name":"ifelse",
-        "child":[
-          {
-            "node_name":"check",
-            "child":[
-              {
-                "node_name":"check1",
-                "child":[]
-              },
-              {
-                "node_name":"check2",
-                "child":[]
-              }
+        "node": {
+            "node_type": "selector_node",
+            "nodes": [
+                {
+                    "node_type": "sequence_node",
+                    "nodes": [
+                        {
+                            "args": [],
+                            "behavior_id": 6850,
+                            "node_type": "leaf"
+                        },
+                        {
+                            "node_type": "parallel_node",
+                            "nodes": [
+                                {
+                                    "node_type": "parallel_node",
+                                    "nodes": [
+                                        {
+                                            "args": [
+                                                1800
+                                            ],
+                                            "behavior_id": 3714,
+                                            "node_type": "leaf"
+                                        },
+                                        {
+                                            "node_type": "sequence_node",
+                                            "nodes": [
+                                                {
+                                                    "args": [],
+                                                    "behavior_id": 4802,
+                                                    "node_type": "leaf"
+                                                },
+                                                {
+                                                    "args": [],
+                                                    "behavior_id": 4866,
+                                                    "node_type": "leaf"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "args": [],
+                                            "behavior_id": 4930,
+                                            "node_type": "leaf"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "node_type": "sequence_node",
+                                    "nodes": [
+                                        {
+                                            "node_type": "sequence_node",
+                                            "nodes": [
+                                                {
+                                                    "node": {
+                                                        "args": [],
+                                                        "behavior_id": 8642,
+                                                        "node_type": "leaf"
+                                                    },
+                                                    "node_type": "negation_node"
+                                                },
+                                                {
+                                                    "args": [
+                                                        5
+                                                    ],
+                                                    "behavior_id": 8002,
+                                                    "node_type": "leaf"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "node_type": "selector_node",
+                                            "nodes": [
+                                                {
+                                                    "node_type": "sequence_node",
+                                                    "nodes": [
+                                                        {
+                                                            "args": [],
+                                                            "behavior_id": 8322,
+                                                            "node_type": "leaf"
+                                                        },
+                                                        {
+                                                            "node": {
+                                                                "check": {
+                                                                    "args": [],
+                                                                    "behavior_id": 7874,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "fail": {
+                                                                    "args": [],
+                                                                    "behavior_id": 8258,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "node_type": "ifelse_node",
+                                                                "success": {
+                                                                    "args": [],
+                                                                    "behavior_id": 8194,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "unknown": null
+                                                            },
+                                                            "node_type": "always_true_node"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "node_type": "sequence_node",
+                                                    "nodes": [
+                                                        {
+                                                            "args": [],
+                                                            "behavior_id": 8450,
+                                                            "node_type": "leaf"
+                                                        },
+                                                        {
+                                                            "node": {
+                                                                "check": {
+                                                                    "args": [],
+                                                                    "behavior_id": 7938,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "fail": {
+                                                                    "args": [],
+                                                                    "behavior_id": 8258,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "node_type": "ifelse_node",
+                                                                "success": {
+                                                                    "args": [],
+                                                                    "behavior_id": 8194,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "unknown": null
+                                                            },
+                                                            "node_type": "always_true_node"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "node_type": "sequence_node",
+                                                    "nodes": [
+                                                        {
+                                                            "args": [],
+                                                            "behavior_id": 8386,
+                                                            "node_type": "leaf"
+                                                        },
+                                                        {
+                                                            "node": {
+                                                                "check": {
+                                                                    "args": [],
+                                                                    "behavior_id": 8066,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "fail": {
+                                                                    "args": [],
+                                                                    "behavior_id": 8258,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "node_type": "ifelse_node",
+                                                                "success": {
+                                                                    "node_type": "sequence_node",
+                                                                    "nodes": [
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 8578,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 4994,
+                                                                            "node_type": "leaf"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "unknown": {
+                                                                    "args": [],
+                                                                    "behavior_id": 3650,
+                                                                    "node_type": "leaf"
+                                                                }
+                                                            },
+                                                            "node_type": "always_true_node"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "node_type": "sequence_node",
+                                    "nodes": [
+                                        {
+                                            "args": [],
+                                            "behavior_id": 9026,
+                                            "node_type": "leaf"
+                                        },
+                                        {
+                                            "args": [],
+                                            "behavior_id": 5250,
+                                            "node_type": "leaf"
+                                        },
+                                        {
+                                            "args": [],
+                                            "behavior_id": 5186,
+                                            "node_type": "leaf"
+                                        },
+                                        {
+                                            "args": [],
+                                            "behavior_id": 5122,
+                                            "node_type": "leaf"
+                                        },
+                                        {
+                                            "args": [],
+                                            "behavior_id": 8962,
+                                            "node_type": "leaf"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "node_type": "sequence_node",
+                                    "nodes": [
+                                        {
+                                            "node": {
+                                                "args": [],
+                                                "behavior_id": 3586,
+                                                "node_type": "leaf"
+                                            },
+                                            "node_type": "negation_node"
+                                        },
+                                        {
+                                            "args": [],
+                                            "behavior_id": 6786,
+                                            "node_type": "leaf"
+                                        },
+                                        {
+                                            "node_type": "selector_node",
+                                            "nodes": [
+                                                {
+                                                    "node_type": "sequence_node",
+                                                    "nodes": [
+                                                        {
+                                                            "args": [],
+                                                            "behavior_id": 3458,
+                                                            "node_type": "leaf"
+                                                        },
+                                                        {
+                                                            "node": {
+                                                                "check": {
+                                                                    "node_type": "sequence_node",
+                                                                    "nodes": [
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 5954,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 6018,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 6338,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 6274,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 8706,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "args": [
+                                                                                "not_zero"
+                                                                            ],
+                                                                            "behavior_id": 4418,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 6082,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "check": {
+                                                                                "args": [],
+                                                                                "behavior_id": 8834,
+                                                                                "node_type": "leaf"
+                                                                            },
+                                                                            "fail": {
+                                                                                "node_type": "parallel_node",
+                                                                                "nodes": [
+                                                                                    {
+                                                                                        "args": [],
+                                                                                        "behavior_id": 6146,
+                                                                                        "node_type": "leaf"
+                                                                                    },
+                                                                                    {
+                                                                                        "args": [],
+                                                                                        "behavior_id": 7490,
+                                                                                        "node_type": "leaf"
+                                                                                    },
+                                                                                    {
+                                                                                        "args": [],
+                                                                                        "behavior_id": 3970,
+                                                                                        "node_type": "leaf"
+                                                                                    },
+                                                                                    {
+                                                                                        "args": [
+                                                                                            "程序启动成功"
+                                                                                        ],
+                                                                                        "behavior_id": 3906,
+                                                                                        "node_type": "leaf"
+                                                                                    },
+                                                                                    {
+                                                                                        "args": [],
+                                                                                        "behavior_id": 4994,
+                                                                                        "node_type": "leaf"
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            "node_type": "ifelse_node",
+                                                                            "success": {
+                                                                                "node_type": "parallel_node",
+                                                                                "nodes": [
+                                                                                    {
+                                                                                        "args": [],
+                                                                                        "behavior_id": 6210,
+                                                                                        "node_type": "leaf"
+                                                                                    },
+                                                                                    {
+                                                                                        "args": [],
+                                                                                        "behavior_id": 7490,
+                                                                                        "node_type": "leaf"
+                                                                                    },
+                                                                                    {
+                                                                                        "args": [
+                                                                                            "计量中"
+                                                                                        ],
+                                                                                        "behavior_id": 3906,
+                                                                                        "node_type": "leaf"
+                                                                                    },
+                                                                                    {
+                                                                                        "args": [],
+                                                                                        "behavior_id": 4994,
+                                                                                        "node_type": "leaf"
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            "unknown": null
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "fail": {
+                                                                    "args": [
+                                                                        5,
+                                                                        10
+                                                                    ],
+                                                                    "behavior_id": 6722,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "node_type": "ifelse_node",
+                                                                "success": {
+                                                                    "args": [],
+                                                                    "behavior_id": 3650,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "unknown": null
+                                                            },
+                                                            "node_type": "always_true_node"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "node_type": "sequence_node",
+                                                    "nodes": [
+                                                        {
+                                                            "node_type": "selector_node",
+                                                            "nodes": [
+                                                                {
+                                                                    "args": [],
+                                                                    "behavior_id": 3522,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                {
+                                                                    "args": [],
+                                                                    "behavior_id": 10946,
+                                                                    "node_type": "leaf"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "node": {
+                                                                "check": {
+                                                                    "args": [
+                                                                        50
+                                                                    ],
+                                                                    "behavior_id": 7170,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "fail": {
+                                                                    "node_type": "sequence_node",
+                                                                    "nodes": [
+                                                                        {
+                                                                            "node": {
+                                                                                "node_type": "sequence_node",
+                                                                                "nodes": [
+                                                                                    {
+                                                                                        "args": [],
+                                                                                        "behavior_id": 10946,
+                                                                                        "node_type": "leaf"
+                                                                                    },
+                                                                                    {
+                                                                                        "args": [],
+                                                                                        "behavior_id": 10818,
+                                                                                        "node_type": "leaf"
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            "node_type": "always_true_node"
+                                                                        },
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 7490,
+                                                                            "node_type": "leaf"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "node_type": "ifelse_node",
+                                                                "success": {
+                                                                    "node_type": "selector_node",
+                                                                    "nodes": [
+                                                                        {
+                                                                            "node_type": "sequence_node",
+                                                                            "nodes": [
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 5762,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "node": {
+                                                                                        "node_type": "sequence_node",
+                                                                                        "nodes": [
+                                                                                            {
+                                                                                                "check": {
+                                                                                                    "args": [],
+                                                                                                    "behavior_id": 8898,
+                                                                                                    "node_type": "leaf"
+                                                                                                },
+                                                                                                "fail": {
+                                                                                                    "node": {
+                                                                                                        "node_type": "sequence_node",
+                                                                                                        "nodes": [
+                                                                                                            {
+                                                                                                                "args": [],
+                                                                                                                "behavior_id": 7490,
+                                                                                                                "node_type": "leaf"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "args": [
+                                                                                                                    "未查询到计划"
+                                                                                                                ],
+                                                                                                                "behavior_id": 3906,
+                                                                                                                "node_type": "leaf"
+                                                                                                            }
+                                                                                                        ]
+                                                                                                    },
+                                                                                                    "node_type": "negation_node"
+                                                                                                },
+                                                                                                "node_type": "ifelse_node",
+                                                                                                "success": {
+                                                                                                    "args": [],
+                                                                                                    "behavior_id": 3650,
+                                                                                                    "node_type": "leaf"
+                                                                                                },
+                                                                                                "unknown": null
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 5442,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 6466,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 5890,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [
+                                                                                                    "重置计量允许完成，等待检查"
+                                                                                                ],
+                                                                                                "behavior_id": 3906,
+                                                                                                "node_type": "leaf"
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "node_type": "always_true_node"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "node_type": "sequence_node",
+                                                                            "nodes": [
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 3138,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "node": {
+                                                                                        "check": {
+                                                                                            "args": [],
+                                                                                            "behavior_id": 6594,
+                                                                                            "node_type": "leaf"
+                                                                                        },
+                                                                                        "fail": {
+                                                                                            "node_type": "sequence_node",
+                                                                                            "nodes": [
+                                                                                                {
+                                                                                                    "args": [],
+                                                                                                    "behavior_id": 7106,
+                                                                                                    "node_type": "leaf"
+                                                                                                },
+                                                                                                {
+                                                                                                    "args": [
+                                                                                                        "重新重置"
+                                                                                                    ],
+                                                                                                    "behavior_id": 3906,
+                                                                                                    "node_type": "leaf"
+                                                                                                },
+                                                                                                {
+                                                                                                    "args": [],
+                                                                                                    "behavior_id": 4994,
+                                                                                                    "node_type": "leaf"
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        "node_type": "ifelse_node",
+                                                                                        "success": {
+                                                                                            "args": [],
+                                                                                            "behavior_id": 3074,
+                                                                                            "node_type": "leaf"
+                                                                                        },
+                                                                                        "unknown": null
+                                                                                    },
+                                                                                    "node_type": "always_true_node"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "node_type": "sequence_node",
+                                                                            "nodes": [
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 5826,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "node": {
+                                                                                        "node_type": "sequence_node",
+                                                                                        "nodes": [
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 6530,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 5890,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [
+                                                                                                    "重置计量允许完成，等待检查"
+                                                                                                ],
+                                                                                                "behavior_id": 3906,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 4994,
+                                                                                                "node_type": "leaf"
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "node_type": "always_true_node"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "node_type": "sequence_node",
+                                                                            "nodes": [
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 3202,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "node": {
+                                                                                        "node_type": "sequence_node",
+                                                                                        "nodes": [
+                                                                                            {
+                                                                                                "node_type": "selector_node",
+                                                                                                "nodes": [
+                                                                                                    {
+                                                                                                        "node_type": "sequence_node",
+                                                                                                        "nodes": [
+                                                                                                            {
+                                                                                                                "args": [],
+                                                                                                                "behavior_id": 3522,
+                                                                                                                "node_type": "leaf"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "args": [],
+                                                                                                                "behavior_id": 5506,
+                                                                                                                "node_type": "leaf"
+                                                                                                            }
+                                                                                                        ]
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "node_type": "sequence_node",
+                                                                                                        "nodes": [
+                                                                                                            {
+                                                                                                                "args": [],
+                                                                                                                "behavior_id": 10946,
+                                                                                                                "node_type": "leaf"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "args": [],
+                                                                                                                "behavior_id": 11074,
+                                                                                                                "node_type": "leaf"
+                                                                                                            }
+                                                                                                        ]
+                                                                                                    }
+                                                                                                ]
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 6466,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 5634,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [
+                                                                                                    "计划下发成功，等待检查"
+                                                                                                ],
+                                                                                                "behavior_id": 3906,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 4994,
+                                                                                                "node_type": "leaf"
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "node_type": "always_true_node"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "node_type": "sequence_node",
+                                                                            "nodes": [
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 3330,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "node": {
+                                                                                        "check": {
+                                                                                            "args": [],
+                                                                                            "behavior_id": 6594,
+                                                                                            "node_type": "leaf"
+                                                                                        },
+                                                                                        "fail": {
+                                                                                            "node_type": "sequence_node",
+                                                                                            "nodes": [
+                                                                                                {
+                                                                                                    "args": [],
+                                                                                                    "behavior_id": 5570,
+                                                                                                    "node_type": "leaf"
+                                                                                                },
+                                                                                                {
+                                                                                                    "args": [
+                                                                                                        "重新下发计划"
+                                                                                                    ],
+                                                                                                    "behavior_id": 3906,
+                                                                                                    "node_type": "leaf"
+                                                                                                },
+                                                                                                {
+                                                                                                    "args": [],
+                                                                                                    "behavior_id": 4994,
+                                                                                                    "node_type": "leaf"
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        "node_type": "ifelse_node",
+                                                                                        "success": {
+                                                                                            "node_type": "sequence_node",
+                                                                                            "nodes": [
+                                                                                                {
+                                                                                                    "args": [],
+                                                                                                    "behavior_id": 5698,
+                                                                                                    "node_type": "leaf"
+                                                                                                },
+                                                                                                {
+                                                                                                    "args": [
+                                                                                                        "等待启动设备"
+                                                                                                    ],
+                                                                                                    "behavior_id": 3906,
+                                                                                                    "node_type": "leaf"
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        "unknown": null
+                                                                                    },
+                                                                                    "node_type": "always_true_node"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "node_type": "sequence_node",
+                                                                            "nodes": [
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 3266,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "node": {
+                                                                                        "node_type": "sequence_node",
+                                                                                        "nodes": [
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 6530,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 5634,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [
+                                                                                                    "计划下发成功，等待检查"
+                                                                                                ],
+                                                                                                "behavior_id": 3906,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 4994,
+                                                                                                "node_type": "leaf"
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "node_type": "always_true_node"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "node_type": "sequence_node",
+                                                                            "nodes": [
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 3394,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "node": {
+                                                                                        "node_type": "sequence_node",
+                                                                                        "nodes": [
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 7234,
+                                                                                                "node_type": "leaf"
+                                                                                            },
+                                                                                            {
+                                                                                                "args": [],
+                                                                                                "behavior_id": 7298,
+                                                                                                "node_type": "leaf"
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "node_type": "always_true_node"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "node_type": "sequence_node",
+                                                                            "nodes": [
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 3778,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "node": {
+                                                                                        "check": {
+                                                                                            "args": [],
+                                                                                            "behavior_id": 3842,
+                                                                                            "node_type": "leaf"
+                                                                                        },
+                                                                                        "fail": {
+                                                                                            "args": [],
+                                                                                            "behavior_id": 5698,
+                                                                                            "node_type": "leaf"
+                                                                                        },
+                                                                                        "node_type": "ifelse_node",
+                                                                                        "success": {
+                                                                                            "node_type": "sequence_node",
+                                                                                            "nodes": [
+                                                                                                {
+                                                                                                    "node": {
+                                                                                                        "node_type": "sequence_node",
+                                                                                                        "nodes": [
+                                                                                                            {
+                                                                                                                "args": [],
+                                                                                                                "behavior_id": 10946,
+                                                                                                                "node_type": "leaf"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "args": [],
+                                                                                                                "behavior_id": 10754,
+                                                                                                                "node_type": "leaf"
+                                                                                                            }
+                                                                                                        ]
+                                                                                                    },
+                                                                                                    "node_type": "always_true_node"
+                                                                                                },
+                                                                                                {
+                                                                                                    "args": [],
+                                                                                                    "behavior_id": 7490,
+                                                                                                    "node_type": "leaf"
+                                                                                                },
+                                                                                                {
+                                                                                                    "args": [
+                                                                                                        "设备启动完成"
+                                                                                                    ],
+                                                                                                    "behavior_id": 3906,
+                                                                                                    "node_type": "leaf"
+                                                                                                },
+                                                                                                {
+                                                                                                    "args": [],
+                                                                                                    "behavior_id": 4994,
+                                                                                                    "node_type": "leaf"
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        "unknown": {
+                                                                                            "args": [],
+                                                                                            "behavior_id": 3650,
+                                                                                            "node_type": "leaf"
+                                                                                        }
+                                                                                    },
+                                                                                    "node_type": "always_true_node"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "node_type": "sequence_node",
+                                                                            "nodes": [
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 10946,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 10690,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "node": {
+                                                                                        "check": {
+                                                                                            "args": [],
+                                                                                            "behavior_id": 8770,
+                                                                                            "node_type": "leaf"
+                                                                                        },
+                                                                                        "fail": {
+                                                                                            "args": [],
+                                                                                            "behavior_id": 7554,
+                                                                                            "node_type": "leaf"
+                                                                                        },
+                                                                                        "node_type": "ifelse_node",
+                                                                                        "success": {
+                                                                                            "node_type": "sequence_node",
+                                                                                            "nodes": [
+                                                                                                {
+                                                                                                    "args": [],
+                                                                                                    "behavior_id": 4162,
+                                                                                                    "node_type": "leaf"
+                                                                                                },
+                                                                                                {
+                                                                                                    "args": [
+                                                                                                        1
+                                                                                                    ],
+                                                                                                    "behavior_id": 4226,
+                                                                                                    "node_type": "leaf"
+                                                                                                },
+                                                                                                {
+                                                                                                    "node_type": "sequence_node",
+                                                                                                    "nodes": [
+                                                                                                        {
+                                                                                                            "args": [],
+                                                                                                            "behavior_id": 4290,
+                                                                                                            "node_type": "leaf"
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "args": [],
+                                                                                                            "behavior_id": 7554,
+                                                                                                            "node_type": "leaf"
+                                                                                                        }
+                                                                                                    ]
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        "unknown": null
+                                                                                    },
+                                                                                    "node_type": "always_true_node"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 7490,
+                                                                            "node_type": "leaf"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "unknown": null
+                                                            },
+                                                            "node_type": "always_true_node"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "node_type": "sequence_node",
+                                                    "nodes": [
+                                                        {
+                                                            "args": [],
+                                                            "behavior_id": 4354,
+                                                            "node_type": "leaf"
+                                                        },
+                                                        {
+                                                            "node": {
+                                                                "check": {
+                                                                    "args": [
+                                                                        3
+                                                                    ],
+                                                                    "behavior_id": 7170,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "fail": {
+                                                                    "args": [],
+                                                                    "behavior_id": 7490,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "node_type": "ifelse_node",
+                                                                "success": {
+                                                                    "node_type": "sequence_node",
+                                                                    "nodes": [
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 7234,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "args": [
+                                                                                1
+                                                                            ],
+                                                                            "behavior_id": 4226,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "node_type": "sequence_node",
+                                                                            "nodes": [
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 3842,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 7490,
+                                                                                    "node_type": "leaf"
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "unknown": null
+                                                            },
+                                                            "node_type": "always_true_node"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "node_type": "sequence_node",
+                                                    "nodes": [
+                                                        {
+                                                            "args": [],
+                                                            "behavior_id": 4738,
+                                                            "node_type": "leaf"
+                                                        },
+                                                        {
+                                                            "node": {
+                                                                "check": {
+                                                                    "args": [
+                                                                        3
+                                                                    ],
+                                                                    "behavior_id": 7170,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "fail": {
+                                                                    "args": [],
+                                                                    "behavior_id": 7490,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                "node_type": "ifelse_node",
+                                                                "success": {
+                                                                    "node_type": "sequence_node",
+                                                                    "nodes": [
+                                                                        {
+                                                                            "args": [],
+                                                                            "behavior_id": 4162,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "args": [
+                                                                                1
+                                                                            ],
+                                                                            "behavior_id": 4226,
+                                                                            "node_type": "leaf"
+                                                                        },
+                                                                        {
+                                                                            "node_type": "sequence_node",
+                                                                            "nodes": [
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 4290,
+                                                                                    "node_type": "leaf"
+                                                                                },
+                                                                                {
+                                                                                    "args": [],
+                                                                                    "behavior_id": 7490,
+                                                                                    "node_type": "leaf"
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "unknown": null
+                                                            },
+                                                            "node_type": "always_true_node"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "node_type": "sequence_node",
+                    "nodes": [
+                        {
+                            "args": [],
+                            "behavior_id": 7042,
+                            "node_type": "leaf"
+                        },
+                        {
+                            "node": {
+                                "node_type": "sequence_node",
+                                "nodes": [
+                                    {
+                                        "args": [],
+                                        "behavior_id": 7682,
+                                        "node_type": "leaf"
+                                    },
+                                    {
+                                        "args": [],
+                                        "behavior_id": 4994,
+                                        "node_type": "leaf"
+                                    },
+                                    {
+                                        "node_type": "parallel_node",
+                                        "nodes": [
+                                            {
+                                                "node_type": "sequence_node",
+                                                "nodes": [
+                                                    {
+                                                        "args": [],
+                                                        "behavior_id": 4034,
+                                                        "node_type": "leaf"
+                                                    },
+                                                    {
+                                                        "check": {
+                                                            "args": [],
+                                                            "behavior_id": 8834,
+                                                            "node_type": "leaf"
+                                                        },
+                                                        "fail": {
+                                                            "node_type": "sequence_node",
+                                                            "nodes": [
+                                                                {
+                                                                    "args": [],
+                                                                    "behavior_id": 6146,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                {
+                                                                    "args": [
+                                                                        "设备停止"
+                                                                    ],
+                                                                    "behavior_id": 3906,
+                                                                    "node_type": "leaf"
+                                                                }
+                                                            ]
+                                                        },
+                                                        "node_type": "ifelse_node",
+                                                        "success": {
+                                                            "node_type": "sequence_node",
+                                                            "nodes": [
+                                                                {
+                                                                    "args": [],
+                                                                    "behavior_id": 6210,
+                                                                    "node_type": "leaf"
+                                                                },
+                                                                {
+                                                                    "args": [
+                                                                        "计量中"
+                                                                    ],
+                                                                    "behavior_id": 3906,
+                                                                    "node_type": "leaf"
+                                                                }
+                                                            ]
+                                                        },
+                                                        "unknown": null
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "args": [],
+                                                "behavior_id": 5058,
+                                                "node_type": "leaf"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "node_type": "always_true_node"
+                        }
+                    ]
+                },
+                {
+                    "node_type": "sequence_node",
+                    "nodes": [
+                        {
+                            "args": [],
+                            "behavior_id": 4482,
+                            "node_type": "leaf"
+                        },
+                        {
+                            "node": {
+                                "check": {
+                                    "args": [],
+                                    "behavior_id": 8770,
+                                    "node_type": "leaf"
+                                },
+                                "fail": {
+                                    "node_type": "sequence_node",
+                                    "nodes": [
+                                        {
+                                            "args": [],
+                                            "behavior_id": 7426,
+                                            "node_type": "leaf"
+                                        },
+                                        {
+                                            "args": [],
+                                            "behavior_id": 7554,
+                                            "node_type": "leaf"
+                                        }
+                                    ]
+                                },
+                                "node_type": "ifelse_node",
+                                "success": {
+                                    "args": [],
+                                    "behavior_id": 3650,
+                                    "node_type": "leaf"
+                                },
+                                "unknown": {
+                                    "args": [],
+                                    "behavior_id": 3650,
+                                    "node_type": "leaf"
+                                }
+                            },
+                            "node_type": "always_true_node"
+                        }
+                    ]
+                },
+                {
+                    "node_type": "sequence_node",
+                    "nodes": [
+                        {
+                            "args": [],
+                            "behavior_id": 4546,
+                            "node_type": "leaf"
+                        },
+                        {
+                            "node": {
+                                "check": {
+                                    "args": [],
+                                    "behavior_id": 8770,
+                                    "node_type": "leaf"
+                                },
+                                "fail": {
+                                    "node_type": "sequence_node",
+                                    "nodes": [
+                                        {
+                                            "args": [],
+                                            "behavior_id": 4674,
+                                            "node_type": "leaf"
+                                        }
+                                    ]
+                                },
+                                "node_type": "ifelse_node",
+                                "success": {
+                                    "args": [],
+                                    "behavior_id": 3650,
+                                    "node_type": "leaf"
+                                },
+                                "unknown": {
+                                    "args": [],
+                                    "behavior_id": 3650,
+                                    "node_type": "leaf"
+                                }
+                            },
+                            "node_type": "always_true_node"
+                        }
+                    ]
+                },
+                {
+                    "node_type": "sequence_node",
+                    "nodes": [
+                        {
+                            "args": [],
+                            "behavior_id": 4610,
+                            "node_type": "leaf"
+                        },
+                        {
+                            "node": {
+                                "node_type": "sequence_node",
+                                "nodes": [
+                                    {
+                                        "args": [],
+                                        "behavior_id": 7618,
+                                        "node_type": "leaf"
+                                    }
+                                ]
+                            },
+                            "node_type": "always_true_node"
+                        }
+                    ]
+                },
+                {
+                    "node_type": "sequence_node",
+                    "nodes": [
+                        {
+                            "args": [],
+                            "behavior_id": 8514,
+                            "node_type": "leaf"
+                        },
+                        {
+                            "node": {
+                                "node_type": "sequence_node",
+                                "nodes": [
+                                    {
+                                        "args": [],
+                                        "behavior_id": 7810,
+                                        "node_type": "leaf"
+                                    },
+                                    {
+                                        "args": [],
+                                        "behavior_id": 8130,
+                                        "node_type": "leaf"
+                                    },
+                                    {
+                                        "args": [],
+                                        "behavior_id": 7746,
+                                        "node_type": "leaf"
+                                    }
+                                ]
+                            },
+                            "node_type": "always_true_node"
+                        }
+                    ]
+                },
+                {
+                    "node_type": "sequence_node",
+                    "nodes": [
+                        {
+                            "args": [],
+                            "behavior_id": 11010,
+                            "node_type": "leaf"
+                        },
+                        {
+                            "node": {
+                                "check": {
+                                    "args": [],
+                                    "behavior_id": 8770,
+                                    "node_type": "leaf"
+                                },
+                                "fail": {
+                                    "args": [],
+                                    "behavior_id": 3650,
+                                    "node_type": "leaf"
+                                },
+                                "node_type": "ifelse_node",
+                                "success": {
+                                    "node_type": "sequence_node",
+                                    "nodes": [
+                                        {
+                                            "args": [],
+                                            "behavior_id": 10882,
+                                            "node_type": "leaf"
+                                        },
+                                        {
+                                            "args": [],
+                                            "behavior_id": 10434,
+                                            "node_type": "leaf"
+                                        }
+                                    ]
+                                },
+                                "unknown": null
+                            },
+                            "node_type": "always_true_node"
+                        }
+                    ]
+                }
             ]
-          },
-          {
-            "node_name":"success",
-            "child":[
-              {
-                "node_name":"success1",
-                "child":[]
-              },
-              {
-                "node_name":"success2",
-                "child":[]
-              }
-            ]
-          },
-          {
-            "node_name":"fail",
-            "child":[]
-          }
-        ]
-      }
-    ]
+        },
+        "node_type": "root"
+  },
+  "baseTree0":{
+    "node_type":"root",
+    "node":{
+      "node_type":"selector_node",
+      "nodes":[
+        {
+          "node_type":"sequence_node",
+          "nodes":[
+            {
+              "node_type":"leaf",
+              "args":[],
+              "behavior_id":7042
+            },
+            {
+              "node_type":"leaf",
+              "args":[],
+              "behavior_id":7682
+            },
+            {
+              "node_type":"leaf",
+              "args":[],
+              "behavior_id":4994
+            }
+          ]
+        }
+      ]
+    }
   }
 }
