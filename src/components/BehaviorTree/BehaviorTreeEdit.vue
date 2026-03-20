@@ -4,6 +4,8 @@
   <el-button type="primary" @click="setEdgesType('step')">阶梯</el-button>
   <el-button type="primary" @click="setEdgesType('bezier')">贝塞尔</el-button>
   <el-button type="primary" @click="setEdgesType('straight')">直线</el-button>
+  <el-button type="primary" @click="unfold()">全部展开</el-button>
+  <el-button type="primary" @click="fold()">全部收起</el-button>
 
   <VueFlow 
     v-model:edges="edges"
@@ -40,13 +42,12 @@
     <template #node-leaf>
       <leaf-node />
     </template>
-    <!-- <InteractionControls /> -->
     <Background />
   </VueFlow>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { Background } from '@vue-flow/background'
 import { MarkerType, VueFlow, useVueFlow } from '@vue-flow/core'
 
@@ -62,6 +63,13 @@ import parallelNode from './BehaviorTreeEditChile/nodes/ParallelNode.vue'
 import leafNode from './BehaviorTreeEditChile/nodes/LeafNode.vue'
 
 import baseData from '@/assets/json/baseData.json'
+
+// 生成唯一节点ID（解决Date.now()重复问题）
+let nodeIndex = 0
+const generateUniqueNodeId = (level, path) => {
+  nodeIndex++
+  return `node-${level}-${path}-${nodeIndex}`
+}
 
 export default {
   name: 'BehaviorTreeEdit',
@@ -80,7 +88,6 @@ export default {
     leafNode,
   },
   setup() {
-    // 1. 修复：ref变量用const声明（仅引用不可变，值可改）
     const position = ref({ x: 0, y: 0, zoom: 1 })
     const { nodesDraggable, setViewport, getViewport, onMoveEnd } = useVueFlow()
     
@@ -89,7 +96,6 @@ export default {
     })
     nodesDraggable.value = false
 
- 
     return {
       position,
       setViewport,
@@ -103,109 +109,93 @@ export default {
       MarkerType,
       tree: {},
       xPointIndex: 0,
-      // 修复：data中无需ref，Vue自动做响应式
       nodes: [],
       edges: [],
+      // 新增：临时存储边数据，避免直接操作v-model绑定的edges
+      tempEdges: [],
     }
   },
   mounted() {
+    this.addIsUnfoldToTree(baseData.baseTree, true)
     this.init()
+    this.edges = [...this.tempEdges]
   },
   methods: {
-    setEdgesType(type){
+    // 全部展开
+    async unfold() {
+      nodeIndex = 0
+      this.nodes = []
+      this.edges = []
+      this.tempEdges = []
+      this.addIsUnfoldToTree(baseData.baseTree, true)
+      await this.init()
+      await nextTick()
+      this.edges = [...this.tempEdges]
+      console.log('全部展开后节点数据:', this.nodes.length)
+      console.log('全部展开后边数据:', this.edges.length)
+    },
+    // 全部收起
+    async fold() {
+      nodeIndex = 0
+      this.nodes = []
+      this.edges = []
+      this.tempEdges = []
+      this.addIsUnfoldToTree(baseData.baseTree, false)
+      await this.init()
+      await nextTick()
+      this.edges = [...this.tempEdges]
+    },
+    // 初始化节点展开状态（深拷贝避免修改原数据）
+    addIsUnfoldToTree(node, bool = false) {
+      if (!node || !node.node_type) return
+      node.isUnfold = bool
+      if (node.node) {
+        this.addIsUnfoldToTree(node.node, bool)
+      } else if (node.nodes) {
+        node.nodes.forEach(child => this.addIsUnfoldToTree(child, bool))
+      } else if (node.check || node.success || node.fail || node.unknown) {
+        if (node.check) this.addIsUnfoldToTree(node.check, bool)
+        if (node.success) this.addIsUnfoldToTree(node.success, bool)
+        if (node.fail) this.addIsUnfoldToTree(node.fail, bool)
+        if (node.unknown) this.addIsUnfoldToTree(node.unknown, bool)
+      }
+    },
+    // 修改连线样式（更新所有边的类型）
+    setEdgesType(type) {
       this.edgesType = type
-      this.edges.forEach(edge => {
-        edge.type = type
-      })
+      this.edges = this.edges.map(edge => ({ ...edge, type }))
     },
     async init() {
       this.tree = baseData.baseTree
+      this.tempEdges = []
       this.traverseTree(this.tree)
     },
-    generateEdges(treeNode, nodes, parentSourceHandle = null) {
+    // 遍历树生成节点和边（核心：边存入临时数组）
+    traverseTree(treeNode, level = 0, startX = 0, path = '') {
       if (!treeNode || !treeNode.node_type) {
-        return
+        return { node: null, nextX: startX }
       }
+
+      // 修复1：使用稳定的唯一ID
+      const nodeId = generateUniqueNodeId(level, path)
+      const nodeType = this.getNodeType(treeNode.node_type)
+      const y = level === 1 ? 200 : 100 + level * 150
 
       let children = []
-      if (treeNode.node) {
-        children = [treeNode.node]
-      } else if (treeNode.nodes) {
-        children = treeNode.nodes
-      } else if (treeNode.check || treeNode.success || treeNode.fail || treeNode.unknown) {
-        if (treeNode.check) children.push({ ...treeNode.check, handle: 'check' })
-        if (treeNode.success) children.push({ ...treeNode.success, handle: 'success' })
-        if (treeNode.fail) children.push({ ...treeNode.fail, handle: 'fail' })
-        if (treeNode.unknown) children.push({ ...treeNode.unknown, handle: 'unknown' })
-      }
-
-      const parentId = `node-${0}-${0}`
-      const nodeType = this.getNodeType(treeNode.node_type)
-
-      children.forEach((child) => {
-        if (!child.node_type) {
-          return
+      if (treeNode.isUnfold) {
+        if (treeNode.node) {
+          children = [treeNode.node]
+        } else if (treeNode.nodes) {
+          children = treeNode.nodes
+        } else if (treeNode.check || treeNode.success || treeNode.fail || treeNode.unknown) {
+          if (treeNode.check) children.push(treeNode.check)
+          if (treeNode.success) children.push(treeNode.success)
+          if (treeNode.fail) children.push(treeNode.fail)
+          if (treeNode.unknown) children.push(treeNode.unknown)
         }
-
-        const childNodeId = this.findNodeId(child, nodes)
-        if (childNodeId) {
-          const sourceHandle = parentSourceHandle || (nodeType === 'ifElseNode' ? child.handle : undefined)
-          const edge = {
-            id: `e${parentId}-${childNodeId}`,
-            source: parentId,
-            target: childNodeId,
-            // 修复：绑定响应式的edgesType
-            type: this.edgesType,
-            sourceHandle: sourceHandle || undefined
-          }
-          this.edges.push(edge)
-        }
-
-        this.generateEdges(child, nodes)
-      })
-    },
-    findNodeId(treeNode, nodes) {
-      if (!treeNode || !treeNode.node_type) {
-        return null
       }
 
-      const nodeType = this.getNodeType(treeNode.node_type)
-      const label = this.getNodeLabel(treeNode.node_type)
-
-      if (treeNode.node_type === 'leaf') {
-        return nodes.find(node => 
-          node.type === nodeType && 
-          node.data.behaviorId === treeNode.behavior_id
-        )?.id || null
-      }
-
-      return nodes.find(node => 
-        node.type === nodeType && 
-        node.data.label === label
-      )?.id || null
-    },
-    traverseTree(treeNode, level = 0, startX = 0) {
-      if (!treeNode || !treeNode.node_type) {
-        return { nodes: [], nextX: startX }
-      }
-
-      // 修复：节点ID生成规则（避免重复）
-      const nodeId = `node-${Date.now()}-${level}-${startX}`
-      const nodeType = this.getNodeType(treeNode.node_type)
-      const y = 100 + level * 150
-
-      let children = []
-      if (treeNode.node) {
-        children = [treeNode.node]
-      } else if (treeNode.nodes) {
-        children = treeNode.nodes
-      } else if (treeNode.check || treeNode.success || treeNode.fail || treeNode.unknown) {
-        if (treeNode.check) children.push(treeNode.check)
-        if (treeNode.success) children.push(treeNode.success)
-        if (treeNode.fail) children.push(treeNode.fail)
-        if (treeNode.unknown) children.push(treeNode.unknown)
-      }
-
+      // 无子节点的情况
       if (children.length === 0) {
         const node = {
           id: nodeId,
@@ -224,30 +214,37 @@ export default {
       let sourceHandle = null
       let sourceHandleIndex = 1
 
-      children.forEach((child) => {
-        const result = this.traverseTree(child, level + 1, currentX)
+      // 遍历子节点生成边
+      children.forEach((child, idx) => {
+        const childPath = `${path}-${idx}`
+        const result = this.traverseTree(child, level + 1, currentX, childPath)
         
-        // 优化：switch简化条件判断
-        if (treeNode.node_type === 'ifelse_node') {
-          switch (sourceHandleIndex) {
-            case 1: sourceHandle = 'if-else-check'; break
-            case 2: sourceHandle = 'if-else-success'; break
-            case 3: sourceHandle = 'if-else-fail'; break
-            case 4: sourceHandle = 'if-else-error'; break
-            default: sourceHandle = null
+        if (result.node) {
+          // ifelse节点处理sourceHandle
+          if (treeNode.node_type === 'ifelse_node') {
+            switch (sourceHandleIndex) {
+              case 1: sourceHandle = 'if-else-check'; break
+              case 2: sourceHandle = 'if-else-success'; break
+              case 3: sourceHandle = 'if-else-fail'; break
+              case 4: sourceHandle = 'if-else-error'; break
+              default: sourceHandle = null
+            }
           }
+          sourceHandleIndex++
+
+          // 修复2：边存入临时数组，而非直接push到v-model的edges
+          this.tempEdges.push({
+            id: `e${nodeId}-${result.node.id}`,
+            source: nodeId,
+            target: result.node.id,
+            sourceHandle: sourceHandle || undefined,
+            type: this.edgesType
+          })
+          currentX = result.nextX
         }
-        sourceHandleIndex++
-        this.edges.push({
-          id: `e${nodeId}-${result.node.id}`,
-          source: nodeId,
-          target: result.node.id,
-          sourceHandle: sourceHandle || undefined,
-          type: this.edgesType
-        })
-        currentX = result.nextX
       })
 
+      // 创建当前节点
       const node = {
         id: nodeId,
         type: nodeType,
@@ -257,10 +254,11 @@ export default {
       if (treeNode.node_type === 'leaf') {
         node.data.behaviorId = treeNode.behavior_id
       }
-
       this.nodes.push(node)
+
       return { node: node, nextX: currentX }
     },
+    // 节点类型映射
     getNodeType(nodeType) {
       const typeMap = {
         'root': 'root',
@@ -276,6 +274,7 @@ export default {
       }
       return typeMap[nodeType] || 'root'
     },
+    // 节点标签映射
     getNodeLabel(nodeType) {
       const labelMap = {
         'root': '根节点',
@@ -291,9 +290,10 @@ export default {
       }
       return labelMap[nodeType] || nodeType
     },
+    // 计算节点X坐标
     calcXPoint(nodeType, X) {
       if (nodeType === 'leaf') return X - 48
-      if (nodeType === 'root') return X - 48
+      if (nodeType === 'root') return X - 56
       if (nodeType === 'always_true_node') return X - 56
       if (nodeType === 'loop_bool_node') return X - 64
       if (nodeType === 'loop_num_node') return X - 64
@@ -304,10 +304,12 @@ export default {
       if (nodeType === 'ifelse_node') return X - 80
       return X
     },
+    // 打印树信息
     printTree() {
       console.log('当前连线类型:', this.edgesType)
-      // console.log('生成的节点:', this.nodes)
-      // console.log('生成的边:', this.edges)
+      console.log('生成的节点数:', this.nodes.length)
+      console.log('生成的边数:', this.edges.length)
+      console.log('当前视图位置:', this.position.value)
     }
   }
 }
