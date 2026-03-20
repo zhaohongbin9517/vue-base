@@ -131,8 +131,6 @@ export default {
       await this.init()
       await nextTick()
       this.edges = [...this.tempEdges]
-      console.log('全部展开后节点数据:', this.nodes.length)
-      console.log('全部展开后边数据:', this.edges.length)
     },
     // 全部收起
     async fold() {
@@ -145,7 +143,7 @@ export default {
       await nextTick()
       this.edges = [...this.tempEdges]
     },
-    // 初始化节点展开状态（深拷贝避免修改原数据）
+    // 初始化节点展开状态
     addIsUnfoldToTree(node, bool = false) {
       if (!node || !node.node_type) return
       node.isUnfold = bool
