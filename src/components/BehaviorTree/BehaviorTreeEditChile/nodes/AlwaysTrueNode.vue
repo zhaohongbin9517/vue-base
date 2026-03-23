@@ -7,15 +7,24 @@ export default {
     Handle,
     NodeActionButtons
   },
-  setup() {
+  props: {
+    data: {
+      type: Object,
+      default: () => null
+    }
+  },
+  data(){
     const handleConnectable = (node, connectedEdges) => {
-      // only allow connections if the node has less than 3 connections
       return connectedEdges.length < 2
     }
-
     return {
       handleConnectable,
       Position
+    }
+  },
+  methods: {
+    collapseExpand() {
+      this.$emit('collapse-expand',this.data.node_id)
     }
   }
 }
@@ -26,6 +35,9 @@ export default {
         <Handle type="target" :position="Position.Top" :connectable="handleConnectable" />
         <h1>永真节点</h1>
         <Handle type="source" :position="Position.Bottom" :connectable="handleConnectable" />
-        <NodeActionButtons />
+        <NodeActionButtons 
+        @collapse-expand="collapseExpand"
+        :isCollapsed="data.node_data.isUnfold"
+        />
     </div>
 </template>

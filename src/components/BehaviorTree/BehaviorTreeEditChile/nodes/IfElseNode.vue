@@ -1,21 +1,3 @@
-<script>
-import { Handle, Position } from '@vue-flow/core'
-import NodeActionButtons from './NodePublicTemp/NodeActionButtons.vue'
-
-export default {
-  name: 'IfElseNode',
-  components: {
-    Handle,
-    NodeActionButtons
-  },
-  setup() {
-    return {
-      Position
-    }
-  }
-}
-</script>
-
 <template>
     <div class="w-40 h-12 border-2 border-blue-500 rounded-lg flex items-center justify-center">
         <Handle type="target" :position="Position.Top" />
@@ -30,6 +12,38 @@ export default {
 
         <!-- 灰色 handle -->
         <Handle id="if-else-error" type="source" :position="Position.Right" class="!top-[90%] !bg-gray-400" />
-        <NodeActionButtons />
+        <NodeActionButtons 
+        @collapse-expand="collapseExpand"
+        :isCollapsed="data.node_data.isUnfold"
+        />
     </div>
 </template>
+
+<script>
+import { Handle, Position } from '@vue-flow/core'
+import NodeActionButtons from './NodePublicTemp/NodeActionButtons.vue'
+
+export default {
+  name: 'IfElseNode',
+  components: {
+    Handle,
+    NodeActionButtons
+  },
+  props: {
+    data: {
+      type: Object,
+      default: () => null
+    }
+  },
+  data(){
+    return {
+      Position
+    }
+  },
+  methods: {
+    collapseExpand() {
+      this.$emit('collapse-expand',this.data.node_id)
+    }
+  }
+}
+</script>

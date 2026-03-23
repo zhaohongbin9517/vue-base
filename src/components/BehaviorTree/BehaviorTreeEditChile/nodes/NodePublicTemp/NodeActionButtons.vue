@@ -18,22 +18,22 @@
       @click="collapseExpand"
     >
       <el-icon>
-        <Expand v-if="isCollapsed" />
-        <Fold v-else />
+        <Plus v-if="!isCollapsed" />
+        <Minus v-else />
       </el-icon>
     </el-button>
   </div>
 </template>
 
 <script>
-import { Delete, Expand, Fold } from '@element-plus/icons-vue'
+import { Delete, Plus,Minus } from '@element-plus/icons-vue'
 
 export default {
   name: 'NodeActionButtons',
   components: {
     Delete,
-    Expand,
-    Fold
+    Plus,
+    Minus
   },
   props: {
     // 是否可以删除
@@ -43,6 +43,11 @@ export default {
     },
     // 是否可以缩放
     isCanShrink: {
+      type: Boolean,
+      default: true
+    },
+    // 是否已折叠
+    isCollapsed: {
       type: Boolean,
       default: true
     }

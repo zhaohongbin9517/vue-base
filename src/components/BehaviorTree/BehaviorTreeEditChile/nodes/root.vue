@@ -6,9 +6,10 @@
     <!-- Vue Flow 内置的底部连线手柄 -->
     <Handle type="source" :position="Position.Bottom" />
     <NodeActionButtons 
-      :isCanDelete=false
-      :isCanShrink=true
       @collapse-expand="collapseExpand"
+      :isCanDelete="false"
+      :isCanShrink="true"
+      :isCollapsed="data.node_data.isUnfold"
     />
   </div>
 </template>
@@ -25,7 +26,7 @@ export default {
   props: {
     data: {
       type: Object,
-      required: true
+      default: () => null
     }
   },
   data(){
@@ -35,7 +36,8 @@ export default {
   },
   methods: {
     collapseExpand() {
-      console.log(this.data)
+      console.log('data:',this.data)
+      this.$emit('collapse-expand',this.data.node_id)
     }
   }
 }
