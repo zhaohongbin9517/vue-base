@@ -11,8 +11,8 @@
   <VueFlow 
     v-model:edges="edges"
     v-model:nodes="nodes"
-    :min-zoom="0.5"
-    :max-zoom="0.5"
+    :min-zoom="0.75"
+    :max-zoom="0.75"
     @viewport-change="syncFlowToViewport"
     fit-view-on-init class="behavior-tree-edit"> 
 
@@ -46,6 +46,9 @@
     <template #node-leaf>
       <leaf-node />
     </template>
+    <template #node-nullNode>
+      <null-node />
+    </template>
     <Background />
     <!-- <InteractionControls /> -->
      <MiniMap />
@@ -67,6 +70,7 @@ import sequenceNode from './BehaviorTreeEditChile/nodes/SequenceNode.vue'
 import negationNode from './BehaviorTreeEditChile/nodes/NegationNode.vue'
 import parallelNode from './BehaviorTreeEditChile/nodes/ParallelNode.vue'
 import leafNode from './BehaviorTreeEditChile/nodes/LeafNode.vue'
+import nullNode from './BehaviorTreeEditChile/nodes/NullNode.vue'
 // import InteractionControls from './BehaviorTreeEditChile/InteractionControls.vue'
 import { MiniMap } from '@vue-flow/minimap'
 
@@ -95,10 +99,11 @@ export default {
     parallelNode,
     leafNode,
     // InteractionControls,
-    MiniMap
+    MiniMap,
+    nullNode
   },
   setup() {
-    const position = ref({ x: 0, y: 0, zoom: 0.5 })
+    const position = ref({ x: 0, y: 0, zoom: 0.75 })
     const { nodesDraggable, setViewport, getViewport,onMoveEnd} = useVueFlow()
     
     onMoveEnd(() => {
@@ -127,7 +132,7 @@ export default {
       // 新增：临时存储边数据，避免直接操作v-model绑定的edges
       tempEdges: [],
       // 当前画布位置
-      viewport: { x: 0,    y: 0,  zoom: 0.5 },
+      viewport: { x: 0,    y: 0,  zoom: 0.75 },
 
       flowMethods: null
     }
@@ -149,7 +154,7 @@ export default {
     initViewport(){
       const containerEl = document.querySelector('.vue-flow')
       this.flowMethods.setViewport({
-        x: -this.rootNodePosition.x/2 + containerEl.clientWidth/2, 
+        x: -this.rootNodePosition.x/1.27 + containerEl.clientWidth/1.27, 
         y: this.rootNodePosition.y, 
         zoom: this.viewport.zoom
       })
@@ -199,7 +204,7 @@ export default {
       } else if (node.nodes) {
         node.nodes.forEach(child => this.addIsUnfoldToTree(child, bool))
       } else if (node.check || node.success || node.fail || node.unknown) {
-        if (node.check) this.addIsUnfoldToTree(node.check, bool)
+        if (node.check) this.addIsUnfoldToTree(node.check, bool) 
         if (node.success) this.addIsUnfoldToTree(node.success, bool)
         if (node.fail) this.addIsUnfoldToTree(node.fail, bool)
         if (node.unknown) this.addIsUnfoldToTree(node.unknown, bool)
@@ -210,6 +215,7 @@ export default {
       this.edgesType = type
       this.edges = this.edges.map(edge => ({ ...edge, type }))
     },
+    //初始化
     async init() {
       this.tree = baseData.baseTree
       this.tempEdges = []
@@ -231,12 +237,15 @@ export default {
         if (treeNode.node) {
           children = [treeNode.node]
         } else if (treeNode.nodes) {
+          // 需要加一个null_node节点
+          treeNode.nodes.filter(child => child.node_type !== 'null_node')
           children = treeNode.nodes
-        } else if (treeNode.check || treeNode.success || treeNode.fail || treeNode.unknown) {
-          if (treeNode.check) children.push(treeNode.check)
-          if (treeNode.success) children.push(treeNode.success)
-          if (treeNode.fail) children.push(treeNode.fail)
-          if (treeNode.unknown) children.push(treeNode.unknown)
+          children.push({node_type: 'null_node'})
+        } else if (treeNode.node_type === 'ifelse_node') {
+          children.push(treeNode.check ? treeNode.check : {node_type: 'null_node'})
+          children.push(treeNode.success ? treeNode.success : {node_type: 'null_node'})
+          children.push(treeNode.fail ? treeNode.fail : {node_type: 'null_node'})
+          children.push(treeNode.unknown ? treeNode.unknown : {node_type: 'null_node'})
         }
       }
 
@@ -245,8 +254,12 @@ export default {
         const node = {
           id: nodeId,
           type: nodeType,
+          label: this.getNodeLabel(treeNode.node_type), 
           position: { x: this.calcXPoint(treeNode.node_type, startX), y },
-          data: { label: this.getNodeLabel(treeNode.node_type) }
+          data: { 
+            node_id : nodeId,
+            node_data: treeNode 
+          }
         }
         if (treeNode.node_type === 'leaf') {
           node.data.behaviorId = treeNode.behavior_id
@@ -279,15 +292,7 @@ export default {
               default: sourceHandle = null
             }
           }
-          // let canChangeEdgesType = true
-          // let localEdgesType = this.edgesType
-          // if(treeNode.node_type === 'ifelse_node' && (sourceHandleIndex === 2 || sourceHandleIndex === 3)){
-          //   canChangeEdgesType = false
-          //   localEdgesType = 'straight'
-          // }
-          // console.log('sourceHandleIndex', localEdgesType)
           sourceHandleIndex++
-          // 修复2：边存入临时数组，而非直接push到v-model的edges
           this.tempEdges.push({
             id: `e${nodeId}-${result.node.id}`,
             source: nodeId,
@@ -303,8 +308,11 @@ export default {
       const node = {
         id: nodeId,
         type: nodeType,
+        label: this.getNodeLabel(treeNode.node_type), 
         position: { x: this.calcXPoint(treeNode.node_type, (startX - 150 + currentX) / 2), y },
-        data: { label: this.getNodeLabel(treeNode.node_type) }
+        data: { 
+          node_id : nodeId,
+          node_data: treeNode }
       }
       if (treeNode.node_type === 'leaf') {
         node.data.behaviorId = treeNode.behavior_id
@@ -330,6 +338,7 @@ export default {
         'sequence_node': 'sequenceNode',
         'negation_node': 'negationNode',
         'parallel_node': 'parallelNode',
+        'null_node': 'nullNode',
         'leaf': 'leaf'
       }
       return typeMap[nodeType] || 'root'
@@ -352,7 +361,8 @@ export default {
     },
     // 计算节点X坐标
     calcXPoint(nodeType, X) {
-      if (nodeType === 'leaf') return X - 48
+      if (nodeType === 'leaf') return X - 56
+      if (nodeType === 'null_node') return X - 48
       if (nodeType === 'root') return X - 56
       if (nodeType === 'always_true_node') return X - 56
       if (nodeType === 'loop_bool_node') return X - 64
@@ -370,11 +380,6 @@ export default {
       // console.log('生成的节点数:', this.nodes.length)
       // console.log('生成的边数:', this.edges.length)
       // console.log('当前视图位置:', this.position.value)
-      console.log('this.rootNodePosition',this.rootNodePosition)
-      console.log('this.viewport',this.viewport)
-      const containerEl = document.querySelector('.vue-flow')
-      console.log('this.containerEl',containerEl.clientWidth )
-      console.log('this.containerEl',containerEl.clientHeight  )
     }
   }
 }

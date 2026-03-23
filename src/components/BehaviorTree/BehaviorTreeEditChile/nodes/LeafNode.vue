@@ -1,15 +1,17 @@
 <script>
 import { Handle, Position } from '@vue-flow/core'
+import NodeActionButtons from './NodePublicTemp/NodeActionButtons.vue'
 
 export default {
   name: 'LeafNode',
   components: {
-    Handle
+    Handle,
+    NodeActionButtons
   },
   props: {
     label: {
       type: String,
-      default: '叶子节点'
+      default: ''
     }
   },
   setup() {
@@ -26,9 +28,13 @@ export default {
 </script>
 
 <template>
-    <div class="w-24 h-12 border-2 border-green-500 rounded-lg flex items-center justify-center">
+    <div class="w-28 h-12 border-2 border-green-500 rounded-lg flex items-center justify-center">
         <Handle type="target" :position="Position.Top" />
         <h1 class="bg-transparent">{{label}}</h1>
+        <NodeActionButtons
+          :isCanDelete=true
+          :isCanShrink=false
+        />
     </div>
 </template>
 

@@ -1,6 +1,7 @@
 <template>
   <div class="node-action-buttons">
     <el-button
+      v-if="isCanDelete"
       size="small"
       circle
       class="absolute top-1 right-1 p-0.5 icon-delete-btn"
@@ -10,12 +11,14 @@
     </el-button>
 
     <el-button
+      v-if="isCanShrink"
       size="small"
       circle
       class="absolute bottom-1 right-1 p-0.5 icon-shrink-btn"
+      @click="collapseExpand"
     >
       <el-icon>
-        <Expand v-if=false />
+        <Expand v-if="isCollapsed" />
         <Fold v-else />
       </el-icon>
     </el-button>
@@ -32,11 +35,33 @@ export default {
     Expand,
     Fold
   },
+  props: {
+    // 是否可以删除
+    isCanDelete: {
+      type: Boolean,
+      default: true
+    },
+    // 是否可以缩放
+    isCanShrink: {
+      type: Boolean,
+      default: true
+    }
+  },
   setup() {
     return {
       handleDelete: () => {
         console.log('Delete button clicked')
       }
+    }
+  },
+  methods: {
+    // 处理保存配置
+    handleSave() {
+      this.$emit('save', this.formData)
+    },
+    // 处理缩放展开
+    collapseExpand() {
+      this.$emit('collapse-expand')
     }
   }
 }

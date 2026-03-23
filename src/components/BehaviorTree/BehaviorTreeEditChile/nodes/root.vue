@@ -5,7 +5,11 @@
     <h2>根节点</h2>
     <!-- Vue Flow 内置的底部连线手柄 -->
     <Handle type="source" :position="Position.Bottom" />
-    <NodeActionButtons />
+    <NodeActionButtons 
+      :isCanDelete=false
+      :isCanShrink=true
+      @collapse-expand="collapseExpand"
+    />
   </div>
 </template>
 <script>
@@ -18,9 +22,20 @@ export default {
       Handle,
       NodeActionButtons
   },
-  setup() {
+  props: {
+    data: {
+      type: Object,
+      required: true
+    }
+  },
+  data(){
     return {
       Position
+    }
+  },
+  methods: {
+    collapseExpand() {
+      console.log(this.data)
     }
   }
 }
