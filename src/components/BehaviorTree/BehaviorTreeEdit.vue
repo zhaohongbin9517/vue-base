@@ -11,8 +11,8 @@
   <VueFlow 
     v-model:edges="edges"
     v-model:nodes="nodes"
-    :min-zoom="0.75"
-    :max-zoom="0.75"
+    :min-zoom="1"
+    :max-zoom="1"
     @viewport-change="syncFlowToViewport"
     fit-view-on-init class="behavior-tree-edit"> 
 
@@ -21,66 +21,77 @@
       <root-node 
       :data="args.data || {}" 
       @collapse-expand="collapseExpand"
+      @delete-node="deleteNode"
       />
     </template>
     <template #node-alwaysTrueNode="args">
       <always-true-node 
       :data="args.data || {}" 
       @collapse-expand="collapseExpand"
+      @delete-node="deleteNode"
       />
     </template>
     <template #node-ifElseNode="args">
       <if-else-node 
       :data="args.data || {}" 
       @collapse-expand="collapseExpand"
+      @delete-node="deleteNode"
       />
     </template>
     <template #node-loopBoolNode="args">
       <loop-bool-node 
       :data="args.data || {}" 
       @collapse-expand="collapseExpand"
+      @delete-node="deleteNode"
       />
     </template>
     <template #node-loopNumNode="args">
       <loop-num-node 
       :data="args.data || {}" 
       @collapse-expand="collapseExpand"
+      @delete-node="deleteNode"
       />
     </template>
     <template #node-selectorNode="args">
       <selector-node 
       :data="args.data || {}"  
       @collapse-expand="collapseExpand"
+      @delete-node="deleteNode"
       />
     </template>
     <template #node-sequenceNode="args">
       <sequence-node 
       :data="args.data || {}" 
       @collapse-expand="collapseExpand"
+      @delete-node="deleteNode"
       />
     </template>
     <template #node-negationNode="args">
       <negation-node 
       :data="args.data || {}" 
       @collapse-expand="collapseExpand"
+      @delete-node="deleteNode"
       />
     </template>
     <template #node-parallelNode="args">
       <parallel-node 
       :data="args.data || {}" 
       @collapse-expand="collapseExpand"
+      @delete-node="deleteNode"
       />
     </template>
     <template #node-leaf="args">
       <leaf-node 
       :data="args.data || {}" 
       @collapse-expand="collapseExpand"
+      @delete-node="deleteNode"
       />
     </template>
     <template #node-nullNode="args">
       <null-node 
       :data="args.data || {}" 
       @collapse-expand="collapseExpand"
+      @delete-node="deleteNode"
       />
     </template>
 
@@ -138,7 +149,7 @@ export default {
     nullNode
   },
   setup() {
-    const position = ref({ x: 0, y: 0, zoom: 0.75 })
+    const position = ref({ x: 0, y: 0, zoom: 1 })
     const { nodesDraggable, setViewport, getViewport,onMoveEnd} = useVueFlow()
     
     onMoveEnd(() => {
@@ -162,6 +173,8 @@ export default {
       xPointIndex: 0,
       nodes: [],
       edges: [],
+      //nodeName-NodeType 映射
+      nodeTypeMap: {},
       // 根节点坐标
       rootNodePosition :{x: 100, y: 100}, 
       // 新增：临时存储边数据，避免直接操作v-model绑定的edges
@@ -179,6 +192,7 @@ export default {
     this.flowMethods = useVueFlow()
   },
   mounted() {
+    this.initNodeTypeMap()
     this.nodeMap = {}
     this.addIsUnfoldToTree(baseData.baseTree, false)
     this.init()
@@ -188,9 +202,15 @@ export default {
     }, 100);
   },
   methods: {
+    initNodeTypeMap(){
+      this.nodeTypeMap = baseData.BasebehaviorGroupList[0].behaviors.reduce((map, item) => {
+        map[item.node_type] = {name: item.name, behavior_id: item.id}
+        return map
+      }, {})
+    },
     //节点缩放事件
-   async collapseExpand(NodeId){
-      let treeNode = this.nodeMap[NodeId]
+    async collapseExpand(NodeId){
+      let treeNode = this.nodeMap[NodeId].node
       nodeIndex = 0
       this.nodeMap = {}
       this.nodes = []
@@ -210,11 +230,38 @@ export default {
         this.initViewport()
       }, 100);
     },
+    // 删除节点事件
+    async deleteNode(NodeId){
+      const nodeParentId = this.nodeMap[NodeId].parentId
+      const idx = this.nodeMap[NodeId].index
+      let parentNode = this.nodeMap[nodeParentId].node
+      if (parentNode.node) {
+        parentNode.node = {node_type: 'null_node'}
+      } else if (parentNode.nodes) {
+        parentNode.nodes.splice(idx, 1)
+      } else if (parentNode.node_type === 'ifelse_node') {
+        switch (idx) {
+          case 0: parentNode.check = {node_type: 'null_node'}; break
+          case 1: parentNode.success = {node_type: 'null_node'}; break
+          case 2: parentNode.fail = {node_type: 'null_node'}; break
+          default: parentNode.unknown = {node_type: 'null_node'}; break
+        }
+      }
+      //重新初始化节点映射
+      nodeIndex = 0
+      this.nodeMap = {}
+      this.nodes = []
+      this.edges = []
+      this.tempEdges = []
+      await this.init()
+      await nextTick()
+      this.edges = [...this.tempEdges]
+    },
     // 初始化画布位置
     initViewport(){
       const containerEl = document.querySelector('.vue-flow')
       this.flowMethods.setViewport({
-        x: -this.rootNodePosition.x/1.32 + containerEl.clientWidth/1.32, 
+        x: -this.rootNodePosition.x/1+ containerEl.clientWidth/2 - 56, 
         y: this.rootNodePosition.y, 
         zoom: this.viewport.zoom
       })
@@ -284,7 +331,7 @@ export default {
       this.traverseTree(this.tree)
     },
     // 遍历树生成节点和边（核心：边存入临时数组）
-    traverseTree(treeNode, level = 0, startX = 0, path = '') {
+    traverseTree(treeNode, level = 0, startX = 0, path = '', parentId = null,idx = 0) {
       if (!treeNode || !treeNode.node_type) {
         return { node: null, nextX: startX }
       }
@@ -292,15 +339,16 @@ export default {
       // 修复1：使用稳定的唯一ID
       const nodeId = generateUniqueNodeId(level, path)
       const nodeType = this.getNodeType(treeNode.node_type)
-      const y = level === 1 ? 200 : 100 + level * 150
+      const y = level === 0 ? 0 : level === 1 ? 100 : 100 + (level - 1) * 150
 
       let children = []
       if (treeNode.isUnfold) {
         if (treeNode.node) {
           children = [treeNode.node]
         } else if (treeNode.nodes) {
-          children = treeNode.nodes.filter(child => child.node_type !== 'null_node')
-          children.push({node_type: 'null_node'})
+          treeNode.nodes = treeNode.nodes.filter(child => child.node_type !== 'null_node')
+          treeNode.nodes.push({node_type: 'null_node'})
+          children = treeNode.nodes
         } else if (treeNode.node_type === 'ifelse_node') {
           children.push(treeNode.check ? treeNode.check : {node_type: 'null_node'})
           children.push(treeNode.success ? treeNode.success : {node_type: 'null_node'})
@@ -316,7 +364,7 @@ export default {
           type: nodeType,
           position: { x: this.calcXPoint(treeNode.node_type, startX), y },
           data: { 
-             label: this.getNodeLabel(treeNode.node_type), 
+            label: this.getNodeLabel(treeNode), 
             node_id : nodeId,
             node_data: treeNode 
           }
@@ -330,7 +378,7 @@ export default {
           this.rootNodePosition = { x: node.position.x, y: 100 }
         }
         //缓存节点名-原始treeNode 映射
-        this.nodeMap[nodeId] = treeNode
+        this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx}
         return { node: node, nextX: startX + 150 }
       }
 
@@ -339,9 +387,9 @@ export default {
       let sourceHandleIndex = 1
 
       // 遍历子节点生成边
-      children.forEach((child, idx) => {
-        const childPath = `${path}-${idx}`
-        const result = this.traverseTree(child, level + 1, currentX, childPath)
+      children.forEach((child, nodeIdx) => {
+        const childPath = `${path}-${nodeIdx}`
+        const result = this.traverseTree(child, level + 1, currentX, childPath, nodeId,nodeIdx)
         
         if (result.node) {
           // ifelse节点处理sourceHandle
@@ -373,7 +421,7 @@ export default {
        
         position: { x: this.calcXPoint(treeNode.node_type, (startX - 150 + currentX) / 2), y },
         data: { 
-          label: this.getNodeLabel(treeNode.node_type), 
+          label: this.getNodeLabel(treeNode), 
           node_id : nodeId,
           node_data: treeNode }
       }
@@ -386,7 +434,7 @@ export default {
       if(treeNode.node_type === 'root'){
         this.rootNodePosition = { x: node.position.x, y: 100 }
       }
-      this.nodeMap[nodeId] = treeNode
+      this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx}
       return { node: node, nextX: currentX }
     },
     // 节点类型映射
@@ -407,20 +455,15 @@ export default {
       return typeMap[nodeType] || 'root'
     },
     // 节点标签映射
-    getNodeLabel(nodeType) {
-      const labelMap = {
-        'root': '根节点',
-        'always_true_node': '永真节点',
-        'ifelse_node': 'ifelse节点',
-        'loop_bool_node': '循环节点(结果)',
-        'loop_num_node': '循环节点(次数)',
-        'selector_node': '选择节点',
-        'sequence_node': '顺序节点',
-        'negation_node': '取反节点',
-        'parallel_node': '平行节点',
-        'leaf': '叶子节点'
+    getNodeLabel(treeNode) {
+      const nodeType = treeNode.node_type
+      if (nodeType === 'leaf') {
+        return treeNode.behavior_id || '叶子节点'
+      } else if (nodeType === 'null_node') {
+        return '添加节点'
+      } else {
+        return this.nodeTypeMap[nodeType].name || nodeType
       }
-      return labelMap[nodeType] || nodeType
     },
     // 计算节点X坐标
     calcXPoint(nodeType, X) {
@@ -443,6 +486,7 @@ export default {
       // console.log('生成的节点数:', this.nodes.length)
       // console.log('生成的边数:', this.edges.length)
       // console.log('当前视图位置:', this.position.value)
+      console.log('当前树结构:', this.nodeTypeMap)
     }
   }
 }

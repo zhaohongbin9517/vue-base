@@ -52,17 +52,10 @@ export default {
       default: true
     }
   },
-  setup() {
-    return {
-      handleDelete: () => {
-        console.log('Delete button clicked')
-      }
-    }
-  },
   methods: {
     // 处理保存配置
-    handleSave() {
-      this.$emit('save', this.formData)
+    handleDelete() {
+      this.$emit('delete-node')
     },
     // 处理缩放展开
     collapseExpand() {

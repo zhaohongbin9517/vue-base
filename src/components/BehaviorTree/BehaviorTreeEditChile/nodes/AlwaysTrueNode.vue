@@ -25,6 +25,9 @@ export default {
   methods: {
     collapseExpand() {
       this.$emit('collapse-expand',this.data.node_id)
+    },
+    deleteNode() {
+      this.$emit('delete-node',this.data.node_id)
     }
   }
 }
@@ -38,6 +41,7 @@ export default {
         <NodeActionButtons 
         @collapse-expand="collapseExpand"
         :isCollapsed="data.node_data.isUnfold"
+        @delete-node="deleteNode"
         />
     </div>
 </template>

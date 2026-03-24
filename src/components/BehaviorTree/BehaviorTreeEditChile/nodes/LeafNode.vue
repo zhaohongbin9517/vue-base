@@ -3,8 +3,9 @@
         <Handle type="target" :position="Position.Top" />
         <h1 class="bg-transparent">{{data.label}}</h1>
         <NodeActionButtons
-          :isCanDelete=true
-          :isCanShrink=false
+          :isCanDelete="true"
+          :isCanShrink="false"
+          @delete-node="deleteNode"
         />
     </div>
 </template>
@@ -33,6 +34,9 @@ export default {
   methods: {
     collapseExpand() {
       console.log('props:', this.data)
+    },
+    deleteNode() {
+      this.$emit('delete-node',this.data.node_id)
     }
   }
 }
