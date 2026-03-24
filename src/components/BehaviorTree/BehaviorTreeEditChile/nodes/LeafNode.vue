@@ -1,9 +1,9 @@
 <template>
     <div 
     :class="{'node_selected': selected}"
-    class="w-28 h-12 border-2 border-green-500 rounded-lg flex items-center justify-center ">
+    class="w-28 h-12 border-2 border-green-500 rounded-lg flex items-center justify-center relative">
         <Handle type="target" :position="Position.Top" />
-        <h1 class="bg-transparent">{{data.label}}</h1>
+        <h1 class="leaf-label">{{data.label}}</h1>
         <NodeActionButtons
           :isCanDelete="true"
           :isCanShrink="false"
@@ -49,6 +49,8 @@ export default {
 </script>
 
 <style scoped>
-
-
+.leaf-label {
+  font-size: 12px;
+  margin-right: 18px;
+}
 </style>

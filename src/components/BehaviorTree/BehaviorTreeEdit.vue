@@ -115,6 +115,7 @@
        :nodeMap="nodeMap"
        :nodeTypeMap="nodeTypeMap"
        :expandedGroups="expandedGroups"
+       @arg-change="handleArgChange"
        @delete-node="deleteNode"
        @collapse-expand="collapseExpand"
        @left-move="leftMove"
@@ -260,6 +261,10 @@ export default {
         map[item.node_type] = {name: item.name, behavior_id: item.id, description: item.desc}
         return map
       }, {})
+    },
+    //参数改变事件
+    handleArgChange({nodeId,index,value}){
+      this.nodeMap[nodeId].node.args[index] = value
     },
     //节点缩放事件
     async collapseExpand(NodeId){

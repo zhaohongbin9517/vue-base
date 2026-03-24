@@ -18,9 +18,33 @@
         <span class="label">节点描述：</span>
         <span class="content">{{ getNodeDesc(selectedNode.node.node_type) }}</span>
       </div>
-      <div v-if="isShowArgs()" class="info-item">
+      <div v-if="isShowArgs()" class="info-item-desc">
         <span class="label">参数：</span>
-        <pre class="value">参数：</pre>
+        <div class="content">
+          <div v-for="(arg, index) in argsList" :key="index" class="arg-item">
+            <div class="arg-name">{{ arg.name }}</div>
+            <div class="arg-type">{{ arg.type }}</div>
+            <el-input
+              v-if="arg.type === 'string'"
+              v-model="arg.value"
+              size="small"
+              @change="handleArgChange(index, $event)"
+            />
+            <el-input-number
+              v-else-if="arg.type === 'int'"
+              v-model="arg.value"
+              size="small"
+              :controls="false"
+              @change="handleArgChange(index, $event)"
+            />
+            <el-input
+              v-if="arg.type === 'atom'"
+              v-model="arg.value"
+              size="small"
+              @change="handleArgChange(index, $event)"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -67,12 +91,45 @@ export default {
       default: () => ({})
     }
   },
-  emits: ['delete-node', 'toggle-fold'],
+  emits: ['delete-node', 'toggle-fold', 'arg-change'],
   setup() {
     return {
+      stomOptions: [
+        { label: '是', value: true },
+        { label: '否', value: false }
+      ]
     }
   },
+  data() {
+    return {
+      argsList: []
+    }
+  },
+  watch: {
+    selectedNode() {
+      this.loadArgs()
+    }
+  },
+  mounted() {
+    this.loadArgs()
+  },
   methods: {
+    loadArgs() {
+      if (!this.selectedNode || !this.selectedNode.node) return
+      const nodeData = this.expandedGroups[this.selectedNode.node.behavior_id] || {}
+      const argsDefinition = nodeData.args || []
+      let argsValue = this.selectedNode.node.args || []
+      this.argsList = argsDefinition.map((item, index) => ({
+        ...item,
+        value: argsValue[index] || ''
+      }))
+    },
+    handleArgChange(index, value) {
+      if (this.selectedNode && this.selectedNode.node) {
+        this.$emit('arg-change', {nodeId:this.selectedNode.node_id,index:index,value:value
+        })
+      }
+    },
     //是否显示参数
     isShowArgs(){
       const nodeData = this.expandedGroups[this.selectedNode.node.behavior_id] || {}
@@ -85,7 +142,6 @@ export default {
       const nodeData = this.expandedGroups[this.selectedNode.node.behavior_id] || {}
       const argsDefinition =  nodeData.args || []  //参数定义
       let argsValue = this.selectedNode.node.args
-      console.log('argsDefinition',argsDefinition,argsValue)
       return argsDefinition.map((item,index) => ({
         ...item,
         value: argsValue[index] || ''
@@ -106,7 +162,7 @@ export default {
     //获取节点描述
     getNodeDesc(nodeType) {
       if (nodeType === 'leaf') {
-        return this.selectedNode.node.node_data?.description || '无描述'
+        return this.expandedGroups[this.selectedNode.node.behavior_id]?.desc || '无描述'
       }
       return this.nodeTypeMap[nodeType]?.description || '无描述'
     },
@@ -237,6 +293,32 @@ export default {
   flex: 1;
   margin-left: 12px;
   word-break: break-all;
+}
+
+.arg-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 4px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.arg-name {
+  font-size: 13px;
+  color: #606266;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.arg-type {
+  font-size: 12px;
+  color: #909399;
+  padding: 2px 6px;
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  white-space: nowrap;
 }
 
 .info-item:last-child {
