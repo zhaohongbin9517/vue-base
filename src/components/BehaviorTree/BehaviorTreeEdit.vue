@@ -114,6 +114,7 @@
        :selectedNode="selectedNode" 
        :nodeMap="nodeMap"
        :nodeTypeMap="nodeTypeMap"
+       :expandedGroups="expandedGroups"
        @delete-node="deleteNode"
        @collapse-expand="collapseExpand"
        @left-move="leftMove"
@@ -141,7 +142,7 @@ import nullNode from './BehaviorTreeEditChile/nodes/NullNode.vue'
 import { MiniMap } from '@vue-flow/minimap'
 import NodeSelectInfo from './BehaviorTreeEditChile/NodeSelectInfo.vue'
 
-import { getBehaviorTree } from '@/api/behavior/behavior'
+import { getBehaviorTree, getAllBehavior } from '@/api/behavior/behavior'
 
 import baseData from '@/assets/json/baseData.json'
 
@@ -191,6 +192,11 @@ export default {
   },
   data() {
     return {
+      // 新增：行为节点分组列表
+      behaviorGroupList: [],
+      // 新增：记录每个分组的展开状态
+      expandedGroups: {},
+
       edgesType: 'smoothstep',
       MarkerType,
       treeInfo :{},
@@ -220,12 +226,12 @@ export default {
     // 初始化 VueFlow 方法（在 created 中解构，保证时机）
     this.flowMethods = useVueFlow()
   },
-  mounted() {
+  async mounted() {
     //获取节点
-    this.getTreeInfo()
+    await this.getTreeInfo()
     this.initNodeTypeMap()
     this.nodeMap = {}
-    this.addIsUnfoldToTree(baseData.baseTree, false)
+    this.addIsUnfoldToTree(this.tree, false)
     this.init()
     this.edges = [...this.tempEdges]
     setTimeout(() => {
@@ -234,10 +240,21 @@ export default {
   },
   methods: {
     async getTreeInfo(){
-      const treeId = this.tree.tree_id
+      // 获取树信息
+      const treeId = this.$route.query.id
       const treeInfo = await getBehaviorTree(treeId)
-      console.log(treeInfo)
+      this.treeInfo = treeInfo
+      this.tree = treeInfo.tree
+      //获取全部行为节点信息
+      const Allbehavior = await getAllBehavior()
+      Allbehavior.forEach(group => {
+        group.behaviors.forEach(behavior => {
+          this.expandedGroups[behavior.id] =behavior
+        })
+      })
+      // console.log('behavior',this.expandedGroups)
     },
+    //初始化基础节点类型
     initNodeTypeMap(){
       this.nodeTypeMap = baseData.BasebehaviorGroupList[0].behaviors.reduce((map, item) => {
         map[item.node_type] = {name: item.name, behavior_id: item.id, description: item.desc}
@@ -356,7 +373,6 @@ export default {
     },
     // 节点点击事件
     nodeClick(node) {
-      console.log(node)
       if(node.node.type !== "nullNode"){
         this.selectedNodeId = node.node.id
         this.selectedNode = this.nodeMap[this.selectedNodeId]
@@ -366,7 +382,7 @@ export default {
     },
     // 全部展开
     async unfold() {
-      this.addIsUnfoldToTree(baseData.baseTree, true)
+      this.addIsUnfoldToTree(this.tree, true)
       this.resetInit()
       setTimeout(() => {
         this.initViewport()
@@ -374,7 +390,7 @@ export default {
     },
     // 全部收起
     async fold() {
-      this.addIsUnfoldToTree(baseData.baseTree, false)
+      this.addIsUnfoldToTree(this.tree, false)
       this.resetInit()
       setTimeout(() => {
         this.initViewport()
@@ -402,7 +418,6 @@ export default {
     },
     //初始化
     async init() {
-      this.tree = baseData.baseTree
       this.tempEdges = []
       this.traverseTree(this.tree)
     },
@@ -534,7 +549,8 @@ export default {
     getNodeLabel(treeNode) {
       const nodeType = treeNode.node_type
       if (nodeType === 'leaf') {
-        return treeNode.behavior_id || '叶子节点'
+        const leafNode =  this.expandedGroups[treeNode.behavior_id] || {}
+        return leafNode.name || '叶子节点'
       } else if (nodeType === 'null_node') {
         return '添加节点'
       } else {

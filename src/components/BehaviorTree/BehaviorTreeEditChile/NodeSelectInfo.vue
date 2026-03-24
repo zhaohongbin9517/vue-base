@@ -61,6 +61,10 @@ export default {
     nodeTypeMap: {
       type: String,
       default: '未知'
+    },
+    expandedGroups: {
+      type: Object,
+      default: () => ({})
     }
   },
   emits: ['delete-node', 'toggle-fold'],
@@ -71,9 +75,21 @@ export default {
   methods: {
     //是否显示参数
     isShowArgs(){
-      const args =  this.selectedNode.node.args || []
-      console.log(args)
+      const nodeData = this.expandedGroups[this.selectedNode.node.behavior_id] || {}
+      const args =  nodeData.args || []
+      this.ShowArgs()
       return args.length > 0
+    },
+    //显示参数内容
+    ShowArgs(){
+      const nodeData = this.expandedGroups[this.selectedNode.node.behavior_id] || {}
+      const argsDefinition =  nodeData.args || []  //参数定义
+      let argsValue = this.selectedNode.node.args
+      console.log('argsDefinition',argsDefinition,argsValue)
+      return argsDefinition.map((item,index) => ({
+        ...item,
+        value: argsValue[index] || ''
+      }))
     },
     //获取节点类型名称
     getNodeTypeName(nodeType) {
