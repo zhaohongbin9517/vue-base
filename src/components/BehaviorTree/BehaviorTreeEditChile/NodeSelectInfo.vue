@@ -7,29 +7,21 @@
     <div class="info-content">
       <div class="info-item">
         <span class="label">节点ID：</span>
-        <span class="value">节点ID</span>
+        <span class="value">{{ getNodeId(selectedNode.node.node_type)  }}</span>
       </div>
       
       <div class="info-item">
         <span class="label">节点类型：</span>
-        <!-- <span class="value">{{ getNodeTypeName(selectedNode.type) }}</span> -->
+        <span class="value">{{ getNodeTypeName(selectedNode.node.node_type) }}</span>
       </div>
-<!--       
-      <div v-if="selectedNode.data.label" class="info-item">
-        <span class="label">节点标签：</span>
-        <span class="value">节点标签</span>
+      <div  class="info-item-desc">
+        <span class="label">节点描述：</span>
+        <span class="content">{{ getNodeDesc(selectedNode.node.node_type) }}</span>
       </div>
-      
-      <div v-if="selectedNode.data.behaviorId" class="info-item">
-        <span class="label">行为ID：</span>
-        <span class="value">行为ID</span>
+      <div v-if="isShowArgs()" class="info-item">
+        <span class="label">参数：</span>
+        <pre class="value">参数：</pre>
       </div>
-      
-      <div v-if="selectedNode.data.node_data" class="info-item">
-        <span class="label">节点数据：</span>
-        <pre class="value">节点数据</pre>
-      </div>
-    -->
     </div>
 
     <div class="info-actions">
@@ -37,7 +29,7 @@
       <el-button  size="small"  @click="rightMove" type="primary" :disabled="!isCanRightMove()" >右移  </el-button>
       <el-button 
         size="small" 
-        @click="handleToggleFold"
+        @click="collapseExpand"
         type="primary"
       > {{ selectedNode.node.isUnfold ? '收起' : '展开' }}
       </el-button>
@@ -65,6 +57,10 @@ export default {
     nodeMap: {
       type: Object,
       default: () => ({})
+    },
+    nodeTypeMap: {
+      type: String,
+      default: '未知'
     }
   },
   emits: ['delete-node', 'toggle-fold'],
@@ -73,6 +69,31 @@ export default {
     }
   },
   methods: {
+    //是否显示参数
+    isShowArgs(){
+      const args =  this.selectedNode.node.args || []
+      console.log(args)
+      return args.length > 0
+    },
+    //获取节点类型名称
+    getNodeTypeName(nodeType) {
+      if (nodeType === 'leaf') return '行为节点'
+      return this.nodeTypeMap[nodeType]?.name || nodeType
+    },
+    //获取节点ID
+    getNodeId(nodeType) {
+      if (nodeType === 'leaf') {
+        return this.selectedNode.node.behavior_id
+      }
+      return this.nodeTypeMap[nodeType]?.behavior_id || nodeType
+    },
+    //获取节点描述
+    getNodeDesc(nodeType) {
+      if (nodeType === 'leaf') {
+        return this.selectedNode.node.node_data?.description || '无描述'
+      }
+      return this.nodeTypeMap[nodeType]?.description || '无描述'
+    },
     //是否可以左移
     isCanLeftMove(){
       if(!this.selectedNode.parentId) return false  //没有父节点，不能左移
@@ -103,9 +124,6 @@ export default {
     isCanDelete(){
         return this.selectedNode.node.node_type !== 'root'
     },
-    getNodeTypeName(nodeType) {
-      return this.nodeTypeMap[nodeType]?.name || nodeType
-    },
     //删除
     handleDelete() {
       if (this.selectedNode) {
@@ -114,6 +132,7 @@ export default {
     },
     //展开收起
     collapseExpand() {
+      console.log(this.selectedNode.node.isUnfold)
        this.$emit('collapse-expand',  this.selectedNode.node_id)
     },
     //左移
@@ -181,6 +200,27 @@ export default {
   padding: 8px;
   background-color: #f5f7fa;
   border-radius: 4px;
+}
+
+.info-item-desc {
+  display: flex;
+  flex-direction: column; /* 关键：改成垂直方向（上下结构） */
+  gap: 6px;                /* 上下之间的间距 */
+  margin-bottom: 12px;
+  padding: 8px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  align-items: flex-start; /* 内容全部左对齐 */
+}
+
+/* 内容文本强制左对齐，解决缩进问题 */
+.info-item-desc .content {
+  font-size: 13px;
+  color: #303133;
+  text-align: left;
+  flex: 1;
+  margin-left: 12px;
+  word-break: break-all;
 }
 
 .info-item:last-child {

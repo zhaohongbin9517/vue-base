@@ -113,6 +113,7 @@
      <NodeSelectInfo 
        :selectedNode="selectedNode" 
        :nodeMap="nodeMap"
+       :nodeTypeMap="nodeTypeMap"
        @delete-node="deleteNode"
        @collapse-expand="collapseExpand"
        @left-move="leftMove"
@@ -137,9 +138,10 @@ import negationNode from './BehaviorTreeEditChile/nodes/NegationNode.vue'
 import parallelNode from './BehaviorTreeEditChile/nodes/ParallelNode.vue'
 import leafNode from './BehaviorTreeEditChile/nodes/LeafNode.vue'
 import nullNode from './BehaviorTreeEditChile/nodes/NullNode.vue'
-// import InteractionControls from './BehaviorTreeEditChile/InteractionControls.vue'
 import { MiniMap } from '@vue-flow/minimap'
 import NodeSelectInfo from './BehaviorTreeEditChile/NodeSelectInfo.vue'
+
+import { getBehaviorTree } from '@/api/behavior/behavior'
 
 import baseData from '@/assets/json/baseData.json'
 
@@ -191,6 +193,7 @@ export default {
     return {
       edgesType: 'smoothstep',
       MarkerType,
+      treeInfo :{},
       tree: {},
       xPointIndex: 0,
       nodes: [],
@@ -218,6 +221,8 @@ export default {
     this.flowMethods = useVueFlow()
   },
   mounted() {
+    //获取节点
+    this.getTreeInfo()
     this.initNodeTypeMap()
     this.nodeMap = {}
     this.addIsUnfoldToTree(baseData.baseTree, false)
@@ -228,20 +233,20 @@ export default {
     }, 100);
   },
   methods: {
+    async getTreeInfo(){
+      const treeId = this.tree.tree_id
+      const treeInfo = await getBehaviorTree(treeId)
+      console.log(treeInfo)
+    },
     initNodeTypeMap(){
       this.nodeTypeMap = baseData.BasebehaviorGroupList[0].behaviors.reduce((map, item) => {
-        map[item.node_type] = {name: item.name, behavior_id: item.id}
+        map[item.node_type] = {name: item.name, behavior_id: item.id, description: item.desc}
         return map
       }, {})
     },
     //节点缩放事件
     async collapseExpand(NodeId){
       let treeNode = this.nodeMap[NodeId].node
-      nodeIndex = 0
-      this.nodeMap = {}
-      this.nodes = []
-      this.edges = []
-      this.tempEdges = []
       if(treeNode.isUnfold){
         // 如果当前是展开状态，收起全部子节点，并且子节点也收起
         this.addIsUnfoldToTree(treeNode, !treeNode.isUnfold)
@@ -249,9 +254,7 @@ export default {
         // 如果当前是收起状态，展开当前节点，但是子节点不展开
         treeNode.isUnfold = true
       }
-      await this.init()
-      await nextTick()
-      this.edges = [...this.tempEdges]
+      this.resetInit()
       setTimeout(() => {
         this.useViewportPosition()
       }, 100);
@@ -274,15 +277,7 @@ export default {
         }
       }
       //重新初始化节点映射
-      nodeIndex = 0
-      this.nodeMap = {}
-      this.nodes = []
-      this.edges = []
-      this.tempEdges = []
-      this.selectedNode = null
-      await this.init()
-      await nextTick()
-      this.edges = [...this.tempEdges]
+      this.resetInit()
       setTimeout(() => {
         this.useViewportPosition()
       }, 100);
@@ -294,7 +289,11 @@ export default {
       let parentNode = this.nodeMap[nodeParentId].node
       if (parentNode.nodes) {
         let arr = parentNode.nodes
-        [arr[idx], arr[idx - 1]] = [arr[idx - 1], arr[idx]];
+        ;[arr[idx], arr[idx - 1]] = [arr[idx - 1], arr[idx]]
+        this.resetInit()
+        setTimeout(() => {
+          this.useViewportPosition()
+        }, 100);
       }
     },
     //右移
@@ -304,8 +303,25 @@ export default {
       let parentNode = this.nodeMap[nodeParentId].node
       if (parentNode.nodes) {
         let arr = parentNode.nodes
-        [arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]];
+        ;[arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]]
+        this.resetInit()
+        setTimeout(() => {
+          this.useViewportPosition()
+        }, 100);
       }
+    },
+    //重置
+    async resetInit(){
+      //重新初始化节点映射
+      nodeIndex = 0
+      this.nodeMap = {}
+      this.nodes = []
+      this.edges = []
+      this.tempEdges = []
+      this.selectedNode = null
+      await this.init()
+      await nextTick()
+      this.edges = [...this.tempEdges]
     },
     // 初始化画布位置
     initViewport(){
@@ -340,6 +356,7 @@ export default {
     },
     // 节点点击事件
     nodeClick(node) {
+      console.log(node)
       if(node.node.type !== "nullNode"){
         this.selectedNodeId = node.node.id
         this.selectedNode = this.nodeMap[this.selectedNodeId]
@@ -349,30 +366,16 @@ export default {
     },
     // 全部展开
     async unfold() {
-      nodeIndex = 0
-      this.nodeMap = {}
-      this.nodes = []
-      this.edges = []
-      this.tempEdges = []
       this.addIsUnfoldToTree(baseData.baseTree, true)
-      await this.init()
-      await nextTick()
-      this.edges = [...this.tempEdges]
+      this.resetInit()
       setTimeout(() => {
         this.initViewport()
       }, 100);
     },
     // 全部收起
     async fold() {
-      nodeIndex = 0
-      this.nodeMap = {}
-      this.nodes = []
-      this.edges = []
-      this.tempEdges = []
       this.addIsUnfoldToTree(baseData.baseTree, false)
-      await this.init()
-      await nextTick()
-      this.edges = [...this.tempEdges]
+      this.resetInit()
       setTimeout(() => {
         this.initViewport()
       }, 100);
