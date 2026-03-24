@@ -109,6 +109,12 @@
     <Background />
     <!-- <InteractionControls /> -->
      <MiniMap />
+     <NodeSelectInfo 
+       :selectedNode="selectedNode" 
+       :nodeTypeMap="nodeTypeMap"
+       @delete-node="deleteNode"
+       @toggle-fold="toggleFold"
+     />
   </VueFlow>
 </template>
 
@@ -130,6 +136,7 @@ import leafNode from './BehaviorTreeEditChile/nodes/LeafNode.vue'
 import nullNode from './BehaviorTreeEditChile/nodes/NullNode.vue'
 // import InteractionControls from './BehaviorTreeEditChile/InteractionControls.vue'
 import { MiniMap } from '@vue-flow/minimap'
+import NodeSelectInfo from './BehaviorTreeEditChile/NodeSelectInfo.vue'
 
 import baseData from '@/assets/json/baseData.json'
 
@@ -157,7 +164,8 @@ export default {
     leafNode,
     // InteractionControls,
     MiniMap,
-    nullNode
+    nullNode,
+    NodeSelectInfo
   },
   setup() {
     const position = ref({ x: 0, y: 0, zoom: 1 })
@@ -196,6 +204,8 @@ export default {
       nodeMap: {},
       //选中节点id
       selectedNodeId: null,
+      //选中节点对象
+      selectedNode: null,
 
       flowMethods: null
     }
@@ -266,6 +276,7 @@ export default {
       this.nodes = []
       this.edges = []
       this.tempEdges = []
+      this.selectedNode = null
       await this.init()
       await nextTick()
       this.edges = [...this.tempEdges]
@@ -291,6 +302,7 @@ export default {
     nodeClick(node) {
       this.selectedNodeId = node.node.id
       let position = this.nodeMap[this.selectedNodeId].position 
+      this.selectedNode = node.node
       const containerEl = document.querySelector('.vue-flow')
       let newPosition = {
         x: -position.x/1+ containerEl.clientWidth/2 - 56, 
@@ -301,6 +313,13 @@ export default {
         this.flowMethods.setViewport(newPosition)
       }, 50);
       console.log(newPosition,position)
+    },
+    // 展开/收起切换
+    toggleFold(nodeData) {
+      if (nodeData && nodeData.node) {
+        nodeData.node.isUnfold = !nodeData.node.isUnfold
+        this.collapseExpand(nodeData.node_id)
+      }
     },
     // 全部展开
     async unfold() {
