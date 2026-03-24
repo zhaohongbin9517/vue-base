@@ -82,10 +82,11 @@ export default {
 .icon-delete-btn {
   background: transparent !important;
   border: none !important;
-  border-radius: 0 !important;
+  background: #fef0f0 !important;
+  border-radius: 50% !important;
   padding: 0 !important;
-  width: 20px !important;
-  height: 20px !important;
+  width: 18px !important;
+  height: 18px !important;
   --el-button-hover-bg-color: transparent !important;
   --el-button-active-bg-color: transparent !important;
   color: #ff4d4f !important;
@@ -98,12 +99,13 @@ export default {
 }
 
 .icon-shrink-btn {
-  background: transparent !important;
+  /* background: transparent !important; */
+  background: #eff6ff !important;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 50% !important;
   padding: 0 !important;
-  width: 20px !important;
-  height: 20px !important;
+  width: 18px !important;
+  height: 18px !important;
   --el-button-hover-bg-color: transparent !important;
   --el-button-active-bg-color: transparent !important;
   color: #4d94ff !important;

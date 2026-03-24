@@ -27,6 +27,10 @@ export default {
     data: {
       type: Object,
       default: () => null
+    },
+    selected: {
+      type: Boolean,
+      default: false
     }
   },
   data(){
@@ -36,7 +40,6 @@ export default {
   },
   methods: {
     collapseExpand() {
-      console.log('data:',this.data)
       this.$emit('collapse-expand',this.data.node_id)
     }
   }

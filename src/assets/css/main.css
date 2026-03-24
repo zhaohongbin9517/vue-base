@@ -62,3 +62,8 @@ body,
     background:#aaa;
     border-radius:4px
 }
+
+.node_selected {
+    box-shadow:0 0 0 2px #aedaff;
+    background:#aedaff
+}

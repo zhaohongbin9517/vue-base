@@ -1,5 +1,7 @@
 <template>
-    <div class="w-40 h-12 border-2 border-blue-500 rounded-lg flex items-center justify-center">
+    <div 
+    :class="{'node_selected': selected}"
+    class="w-40 h-12 border-2 border-blue-500 rounded-lg flex items-center justify-center">
         <Handle type="target" :position="Position.Top" />
         <h1>if else节点</h1>
         <!-- 蓝色 check -->
@@ -34,6 +36,10 @@ export default {
     data: {
       type: Object,
       default: () => null
+    },
+    selected: {
+      type: Boolean,
+      default: false
     }
   },
   data(){

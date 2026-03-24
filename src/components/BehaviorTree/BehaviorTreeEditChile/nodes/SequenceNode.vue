@@ -1,5 +1,7 @@
 <template>
-    <div class="w-28 h-12 border-2 border-indigo-500 rounded-lg flex items-center justify-center">
+    <div 
+    :class="{'node_selected': selected}"
+    class="w-28 h-12 border-2 border-indigo-500 rounded-lg flex items-center justify-center">
         <Handle type="target" :position="Position.Top" :connectable="handleConnectable" />
         <h1>顺序节点</h1>
         <Handle type="source" :position="Position.Bottom" :connectable="handleConnectable" />
@@ -25,6 +27,10 @@ export default {
     data: {
       type: Object,
       default: () => null
+    },
+    selected: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

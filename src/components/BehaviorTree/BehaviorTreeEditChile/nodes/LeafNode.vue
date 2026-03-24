@@ -1,5 +1,7 @@
 <template>
-    <div class="w-28 h-12 border-2 border-green-500 rounded-lg flex items-center justify-center">
+    <div 
+    :class="{'node_selected': selected}"
+    class="w-28 h-12 border-2 border-green-500 rounded-lg flex items-center justify-center ">
         <Handle type="target" :position="Position.Top" />
         <h1 class="bg-transparent">{{data.label}}</h1>
         <NodeActionButtons
@@ -24,6 +26,10 @@ export default {
     data: {
       type: Object,
       default: () => null
+    },
+    selected: {
+      type: Boolean,
+      default: false
     }
   },
   data(){
