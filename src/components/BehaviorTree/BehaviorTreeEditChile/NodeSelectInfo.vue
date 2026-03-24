@@ -2,46 +2,46 @@
   <div v-if="selectedNode" class="node-select-info">
     <div class="info-header">
       <h3>节点信息</h3>
-      <el-button type="danger" size="small" circle @click="handleDelete">
-        <el-icon><Delete /></el-icon>
-      </el-button>
     </div>
     
     <div class="info-content">
       <div class="info-item">
         <span class="label">节点ID：</span>
-        <span class="value">{{ selectedNode.id }}</span>
+        <span class="value">节点ID</span>
       </div>
       
       <div class="info-item">
         <span class="label">节点类型：</span>
-        <span class="value">{{ getNodeTypeName(selectedNode.type) }}</span>
+        <!-- <span class="value">{{ getNodeTypeName(selectedNode.type) }}</span> -->
       </div>
-      
+<!--       
       <div v-if="selectedNode.data.label" class="info-item">
         <span class="label">节点标签：</span>
-        <span class="value">{{ selectedNode.data.label }}</span>
+        <span class="value">节点标签</span>
       </div>
       
       <div v-if="selectedNode.data.behaviorId" class="info-item">
         <span class="label">行为ID：</span>
-        <span class="value">{{ selectedNode.data.behaviorId }}</span>
+        <span class="value">行为ID</span>
       </div>
       
       <div v-if="selectedNode.data.node_data" class="info-item">
         <span class="label">节点数据：</span>
-        <pre class="value">{{ selectedNode.data.node_data }}</pre>
+        <pre class="value">节点数据</pre>
       </div>
+    -->
     </div>
-    
+
     <div class="info-actions">
+      <el-button  size="small"  @click="leftMove" type="primary" :disabled="!isCanLeftMove()" >左移  </el-button>
+      <el-button  size="small"  @click="rightMove" type="primary" :disabled="!isCanRightMove()" >右移  </el-button>
       <el-button 
         size="small" 
         @click="handleToggleFold"
         type="primary"
-      >
-        {{ selectedNode.data.isUnfold ? '收起' : '展开' }}
+      > {{ selectedNode.node.isUnfold ? '收起' : '展开' }}
       </el-button>
+      <el-button  size="small"  @click="handleDelete" type="danger" :disabled="!isCanDelete()" >删除  </el-button>
     </div>
   </div>
   
@@ -51,54 +51,95 @@
 </template>
 
 <script>
-import { Delete } from '@element-plus/icons-vue'
+// import {  } from '@element-plus/icons-vue'
 
 export default {
   name: 'NodeSelectInfo',
   components: {
-    Delete
   },
   props: {
     selectedNode: {
       type: Object,
       default: null
     },
-    nodeTypeMap: {
+    nodeMap: {
       type: Object,
-      default: () => {}
+      default: () => ({})
     }
   },
   emits: ['delete-node', 'toggle-fold'],
   setup() {
     return {
-      Delete
     }
   },
   methods: {
+    //是否可以左移
+    isCanLeftMove(){
+      if(!this.selectedNode.parentId) return false  //没有父节点，不能左移
+      const parentNode =  this.nodeMap[this.selectedNode.parentId]
+      if (parentNode.node.node) {
+        return false} 
+      else if (parentNode.node.nodes) {
+        return  this.selectedNode.index > 0 //第一个节点不能左移
+      } else if (parentNode.node.node_type === 'ifelse_node') {
+        return  false
+      }
+      return true
+    },
+    //是否可以右移
+    isCanRightMove(){
+      if(!this.selectedNode.parentId) return false  //没有父节点，不能左移
+      const parentNode =  this.nodeMap[this.selectedNode.parentId]
+      if (parentNode.node.node) {
+        return false} 
+      else if (parentNode.node.nodes) {
+        return  this.selectedNode.index < (parentNode.node.nodes.length - 2) //第一个节点不能左移
+      } else if (parentNode.node.node_type === 'ifelse_node') {
+        return  false
+      }
+      return true
+    },
+    // 是否可以删除
+    isCanDelete(){
+        return this.selectedNode.node.node_type !== 'root'
+    },
     getNodeTypeName(nodeType) {
       return this.nodeTypeMap[nodeType]?.name || nodeType
     },
+    //删除
     handleDelete() {
       if (this.selectedNode) {
-        this.$emit('delete-node', this.selectedNode.id)
+        this.$emit('delete-node', this.selectedNode.node_id)
       }
     },
-    handleToggleFold() {
-      if (this.selectedNode && this.selectedNode.data.node_data) {
-        this.$emit('toggle-fold', this.selectedNode.data.node_data)
-      }
-    }
+    //展开收起
+    collapseExpand() {
+       this.$emit('collapse-expand',  this.selectedNode.node_id)
+    },
+    //左移
+    leftMove() {
+      this.$emit('left-move', this.selectedNode.node_id)
+    },
+    //右移
+    rightMove() {
+      this.$emit('right-move', this.selectedNode.node_id)
+    },
   }
 }
 </script>
 
 <style scoped>
 .node-select-info {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  width: 320px;
   border: 1px solid #dcdde6;
   border-radius: 8px;
   padding: 16px;
   background-color: #fff;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.15);
+  z-index: 100;
 }
 
 .node-select-info.empty {
@@ -128,6 +169,8 @@ export default {
 
 .info-content {
   margin-bottom: 16px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .info-item {

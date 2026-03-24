@@ -16,6 +16,7 @@
     :max-zoom="1"
     @viewport-change="syncFlowToViewport"
     @node-click="nodeClick"
+    @pane-click="paneClick"
     fit-view-on-init class="behavior-tree-edit"> 
 
     <!-- 核心修复：增加空值保护，避免 node 为 undefined 时报错 -->
@@ -111,9 +112,11 @@
      <MiniMap />
      <NodeSelectInfo 
        :selectedNode="selectedNode" 
-       :nodeTypeMap="nodeTypeMap"
+       :nodeMap="nodeMap"
        @delete-node="deleteNode"
-       @toggle-fold="toggleFold"
+       @collapse-expand="collapseExpand"
+       @left-move="leftMove"
+       @right-move="rightMove"
      />
   </VueFlow>
 </template>
@@ -249,9 +252,9 @@ export default {
       await this.init()
       await nextTick()
       this.edges = [...this.tempEdges]
-      // setTimeout(() => {
-      //   this.initViewport()
-      // }, 100);
+      setTimeout(() => {
+        this.useViewportPosition()
+      }, 100);
     },
     // 删除节点事件
     async deleteNode(NodeId){
@@ -280,6 +283,29 @@ export default {
       await this.init()
       await nextTick()
       this.edges = [...this.tempEdges]
+      setTimeout(() => {
+        this.useViewportPosition()
+      }, 100);
+    },
+    //左移
+    leftMove(NodeId){
+      const nodeParentId = this.nodeMap[NodeId].parentId
+      const idx = this.nodeMap[NodeId].index
+      let parentNode = this.nodeMap[nodeParentId].node
+      if (parentNode.nodes) {
+        let arr = parentNode.nodes
+        [arr[idx], arr[idx - 1]] = [arr[idx - 1], arr[idx]];
+      }
+    },
+    //右移
+    rightMove(NodeId){
+      const nodeParentId = this.nodeMap[NodeId].parentId
+      const idx = this.nodeMap[NodeId].index
+      let parentNode = this.nodeMap[nodeParentId].node
+      if (parentNode.nodes) {
+        let arr = parentNode.nodes
+        [arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]];
+      }
     },
     // 初始化画布位置
     initViewport(){
@@ -290,19 +316,10 @@ export default {
         zoom: this.viewport.zoom
       })
     },
-    // 使用当前画布位置更新根节点坐标
+    // 使用当前选中的阶段作为视图中间
     useViewportPosition(){
-      this.flowMethods.setViewport(this.viewport)
-    },
-    // 同步画布位置到数据
-    syncFlowToViewport(newViewport) {
-      this.viewport = newViewport
-    },
-    // 节点点击事件
-    nodeClick(node) {
-      this.selectedNodeId = node.node.id
-      let position = this.nodeMap[this.selectedNodeId].position 
-      this.selectedNode = node.node
+      const localNode = this.nodeMap[this.selectedNodeId] || {}
+      const position = localNode.position || this.rootNodePosition
       const containerEl = document.querySelector('.vue-flow')
       let newPosition = {
         x: -position.x/1+ containerEl.clientWidth/2 - 56, 
@@ -312,13 +329,22 @@ export default {
       setTimeout(() => {
         this.flowMethods.setViewport(newPosition)
       }, 50);
-      console.log(newPosition,position)
     },
-    // 展开/收起切换
-    toggleFold(nodeData) {
-      if (nodeData && nodeData.node) {
-        nodeData.node.isUnfold = !nodeData.node.isUnfold
-        this.collapseExpand(nodeData.node_id)
+    // 同步画布位置到数据
+    syncFlowToViewport(newViewport) {
+      this.viewport = newViewport
+    },
+    // 点击空白区域事件
+    paneClick() {
+      this.selectedNode = null
+    },
+    // 节点点击事件
+    nodeClick(node) {
+      if(node.node.type !== "nullNode"){
+        this.selectedNodeId = node.node.id
+        this.selectedNode = this.nodeMap[this.selectedNodeId]
+      }else {
+        this.selectedNode = null
       }
     },
     // 全部展开
@@ -425,7 +451,7 @@ export default {
           this.rootNodePosition = { x: node.position.x, y: 100 }
         }
         //缓存节点名-原始treeNode 映射
-        this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx,position:node.position}
+        this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx,position:node.position,node_id:nodeId}
         return { node: node, nextX: startX + 150 }
       }
 
@@ -481,7 +507,7 @@ export default {
       if(treeNode.node_type === 'root'){
         this.rootNodePosition = { x: node.position.x, y: 100 }
       }
-      this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx,position:node.position}
+      this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx,position:node.position,node_id:nodeId}
       return { node: node, nextX: currentX }
     },
     // 节点类型映射
