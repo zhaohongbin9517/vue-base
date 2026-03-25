@@ -146,7 +146,7 @@
         <div class="group-header">
           <el-icon class="group-icon"><Folder /></el-icon>
           <span class="group-name">{{ group.group_name }}</span>
-          <span class="node-count">{{ group.behaviors.length }}个节点</span>
+          <span class="node-count">节点:{{ group.behaviors.length }}</span>
         </div>
         <div class="node-list">
           <div 
@@ -160,7 +160,7 @@
             <el-icon class="node-icon"><CircleCheck /></el-icon>
             <div class="node-child">
               <span class="node-name">{{ behavior.name }}</span>
-              <span class="node-desc">{{ behavior.desc }}</span>
+              <!-- <span class="node-desc">{{ behavior.desc }}</span> -->
             </div>
           </div>
         </div>
@@ -696,15 +696,19 @@ export default {
 <style scoped>
 
 .node-info {
+  position: fixed;
+  /* top: 20px; */
+  left: 1%;
   height: 87vh;
-  width: 320px;
+  width: 250px;
   border: 1px solid #dcdde6;
   border-radius: 8px;
-  padding: 16px;
+  padding: 16px 5px 16px 10px;
   background-color: #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.15);
   z-index: 100;
   overflow-y: auto;
+  pointer-events: auto;
 }
 
 .node-child {
@@ -734,7 +738,7 @@ export default {
 }
 
 .group-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #303133;
   margin-right: 12px;
@@ -747,7 +751,7 @@ export default {
 }
 
 .node-list {
-  padding: 8px;
+  padding: 1px;
   background-color: #f9f9f9;
   border-radius: 6px;
 }
@@ -786,7 +790,7 @@ export default {
 }
 
 .node-name {
-  font-size: 14px;
+  font-size: 12px;
   color: #303133;
   font-weight: 500;
 }
