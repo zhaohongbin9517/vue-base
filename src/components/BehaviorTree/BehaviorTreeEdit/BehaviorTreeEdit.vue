@@ -1,6 +1,13 @@
 <template>
   <div class="behavior-tree-edit-container">
-    <el-dropdown @command="handleEdgeTypeChange">
+    <!--
+     显示行为树的名称
+    -->
+    <el-tag type="primary" round style="margin-right: 20px;">
+      {{ treeInfo.name || '行为树' }}
+    </el-tag>
+
+    <el-dropdown @command="handleEdgeTypeChange" style="margin-right: 20px;">
       <el-button type="primary">
         边线类型 <el-icon class="el-icon--right"><arrow-down /></el-icon>
       </el-button>
@@ -13,10 +20,11 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-    <el-button type="primary" @click="printTree">打印</el-button>
+    
+    <!-- <el-button type="primary" @click="printTree">打印</el-button> -->
     <el-button type="primary" @click="unfold()">全部展开</el-button>
     <el-button type="primary" @click="fold()">全部收起</el-button>
-    <el-button type="primary" @click="initViewport()">定位root节点</el-button>
+    <el-button type="success" @click="saveTreee()">保存</el-button>
   </div>
   <VueFlow 
     v-model:edges="edges"
