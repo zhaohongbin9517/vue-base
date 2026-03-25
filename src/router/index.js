@@ -37,7 +37,7 @@ const routes = [
     path: '/',
     component: MainLayout,
     // redirect: '/user-center',
-    redirect: '/behavior-tree/edit-tree?id=2178',
+    redirect: '/edit-tree?id=2178',
     children: [
       {
         path: '403',
@@ -73,6 +73,12 @@ const routes = [
           }
         ]
       },
+      // 编辑行为树
+      {
+        path: 'edit-tree',
+        name: 'BehaviorTreeEdit',
+        component: BehaviorTreeEdit
+      },
       // 行为树路由
       {
         path: 'behavior-tree',
@@ -89,11 +95,6 @@ const routes = [
             path: 'tree-manager',
             name: 'BehaviorTreeManager',
             component: BehaviorTreeManager
-          },
-          {
-            path: 'edit-tree',
-            name: 'BehaviorTreeEdit',
-            component: BehaviorTreeEdit
           },
           {
             path: 'Snapshot',

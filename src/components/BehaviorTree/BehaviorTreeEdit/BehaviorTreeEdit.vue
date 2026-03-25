@@ -1,9 +1,6 @@
 <template>
   <div class="behavior-tree-edit-container">
-    <!--
-     显示行为树的名称
-    -->
-    <el-tag type="primary" round style="margin-right: 20px;">
+    <el-tag type="primary" round style="margin-right: 20px; margin-left: 320px;">
       {{ treeInfo.name || '行为树' }}
     </el-tag>
 
@@ -17,6 +14,11 @@
           <el-dropdown-item command="step">阶梯</el-dropdown-item>
           <el-dropdown-item command="bezier">贝塞尔</el-dropdown-item>
           <el-dropdown-item command="straight">直线</el-dropdown-item>
+
+          <el-dropdown-item command="animated-smoothstep">动画-平滑</el-dropdown-item>
+          <el-dropdown-item command="animated-step">动画-阶梯</el-dropdown-item>
+          <el-dropdown-item command="animated-bezier">动画-贝塞尔</el-dropdown-item>
+          <el-dropdown-item command="animated-straight">动画-直线</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -138,6 +140,11 @@
        @left-move="leftMove"
        @right-move="rightMove"
      />
+    <div  class="node-info">
+      <div class="info-header">
+        <h3>节点信息</h3>
+      </div>
+    </div>      
   </VueFlow>
 </template>
 
@@ -286,9 +293,19 @@ export default {
       this.nodeMap[nodeId].node.args[index] = value
     },
     //边线类型下拉选择
-    handleEdgeTypeChange(type) {
+    handleEdgeTypeChange(Command) {
+      const arr = Command.split('-') // 按 "-" 拆分
+      let type = this.edgesType
+      let animated = false
+      if( arr.length > 1){
+        type = arr[1]
+        animated = true
+      } else {
+        type = arr[0]
+        animated = false
+      }
       this.edgesType = type
-      this.edges = this.edges.map(edge => ({ ...edge, type }))
+      this.edges = this.edges.map(edge => ({ ...edge, type,animated }))
     },
     //节点缩放事件
     async collapseExpand(NodeId){
@@ -507,21 +524,24 @@ export default {
         const result = this.traverseTree(child, level + 1, currentX, childPath, nodeId,nodeIdx)
         
         if (result.node) {
+          let edgesLable  = ''
           // ifelse节点处理sourceHandle
           if (treeNode.node_type === 'ifelse_node') {
             switch (sourceHandleIndex) {
-              case 1: sourceHandle = 'if-else-check'; break
-              case 2: sourceHandle = 'if-else-success'; break
-              case 3: sourceHandle = 'if-else-fail'; break
-              case 4: sourceHandle = 'if-else-error'; break
+              case 1: sourceHandle = 'if-else-check'; edgesLable = '检查' ;break
+              case 2: sourceHandle = 'if-else-success'; edgesLable = '成功'; break
+              case 3: sourceHandle = 'if-else-fail'; edgesLable = '失败' ;break
+              case 4: sourceHandle = 'if-else-error'; edgesLable = '错误' ;break
               default: sourceHandle = null
             }
           }
           sourceHandleIndex++
           this.tempEdges.push({
             id: `e${nodeId}-${result.node.id}`,
+            label:edgesLable,
             source: nodeId,
             target: result.node.id,
+            animated: true,
             deletable:false,
             sourceHandle: sourceHandle || undefined,
             type: this.edgesType
@@ -609,6 +629,17 @@ export default {
 </script>
 
 <style scoped>
+
+.node-info {
+  height: 80vh;
+  width: 320px;
+  border: 1px solid #dcdde6;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fff;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
 .behavior-tree-edit {
   min-height: 81vh;
   max-height: 81vh;

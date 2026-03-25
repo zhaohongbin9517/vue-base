@@ -205,7 +205,7 @@ export default {
     editTree(treeId) {
       console.log('编辑行为树:', treeId)
       // 这里可以实现编辑行为树的逻辑
-      this.$router.push(`/behavior-tree/edit-tree?id=${treeId}`)
+      this.$router.push(`/edit-tree?id=${treeId}`)
     },
     
     // 删除行为树
