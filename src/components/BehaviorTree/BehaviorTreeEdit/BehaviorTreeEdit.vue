@@ -141,14 +141,25 @@
        @right-move="rightMove"
      />
     <div  class="node-info">
-      <!-- 节点拖放区域 -->
-      <div v-for="group in behaviorGroupList" :key="group.id" class="node-group">
+      <el-input
+        v-model="searchText"
+        placeholder="搜索节点"
+        size="small"
+        clearable
+        style="margin-bottom: 15px;width: 220px;"
+      >
+        <template #prefix>
+          <el-icon><Search /></el-icon>
+        </template>
+      </el-input>
+
+      <div v-for="group in filteredGroups" :key="group.id" class="node-group">
         <div class="group-header">
           <el-icon class="group-icon"><Folder /></el-icon>
           <span class="group-name">{{ group.group_name }}</span>
           <span class="node-count">节点:{{ group.behaviors.length }}</span>
         </div>
-        <div class="node-list">
+        <div v-show="expandedGroups[group.id]" class="node-list">
           <div 
             v-for="behavior in group.behaviors" 
             :key="behavior.id" 
@@ -173,7 +184,7 @@
 import { ref, nextTick } from 'vue'
 import { Background } from '@vue-flow/background'
 import { MarkerType, VueFlow, useVueFlow } from '@vue-flow/core'
-import { ArrowDown, Folder, CircleCheck } from '@element-plus/icons-vue'
+import { ArrowDown, Folder, CircleCheck,Search } from '@element-plus/icons-vue'
 
 import rootNode from './BehaviorTreeEditChile/nodes/root.vue'
 import alwaysTrueNode from './BehaviorTreeEditChile/nodes/AlwaysTrueNode.vue'
@@ -221,7 +232,8 @@ export default {
     NodeSelectInfo,
     ArrowDown,
     Folder,
-    CircleCheck
+    CircleCheck,
+    Search
   },
   setup() {
     const position = ref({ x: 0, y: 0, zoom: 1 })
@@ -246,6 +258,8 @@ export default {
       behaviorGroupList: [],
       // 新增：记录每个分组的展开状态
       expandedGroups: {},
+      // 新增：搜索关键词
+      searchText: '',
 
       edgesType: 'smoothstep',
       MarkerType,
@@ -298,12 +312,9 @@ export default {
       //获取全部行为节点信息
       const Allbehavior = await getAllBehavior()
       this.behaviorGroupList = Allbehavior
-      Allbehavior.forEach(group => {
-        group.behaviors.forEach(behavior => {
-          this.expandedGroups[behavior.id] =behavior
-        })
+      this.behaviorGroupList.forEach(group => {
+        this.expandedGroups[group.id] = true
       })
-      // console.log('behavior',this.expandedGroups)
     },
     //初始化基础节点类型
     initNodeTypeMap(){
@@ -688,6 +699,31 @@ export default {
       }
       
       this.edges.push(newEdge)
+    },
+    toggleGroup(group) {
+      this.$set(this.expandedGroups, group.id, !this.expandedGroups[group.id])
+    }
+  },
+  computed: {
+    filteredGroups() {
+      if (!this.searchText) {
+        return this.behaviorGroupList
+      }
+      
+      return this.behaviorGroupList.map(group => {
+        const filteredBehaviors = group.behaviors.filter(behavior => 
+          behavior.name.toLowerCase().includes(this.searchText.toLowerCase())
+        )
+        
+        if (filteredBehaviors.length > 0) {
+          return {
+            ...group,
+            behaviors: filteredBehaviors
+          }
+        }
+        
+        return null
+      }).filter(group => group !== null)
     }
   }
 }
@@ -735,6 +771,10 @@ export default {
   font-size: 18px;
   color: #67c23a;
   margin-right: 8px;
+}
+
+.group-icon.expanded {
+  transform: rotate(90deg);
 }
 
 .group-name {
@@ -800,6 +840,7 @@ export default {
   color: #909399;
   margin-top: 2px;
 }
+
 .behavior-tree-edit {
   min-height: 87vh;
   max-height: 87vh;
