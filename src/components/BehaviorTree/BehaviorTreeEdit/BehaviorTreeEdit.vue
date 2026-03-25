@@ -154,8 +154,8 @@
       </el-input>
 
       <div v-for="group in filteredGroups" :key="group.id" class="node-group">
-        <div class="group-header">
-          <el-icon class="group-icon"><Folder /></el-icon>
+        <div class="group-header" @click="toggleGroup(group)">
+          <el-icon class="group-icon" :class="{ 'expanded': expandedGroups[group.id] }"><ArrowRight /></el-icon>
           <span class="group-name">{{ group.group_name }}</span>
           <span class="node-count">节点:{{ group.behaviors.length }}</span>
         </div>
@@ -184,7 +184,7 @@
 import { ref, nextTick } from 'vue'
 import { Background } from '@vue-flow/background'
 import { MarkerType, VueFlow, useVueFlow } from '@vue-flow/core'
-import { ArrowDown, Folder, CircleCheck,Search } from '@element-plus/icons-vue'
+import { ArrowDown,  CircleCheck, Search, ArrowRight } from '@element-plus/icons-vue'
 
 import rootNode from './BehaviorTreeEditChile/nodes/root.vue'
 import alwaysTrueNode from './BehaviorTreeEditChile/nodes/AlwaysTrueNode.vue'
@@ -231,9 +231,9 @@ export default {
     nullNode,
     NodeSelectInfo,
     ArrowDown,
-    Folder,
     CircleCheck,
-    Search
+    Search,
+    ArrowRight
   },
   setup() {
     const position = ref({ x: 0, y: 0, zoom: 1 })
@@ -701,7 +701,7 @@ export default {
       this.edges.push(newEdge)
     },
     toggleGroup(group) {
-      this.$set(this.expandedGroups, group.id, !this.expandedGroups[group.id])
+      this.expandedGroups[group.id] = !this.expandedGroups[group.id]
     }
   },
   computed: {
