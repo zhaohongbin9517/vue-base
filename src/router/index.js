@@ -25,7 +25,7 @@ import Snapshot from '../components/BehaviorTree/BTChild/Snapshot.vue'
 // import VueTestTemp from '../components/BehaviorTree/BTChild/VueTestTemp.vue'
 import NodeManager from '../components/BehaviorTree/BTChild/NodeManager.vue'
 import BehaviorTreeManager from '../components/BehaviorTree/BTChild/BehaviorTreeManager.vue'
-import BehaviorTreeEdit from '../components/BehaviorTree/BehaviorTreeEdit.vue'
+import BehaviorTreeEdit from '../components/BehaviorTree/BehaviorTreeEdit/BehaviorTreeEdit.vue'
 
 const routes = [
   {

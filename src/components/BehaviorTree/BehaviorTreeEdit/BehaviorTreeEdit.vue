@@ -1,10 +1,19 @@
 <template>
   <div class="behavior-tree-edit-container">
+    <el-dropdown @command="handleEdgeTypeChange">
+      <el-button type="primary">
+        边线类型 <el-icon class="el-icon--right"><arrow-down /></el-icon>
+      </el-button>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item command="smoothstep">平滑</el-dropdown-item>
+          <el-dropdown-item command="step">阶梯</el-dropdown-item>
+          <el-dropdown-item command="bezier">贝塞尔</el-dropdown-item>
+          <el-dropdown-item command="straight">直线</el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
     <el-button type="primary" @click="printTree">打印</el-button>
-    <el-button type="primary" @click="setEdgesType('smoothstep')">平滑</el-button>
-    <el-button type="primary" @click="setEdgesType('step')">阶梯</el-button>
-    <el-button type="primary" @click="setEdgesType('bezier')">贝塞尔</el-button>
-    <el-button type="primary" @click="setEdgesType('straight')">直线</el-button>
     <el-button type="primary" @click="unfold()">全部展开</el-button>
     <el-button type="primary" @click="fold()">全部收起</el-button>
     <el-button type="primary" @click="initViewport()">定位root节点</el-button>
@@ -128,6 +137,7 @@
 import { ref, nextTick } from 'vue'
 import { Background } from '@vue-flow/background'
 import { MarkerType, VueFlow, useVueFlow } from '@vue-flow/core'
+import { ArrowDown } from '@element-plus/icons-vue'
 
 import rootNode from './BehaviorTreeEditChile/nodes/root.vue'
 import alwaysTrueNode from './BehaviorTreeEditChile/nodes/AlwaysTrueNode.vue'
@@ -172,7 +182,8 @@ export default {
     // InteractionControls,
     MiniMap,
     nullNode,
-    NodeSelectInfo
+    NodeSelectInfo,
+    ArrowDown
   },
   setup() {
     const position = ref({ x: 0, y: 0, zoom: 1 })
@@ -265,6 +276,11 @@ export default {
     //参数改变事件
     handleArgChange({nodeId,index,value}){
       this.nodeMap[nodeId].node.args[index] = value
+    },
+    //边线类型下拉选择
+    handleEdgeTypeChange(type) {
+      this.edgesType = type
+      this.edges = this.edges.map(edge => ({ ...edge, type }))
     },
     //节点缩放事件
     async collapseExpand(NodeId){
@@ -415,11 +431,6 @@ export default {
         if (node.fail) this.addIsUnfoldToTree(node.fail, bool)
         if (node.unknown) this.addIsUnfoldToTree(node.unknown, bool)
       }
-    },
-    // 修改连线样式（更新所有边的类型）
-    setEdgesType(type) {
-      this.edgesType = type
-      this.edges = this.edges.map(edge => ({ ...edge, type }))
     },
     //初始化
     async init() {

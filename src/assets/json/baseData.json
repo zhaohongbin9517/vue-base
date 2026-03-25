@@ -22,7 +22,7 @@
   ],
   "baseBehaviorTree":{
         "node_type":"root",
-        "node":{}
+        "node":{"node_type":"null_node"}
   },
   "baseTree":{
         "node": {
