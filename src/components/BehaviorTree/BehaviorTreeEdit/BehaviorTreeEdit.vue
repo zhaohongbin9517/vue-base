@@ -1,6 +1,6 @@
 <template>
   <div class="behavior-tree-edit-container">
-    <el-tag type="primary" round style="margin-right: 20px; margin-left: 320px;">
+    <el-tag type="primary" round style="margin-right: 20px; margin-left: 350px;">
       {{ treeInfo.name || '行为树' }}
     </el-tag>
 
@@ -141,8 +141,29 @@
        @right-move="rightMove"
      />
     <div  class="node-info">
-      <div class="info-header">
-        <h3>节点信息</h3>
+      <!-- 节点拖放区域 -->
+      <div v-for="group in behaviorGroupList" :key="group.id" class="node-group">
+        <div class="group-header">
+          <el-icon class="group-icon"><Folder /></el-icon>
+          <span class="group-name">{{ group.group_name }}</span>
+          <span class="node-count">{{ group.behaviors.length }}个节点</span>
+        </div>
+        <div class="node-list">
+          <div 
+            v-for="behavior in group.behaviors" 
+            :key="behavior.id" 
+            class="node-item"
+            draggable="true"
+            @dragstart="handleDragStart($event, behavior)"
+            @click="addBehaviorNode(behavior)"
+          >
+            <el-icon class="node-icon"><CircleCheck /></el-icon>
+            <div class="node-child">
+              <span class="node-name">{{ behavior.name }}</span>
+              <span class="node-desc">{{ behavior.desc }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>      
   </VueFlow>
@@ -152,7 +173,7 @@
 import { ref, nextTick } from 'vue'
 import { Background } from '@vue-flow/background'
 import { MarkerType, VueFlow, useVueFlow } from '@vue-flow/core'
-import { ArrowDown } from '@element-plus/icons-vue'
+import { ArrowDown, Folder, CircleCheck } from '@element-plus/icons-vue'
 
 import rootNode from './BehaviorTreeEditChile/nodes/root.vue'
 import alwaysTrueNode from './BehaviorTreeEditChile/nodes/AlwaysTrueNode.vue'
@@ -198,7 +219,9 @@ export default {
     MiniMap,
     nullNode,
     NodeSelectInfo,
-    ArrowDown
+    ArrowDown,
+    Folder,
+    CircleCheck
   },
   setup() {
     const position = ref({ x: 0, y: 0, zoom: 1 })
@@ -274,6 +297,7 @@ export default {
       this.tree = treeInfo.tree
       //获取全部行为节点信息
       const Allbehavior = await getAllBehavior()
+      this.behaviorGroupList = Allbehavior
       Allbehavior.forEach(group => {
         group.behaviors.forEach(behavior => {
           this.expandedGroups[behavior.id] =behavior
@@ -623,6 +647,47 @@ export default {
       // console.log('生成的边数:', this.edges.length)
       // console.log('当前视图位置:', this.position.value)
       console.log('当前树结构:', this.nodeTypeMap)
+    },
+    // 拖动开始
+    handleDragStart(event, behavior) {
+      event.dataTransfer.setData('application/json', JSON.stringify(behavior))
+      event.dataTransfer.effectAllowed = 'copy'
+    },
+    // 点击添加节点
+    addBehaviorNode(behavior) {
+      // const viewport = this.position
+      const containerEl = document.querySelector('.vue-flow')
+      const containerRect = containerEl.getBoundingClientRect()
+      const centerX = containerRect.width / 2 + this.rootNodePosition.x
+      const centerY = containerRect.height / 2 + this.rootNodePosition.y
+      
+      const newNode = {
+        id: `behavior-${behavior.id}-${Date.now()}`,
+        type: 'leaf',
+        position: { x: centerX, y: centerY },
+        data: {
+          label: behavior.name,
+          node_id: `behavior-${behavior.id}-${Date.now()}`,
+          // node_data: behavior,
+          behaviorId: behavior.id,
+          node_data: {
+            ...behavior,
+            args: behavior.args || []
+          }
+        }
+      }
+      
+      this.nodes.push(newNode)
+      
+      const newEdge = {
+        id: `e${this.tree.tree_id}-${newNode.id}`,
+        source: this.tree.tree_id,
+        target: newNode.id,
+        deletable: false,
+        type: this.edgesType
+      }
+      
+      this.edges.push(newEdge)
     }
   }
 }
@@ -631,7 +696,7 @@ export default {
 <style scoped>
 
 .node-info {
-  height: 80vh;
+  height: 87vh;
   width: 320px;
   border: 1px solid #dcdde6;
   border-radius: 8px;
@@ -639,10 +704,101 @@ export default {
   background-color: #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.15);
   z-index: 100;
+  overflow-y: auto;
+}
+
+.node-child {
+  background-color: #fff;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.node-group {
+  margin-bottom: 20px;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background-color: #f5f7fa;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.group-icon {
+  font-size: 18px;
+  color: #67c23a;
+  margin-right: 8px;
+}
+
+.group-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+  margin-right: 12px;
+}
+
+.node-count {
+  font-size: 12px;
+  color: #909399;
+  margin-left: auto;
+}
+
+.node-list {
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+.node-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 6px;
+  background-color: #fff;
+  border: 1px solid #e4e7ed;
+  border-radius: 6px;
+  cursor: grab;
+  transition: all 0.3s ease;
+}
+
+.node-item:hover {
+  border-color: #409eff;
+  box-shadow: 0 2px 8px 0 rgba(64, 158, 255, 0.15);
+}
+
+.node-item:active {
+  cursor: grabbing;
+}
+
+.node-icon {
+  font-size: 16px;
+  color: #67c23a;
+  margin-right: 10px;
+}
+
+.node-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.node-name {
+  font-size: 14px;
+  color: #303133;
+  font-weight: 500;
+}
+
+.node-desc {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 2px;
 }
 .behavior-tree-edit {
-  min-height: 81vh;
-  max-height: 81vh;
+  min-height: 87vh;
+  max-height: 87vh;
   overflow-y: auto;
   margin-bottom: 20px;
   border-radius: 8px;
