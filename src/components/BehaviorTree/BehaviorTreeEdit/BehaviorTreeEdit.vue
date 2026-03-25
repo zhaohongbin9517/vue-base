@@ -141,17 +141,23 @@
        @right-move="rightMove"
      />
     <div  class="node-info">
-      <el-input
-        v-model="searchText"
-        placeholder="搜索节点"
-        size="small"
-        clearable
-        style="margin-bottom: 15px;width: 220px;"
-      >
-        <template #prefix>
-          <el-icon><Search /></el-icon>
-        </template>
-      </el-input>
+      <div class="node-info-search">
+        <el-input
+          v-model="searchText"
+          placeholder="搜索节点"
+          size="small"
+          clearable
+          style="width: 150px;"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
+          <div class="search-btn">
+            <el-button type="primary" size="small" circle @click="searchNodes" class="search-btn" ><el-icon><Search /></el-icon></el-button>
+            <el-button type="primary" size="small" circle @click="clearSearch" class="clear-btn" ><el-icon><Search /></el-icon></el-button>
+          </div>
+        </div>
 
       <div v-for="group in filteredGroups" :key="group.id" class="node-group">
         <div class="group-header" @click="toggleGroup(group)">
@@ -743,8 +749,37 @@ export default {
   background-color: #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.15);
   z-index: 100;
-  overflow-y: auto;
   pointer-events: auto;
+  overflow-y: scroll !important;
+}
+
+.node-info-search {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #fff;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.node-info-search .el-input {
+  flex: 1;
+}
+
+.search-btn {
+  margin-left: 0px;
+  display: flex;
+  gap: 8px;
+}
+.search-btn :deep(.el-button) {
+  margin-left: 0px;
+}
+
+.search-btn .el-button {
+  padding: 8px;
 }
 
 .node-child {
