@@ -55,7 +55,8 @@
         size="small" 
         @click="collapseExpand"
         type="primary"
-      > {{ selectedNode.node.isUnfold ? '收起' : '展开' }}
+        :disabled="selectedNode.node.node_type === 'leaf'"
+      > {{ selectedNode.node.isUnfold  ? '收起' : '展开' }}
       </el-button>
       <el-button  size="small"  @click="handleDelete" type="danger" :disabled="!isCanDelete()" >删除  </el-button>
     </div>
