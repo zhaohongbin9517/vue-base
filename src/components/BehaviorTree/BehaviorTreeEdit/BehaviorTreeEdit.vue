@@ -140,49 +140,15 @@
        @left-move="leftMove"
        @right-move="rightMove"
      />
-    <div  class="node-info">
-      <div class="node-info-search">
-        <el-input
-          v-model="searchText"
-          placeholder="搜索节点"
-          size="small"
-          clearable
-          style="width: 150px;"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-        </el-input>
-          <div class="search-btn">
-            <el-button type="primary" size="small" circle @click="searchNodes" class="search-btn" ><el-icon><Search /></el-icon></el-button>
-            <el-button type="primary" size="small" circle @click="clearSearch" class="clear-btn" ><el-icon><Search /></el-icon></el-button>
-          </div>
-        </div>
-
-      <div v-for="group in filteredGroups" :key="group.id" class="node-group">
-        <div class="group-header" @click="toggleGroup(group)">
-          <el-icon class="group-icon" :class="{ 'expanded': expandedGroups[group.id] }"><ArrowRight /></el-icon>
-          <span class="group-name">{{ group.group_name }}</span>
-          <span class="node-count">节点:{{ group.behaviors.length }}</span>
-        </div>
-        <div v-show="expandedGroups[group.id]" class="node-list">
-          <div 
-            v-for="behavior in group.behaviors" 
-            :key="behavior.id" 
-            class="node-item"
-            draggable="true"
-            @dragstart="handleDragStart($event, behavior)"
-            @click="addBehaviorNode(behavior)"
-          >
-            <el-icon class="node-icon"><CircleCheck /></el-icon>
-            <div class="node-child">
-              <span class="node-name">{{ behavior.name }}</span>
-              <!-- <span class="node-desc">{{ behavior.desc }}</span> -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>      
+    <BehaviorNodePanel
+      :behaviorGroupList="behaviorGroupList"
+      :expandedGroups="expandedGroups"
+      :searchText="searchText"
+      @toggle-group="toggleGroup"
+      @expand-all="expandAll"
+      @fold-all="foldAll"
+      @drag-end="handleDragEnd"
+    />
   </VueFlow>
 </template>
 
@@ -190,7 +156,7 @@
 import { ref, nextTick } from 'vue'
 import { Background } from '@vue-flow/background'
 import { MarkerType, VueFlow, useVueFlow } from '@vue-flow/core'
-import { ArrowDown,  CircleCheck, Search, ArrowRight } from '@element-plus/icons-vue'
+import { ArrowDown } from '@element-plus/icons-vue'
 
 import rootNode from './BehaviorTreeEditChile/nodes/root.vue'
 import alwaysTrueNode from './BehaviorTreeEditChile/nodes/AlwaysTrueNode.vue'
@@ -205,6 +171,7 @@ import leafNode from './BehaviorTreeEditChile/nodes/LeafNode.vue'
 import nullNode from './BehaviorTreeEditChile/nodes/NullNode.vue'
 import { MiniMap } from '@vue-flow/minimap'
 import NodeSelectInfo from './BehaviorTreeEditChile/NodeSelectInfo.vue'
+import BehaviorNodePanel from './BehaviorNodePanel.vue'
 
 import { getBehaviorTree, getAllBehavior } from '@/api/behavior/behavior'
 
@@ -236,10 +203,8 @@ export default {
     MiniMap,
     nullNode,
     NodeSelectInfo,
-    ArrowDown,
-    CircleCheck,
-    Search,
-    ArrowRight
+    BehaviorNodePanel,
+    ArrowDown
   },
   setup() {
     const position = ref({ x: 0, y: 0, zoom: 1 })
@@ -319,7 +284,7 @@ export default {
       const Allbehavior = await getAllBehavior()
       this.behaviorGroupList = Allbehavior
       this.behaviorGroupList.forEach(group => {
-        this.expandedGroups[group.id] = true
+        this.expandedGroups[group.id] = false
       })
     },
     //初始化基础节点类型
@@ -667,11 +632,19 @@ export default {
     },
     // 拖动开始
     handleDragStart(event, behavior) {
-      event.dataTransfer.setData('application/json', JSON.stringify(behavior))
-      event.dataTransfer.effectAllowed = 'copy'
+      console.log('start',event,behavior)
+      // event.dataTransfer.setData('application/json', JSON.stringify(behavior))
+      // event.dataTransfer.effectAllowed = 'copy'
+    },
+    // 拖动过节点
+    handleDragEnd(event, behavior) {
+      console.log('end',event,behavior)
+      // event.preventDefault()
+      // event.dataTransfer.dropEffect = 'copy'
     },
     // 点击添加节点
     addBehaviorNode(behavior) {
+      console.log(behavior)
       // const viewport = this.position
       const containerEl = document.querySelector('.vue-flow')
       const containerRect = containerEl.getBoundingClientRect()
@@ -706,176 +679,24 @@ export default {
       
       this.edges.push(newEdge)
     },
-    toggleGroup(group) {
-      this.expandedGroups[group.id] = !this.expandedGroups[group.id]
-    }
-  },
-  computed: {
-    filteredGroups() {
-      if (!this.searchText) {
-        return this.behaviorGroupList
-      }
-      
-      return this.behaviorGroupList.map(group => {
-        const filteredBehaviors = group.behaviors.filter(behavior => 
-          behavior.name.toLowerCase().includes(this.searchText.toLowerCase())
-        )
-        
-        if (filteredBehaviors.length > 0) {
-          return {
-            ...group,
-            behaviors: filteredBehaviors
-          }
-        }
-        
-        return null
-      }).filter(group => group !== null)
+    toggleGroup(groupid) {
+      this.expandedGroups[groupid] = !this.expandedGroups[groupid]
+    },
+    expandAll() {
+      this.behaviorGroupList.forEach(group => {
+        this.expandedGroups[group.id] = true
+      })
+    },
+    foldAll() {
+      this.behaviorGroupList.forEach(group => {
+        this.expandedGroups[group.id] = false
+      })
     }
   }
 }
 </script>
 
 <style scoped>
-
-.node-info {
-  position: fixed;
-  /* top: 20px; */
-  left: 1%;
-  height: 87vh;
-  width: 250px;
-  border: 1px solid #dcdde6;
-  border-radius: 8px;
-  padding: 16px 5px 16px 10px;
-  background-color: #fff;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.15);
-  z-index: 100;
-  pointer-events: auto;
-  overflow-y: scroll !important;
-}
-
-.node-info-search {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background-color: #fff;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.node-info-search .el-input {
-  flex: 1;
-}
-
-.search-btn {
-  margin-left: 0px;
-  display: flex;
-  gap: 8px;
-}
-.search-btn :deep(.el-button) {
-  margin-left: 0px;
-}
-
-.search-btn .el-button {
-  padding: 8px;
-}
-
-.node-child {
-  background-color: #fff;
-  z-index: 100;
-  overflow-y: auto;
-}
-
-.node-group {
-  margin-bottom: 20px;
-}
-
-.group-header {
-  display: flex;
-  align-items: center;
-  padding: 10px 12px;
-  background-color: #f5f7fa;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  cursor: pointer;
-}
-
-.group-icon {
-  font-size: 18px;
-  color: #67c23a;
-  margin-right: 8px;
-}
-
-.group-icon.expanded {
-  transform: rotate(90deg);
-}
-
-.group-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #303133;
-  margin-right: 12px;
-}
-
-.node-count {
-  font-size: 12px;
-  color: #909399;
-  margin-left: auto;
-}
-
-.node-list {
-  padding: 1px;
-  background-color: #f9f9f9;
-  border-radius: 6px;
-}
-
-.node-item {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  margin-bottom: 6px;
-  background-color: #fff;
-  border: 1px solid #e4e7ed;
-  border-radius: 6px;
-  cursor: grab;
-  transition: all 0.3s ease;
-}
-
-.node-item:hover {
-  border-color: #409eff;
-  box-shadow: 0 2px 8px 0 rgba(64, 158, 255, 0.15);
-}
-
-.node-item:active {
-  cursor: grabbing;
-}
-
-.node-icon {
-  font-size: 16px;
-  color: #67c23a;
-  margin-right: 10px;
-}
-
-.node-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.node-name {
-  font-size: 12px;
-  color: #303133;
-  font-weight: 500;
-}
-
-.node-desc {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 2px;
-}
-
 .behavior-tree-edit {
   min-height: 87vh;
   max-height: 87vh;
