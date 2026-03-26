@@ -47,10 +47,17 @@
           <div v-if="expandedGroups[group.id]" class="node-list">
             <div v-for="node in group.behaviors" :key="node.id" class="node-item">
               <el-icon class="node-icon"><CircleCheck /></el-icon>
+              <!-- 节点名称和描述 -->
               <div class="node-info">
                 <span class="node-name">{{ node.name }}</span>
                 <span class="node-desc">{{ node.desc }}</span>
               </div>
+              <div class="node-args" >
+                <div v-for="arg in node.args" :key="arg.name" class="node-arg-item">
+                   <el-tag type="primary" size="small" >{{ arg.name }} : {{ arg.type }}</el-tag>
+                </div>
+              </div>
+               <!-- 节点操作按钮 -->
               <div v-if="group.id != -1" class="node-actions">
                 <el-button type="primary" size="small" circle @click="viewNodeInfo(node)">
                   <el-icon><InfoFilled /></el-icon>
@@ -179,10 +186,10 @@
                     </el-select>
                 </template>
               </el-table-column>
-              <el-table-column prop="name" label="参数值" min-width="200">
+              <el-table-column prop="name" label="参数名称" min-width="200">
                 <template #default="{ row }">
                   <el-input 
-                    v-model="row.value" 
+                    v-model="row.name" 
                     placeholder="请输入参数名称" 
                     controls-position="right"
                   />
@@ -353,7 +360,6 @@ export default {
         getAllBehavior().then(res => {
             // 为API返回的数据添加展开状态
             this.behaviorGroupList = structuredClone(this.BasebehaviorGroupList.concat(res)),
-            console.log(this.behaviorGroupList),
             // 初始化展开状态
             this.behaviorGroupList.forEach(group => {
                 this.expandedGroups[group.id] = this.expandedGroups[group.id] ? this.expandedGroups[group.id] : false
@@ -714,6 +720,17 @@ export default {
   padding: 8px 0;
   border-bottom: 1px dashed #ebeef5;
   transition: background-color 0.3s ease;
+}
+
+.node-args{
+  margin-right: 180px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.node-arg-item{
+  margin-right: 14px;
 }
 
 .node-item:last-child {

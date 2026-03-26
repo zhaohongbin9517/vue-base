@@ -132,7 +132,6 @@ export default {
     // 初始化数据
     initData(){
         getAllBehaviorTree().then(response => {
-            console.log(response)
             this.behaviorTrees = baseData.BehaviorTreeList.concat(response)
         })
     },
