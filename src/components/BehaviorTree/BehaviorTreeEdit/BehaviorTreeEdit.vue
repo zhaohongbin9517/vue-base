@@ -295,7 +295,16 @@ export default {
     },
     //参数改变事件
     handleArgChange({nodeId,index,value}){
-      this.nodeMap[nodeId].node.args[index] = value
+      let treeNode = this.nodeMap[nodeId].node
+      if(treeNode.node_type === 'loop_bool_node'){
+        treeNode.bool = value
+        return
+      }
+      if(treeNode.node_type === 'loop_num_node'){
+        treeNode.num = value
+        return
+      }
+      treeNode.args[index] = value
     },
     //边线类型下拉选择
     handleEdgeTypeChange(Command) {

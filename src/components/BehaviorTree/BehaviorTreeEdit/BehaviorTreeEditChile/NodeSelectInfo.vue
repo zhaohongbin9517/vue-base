@@ -43,6 +43,14 @@
               size="small"
               @change="handleArgChange(index, $event)"
             />
+            <el-switch 
+              v-if="arg.type === 'bool'"
+              v-model="arg.value"
+              size="small"
+              active-text="成功"
+              inactive-text="失败"
+              @change="handleArgChange(index, $event)"
+            />
           </div>
         </div>
       </div>
@@ -117,13 +125,20 @@ export default {
   methods: {
     loadArgs() {
       if (!this.selectedNode || !this.selectedNode.node) return
-      const nodeData = this.expandedGroups[this.selectedNode.node.behavior_id] || {}
-      const argsDefinition = nodeData.args || []
-      let argsValue = this.selectedNode.node.args || []
-      this.argsList = argsDefinition.map((item, index) => ({
-        ...item,
-        value: argsValue[index] || ''
-      }))
+      if(this.selectedNode.node.node_type === 'loop_bool_node') {
+        this.argsList = [{ name: '循环结果', type: 'bool',  value: this.selectedNode.node.bool } ]
+      }else if(this.selectedNode.node.node_type === 'loop_num_node'){
+        this.argsList = [{ name: '循环次数', type: 'int',  value: this.selectedNode.node.num } ]
+      }else {
+        const nodeData = this.expandedGroups[this.selectedNode.node.behavior_id] || {}
+        const argsDefinition = nodeData.args || []
+        let argsValue = this.selectedNode.node.args || []
+        this.argsList = argsDefinition.map((item, index) => ({
+          ...item,
+          value: argsValue[index] || ''
+        }))
+      }
+      console.log(this.argsList)
     },
     handleArgChange(index, value) {
       if (this.selectedNode && this.selectedNode.node) {
@@ -133,6 +148,8 @@ export default {
     },
     //是否显示参数
     isShowArgs(){
+      if(this.selectedNode.node.node_type === 'loop_bool_node') return true
+      if(this.selectedNode.node.node_type === 'loop_num_node') return true
       const nodeData = this.expandedGroups[this.selectedNode.node.behavior_id] || {}
       const args =  nodeData.args || []
       this.ShowArgs()
