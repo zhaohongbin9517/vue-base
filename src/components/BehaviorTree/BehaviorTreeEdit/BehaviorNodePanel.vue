@@ -38,18 +38,18 @@
           <span class="node-count">节点:{{ group.behaviors.length }}</span>
         </div>
         <div v-show="localExpandedGroups[group.id]" class="node-list">
-          <div
-            v-for="behavior in group.behaviors"
-            :key="behavior.id"
-            class="node-item"
-            draggable="true"
-            @dragstart="handleDragStart($event,behavior)"
-          >
-            <el-icon class="node-icon"><CircleCheck /></el-icon>
-            <div class="node-child">
-              <span class="node-name">{{ behavior.name }}</span>
-            </div>
-          </div>
+          <el-tooltip   v-for="behavior in group.behaviors" :key="behavior.id" :content="behavior.desc" placement="top" effect="light" >
+              <div
+                class="node-item"
+                draggable="true"
+                @dragstart="handleDragStart($event,behavior)"
+              >
+                <el-icon class="node-icon"><CircleCheck /></el-icon>
+                <div class="node-child">
+                    <span class="node-name">{{ behavior.name }}</span>
+                  </div>
+              </div>
+          </el-tooltip>
         </div>
       </div>
     </div>
