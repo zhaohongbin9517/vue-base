@@ -1,6 +1,6 @@
 <template>
   <!-- 节点容器：relative 确保图标绝对定位生效 -->
-  <div class="w-28 h-12 border-2 border-green-500 rounded-lg flex items-center justify-center relative">
+  <div class="w-28 h-11 border-2 border-green-500 rounded-lg flex items-center justify-center relative">
     <!-- 节点文本 -->
     <h2>根节点</h2>
     <!-- Vue Flow 内置的底部连线手柄 -->

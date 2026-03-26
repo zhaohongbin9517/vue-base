@@ -17,7 +17,7 @@ export default {
 </script>
 
 <template>
-    <div class="w-24 h-12 border-2 border-red-500 rounded-lg flex items-center justify-center">
+    <div class="w-20 h-11 border-2 border-red-500 rounded-lg flex items-center justify-center">
         <Handle type="target" :position="Position.Top" />
         <el-icon ><Plus /></el-icon>
         <!-- <h1>待添加节点</h1> -->

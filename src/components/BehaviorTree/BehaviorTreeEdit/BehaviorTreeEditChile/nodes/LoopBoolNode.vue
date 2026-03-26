@@ -1,9 +1,9 @@
 <template>
     <div 
     :class="{'node_selected': selected}"
-    class="w-32 h-12 border-2 border-yellow-500 rounded-lg flex items-center justify-center">
+    class="w-32 h-11 border-2 border-yellow-500 rounded-lg flex items-center justify-center">
         <Handle type="target" :position="Position.Top" :connectable="handleConnectable" />
-        <h1>循环节点(结果)</h1>
+        <h1 class="label">循环节点(结果)</h1>
         <Handle type="source" :position="Position.Bottom" :connectable="handleConnectable" />
         <NodeActionButtons 
         @collapse-expand="collapseExpand"
@@ -48,3 +48,9 @@ export default {
   }
 }
 </script>
+<style scoped>
+.label {
+  font-size: 14px;
+  margin-right: 18px;
+}
+</style>

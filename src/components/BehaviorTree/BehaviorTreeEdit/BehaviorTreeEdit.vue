@@ -606,7 +606,7 @@ export default {
     // 计算节点X坐标
     calcXPoint(nodeType, X) {
       if (nodeType === 'leaf') return X - 56
-      if (nodeType === 'null_node') return X - 48
+      if (nodeType === 'null_node') return X - 40
       if (nodeType === 'root') return X - 56
       if (nodeType === 'always_true_node') return X - 56
       if (nodeType === 'loop_bool_node') return X - 64
