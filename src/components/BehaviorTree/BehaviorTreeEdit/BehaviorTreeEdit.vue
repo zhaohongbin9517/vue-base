@@ -174,7 +174,7 @@ import BehaviorNodePanel from './BehaviorNodePanel.vue'
 
 import { getBehaviorTree, getAllBehavior } from '@/api/behavior/behavior'
 
-import baseData from '@/assets/json/baseData.json'
+import {getBaseGroupBehavior, getBaseNodeInfo, getTreeNodeTypeToVueFlowNodeType } from '@/store/node'
 
 // 生成唯一节点ID（解决Date.now()重复问题）
 let nodeIndex = 0
@@ -198,7 +198,6 @@ export default {
     negationNode,
     parallelNode,
     leafNode,
-    // InteractionControls,
     MiniMap,
     nullNode,
     NodeSelectInfo,
@@ -224,6 +223,7 @@ export default {
   },
   data() {
     return {
+      nodeTypeToVueFlowNodeType: getTreeNodeTypeToVueFlowNodeType(),
       // 新增：行为节点分组列表
       behaviorGroupList: [],
       // 新增：记录每个分组的展开状态
@@ -239,7 +239,7 @@ export default {
       nodes: [],
       edges: [],
       //nodeName-NodeType 映射
-      nodeTypeMap: {},
+      nodeTypeMap : getBaseNodeInfo(),
       // 根节点坐标
       rootNodePosition :{x: 100, y: 100}, 
       // 新增：临时存储边数据，避免直接操作v-model绑定的edges
@@ -269,7 +269,6 @@ export default {
   async mounted() {
     //获取节点
     await this.getTreeInfo()
-    this.initNodeTypeMap()
     this.nodeMap = {}
     this.addIsUnfoldToTree(this.tree, false)
     this.init()
@@ -287,19 +286,12 @@ export default {
       this.tree = treeInfo.tree
       //获取全部行为节点信息
       const Allbehavior = await getAllBehavior()
-      this.behaviorGroupList = structuredClone(baseData.BasebehaviorGroupList.concat(Allbehavior)),
+      this.behaviorGroupList = structuredClone(getBaseGroupBehavior().concat(Allbehavior)),
       this.behaviorGroupList.forEach(group => {
         group.behaviors.forEach(item => {
           this.expandedGroups[item.id] = item
         })
       })
-    },
-    //初始化基础节点类型
-    initNodeTypeMap(){
-      this.nodeTypeMap = baseData.BasebehaviorGroupList[0].behaviors.reduce((map, item) => {
-        map[item.node_type] = {name: item.name, behavior_id: item.id, description: item.desc}
-        return map
-      }, {})
     },
     //参数改变事件
     handleArgChange({nodeId,index,value}){
@@ -484,7 +476,7 @@ export default {
 
       // 修复1：使用稳定的唯一ID
       const nodeId = generateUniqueNodeId(level, path)
-      const nodeType = this.getNodeType(treeNode.node_type)
+      const nodeType = this.nodeTypeToVueFlowNodeType[treeNode.node_type]
       const y = level === 0 ? 0 : level === 1 ? 100 : 100 + (level - 1) * 100
 
       let children = []
@@ -590,23 +582,6 @@ export default {
       this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx,position:node.position,node_id:nodeId}
       return { node: node, nextX: currentX }
     },
-    // 节点类型映射
-    getNodeType(nodeType) {
-      const typeMap = {
-        'root': 'root',
-        'always_true_node': 'alwaysTrueNode',
-        'ifelse_node': 'ifElseNode',
-        'loop_bool_node': 'loopBoolNode',
-        'loop_num_node': 'loopNumNode',
-        'selector_node': 'selectorNode',
-        'sequence_node': 'sequenceNode',
-        'negation_node': 'negationNode',
-        'parallel_node': 'parallelNode',
-        'null_node': 'nullNode',
-        'leaf': 'leaf'
-      }
-      return typeMap[nodeType] || 'root'
-    },
     // 节点标签映射
     getNodeLabel(treeNode) {
       const nodeType = treeNode.node_type
@@ -692,7 +667,43 @@ export default {
      */
     addBehaviorNode(BehaviorId,parentId,idx){
       const behavior = this.expandedGroups[BehaviorId] || {}
-      console.log('添加节点',behavior,parentId,idx)
+      let treeNode = this.nodeMap[parentId].node
+      // 父节点只能有一个节点，且这个节点目前是空节点，使用新节点替换
+      if(treeNode.node && treeNode.node.node_type !== 'null_node'){
+        return
+      }
+      console.log('添加节点',behavior,treeNode,idx)
+    },
+    //行为节点转换为树节点
+    behaviorNodeToTreeNode(behavior){
+      switch(behavior.type){
+        case 'always_true_node' : 
+        case 'negation_node' :
+          return {
+            node_type: 'negation_node',
+            child: null
+          }
+        case 'leaf':
+          return {
+            node_type: 'leaf',
+            behavior_id: behavior.id,
+            name: behavior.name,
+            desc: behavior.desc,
+            args: behavior.args || []
+          }
+        case 'ifelse_node':
+          return {
+            node_type: 'ifelse_node',
+            check: null,
+            success: null,
+            fail: null,
+            unknown: null
+          }
+        default:
+          return {
+            node_type: 'null_node'
+          }
+      }
     },
     //查找最近的空节点
     findNearestInRange(list, target, range = 50) {
