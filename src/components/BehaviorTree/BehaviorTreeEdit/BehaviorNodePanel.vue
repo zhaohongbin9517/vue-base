@@ -43,10 +43,7 @@
             :key="behavior.id"
             class="node-item"
             draggable="true"
-            @dragstart="handleDragStart($event, behavior)"
-            @dragover="handleDragOver($event)"
-            @dragend="handleDragEnd($event, behavior)"
-            @click="addBehaviorNode(behavior)"
+            @dragstart="handleDragStart($event,behavior)"
           >
             <el-icon class="node-icon"><CircleCheck /></el-icon>
             <div class="node-child">
@@ -75,17 +72,16 @@ export default {
     behaviorGroupList: {
       type: Array,
       default: () => []
-    },
-    expandedGroups: {
-      type: Object,
-      default: () => ({})
     }
   },
   data() {
     return {
       searchText: '',
       localBehaviorGroupList: this.behaviorGroupList,
-      localExpandedGroups: this.expandedGroups
+      localExpandedGroups:this.behaviorGroupList.reduce((map, group) => {
+        map[group.id] = false
+        return map
+      }, {})
     }
   },
   watch: {
@@ -96,28 +92,25 @@ export default {
       },
       immediate: true,
       deep: true
-    },
-    // 监听展开状态同步
-    expandedGroups: {
-      handler(val) {
-        this.localExpandedGroups = val
-      },
-      immediate: true,
-      deep: true
     }
   },
   methods: {
-    toggleGroup(group) { this.$emit('toggle-group', group.id) },
-    expandAll(){this.$emit('expand-all') },
-    foldAll(){this.$emit('fold-all') },
-
-    handleDragEnd(event, behavior) {
-      console.log(event, behavior)
-      // this.$emit('drag-end', behavior)
+    toggleGroup(group) {
+       this.localExpandedGroups[group.id] = !this.localExpandedGroups[group.id]  
     },
-    handleDragOver(event){
-      console.log('move',event.x,event.y)
-    }
+    expandAll(){
+      this.localBehaviorGroupList.forEach(group => {
+        this.localExpandedGroups[group.id] = true
+      })
+    },
+    foldAll(){
+      this.localBehaviorGroupList.forEach(group => {
+        this.localExpandedGroups[group.id] = false
+      })
+     },
+     handleDragStart(event,behavior) {
+      event.dataTransfer.setData('application/json', JSON.stringify({behavior_id:behavior.id}))
+     }
   },
   computed: {
     filteredGroups() {

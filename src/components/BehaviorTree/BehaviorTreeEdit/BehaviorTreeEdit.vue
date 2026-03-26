@@ -3,7 +3,6 @@
     <el-tag type="primary" round style="margin-right: 20px; margin-left: 350px;">
       {{ treeInfo.name || '行为树' }}
     </el-tag>
-
     <el-dropdown @command="handleEdgeTypeChange" style="margin-right: 20px;">
       <el-button type="primary">
         边线类型 <el-icon class="el-icon--right"><arrow-down /></el-icon>
@@ -27,8 +26,10 @@
     <el-button type="primary" @click="unfold()">全部展开</el-button>
     <el-button type="primary" @click="fold()">全部收起</el-button>
     <el-button type="success" @click="saveTreee()">保存</el-button>
+    <el-input v-model="hintMMessage"  style="width: 500px; margin-left: 20px;" />
   </div>
   <VueFlow 
+    ref="vueFlowRef"
     v-model:edges="edges"
     v-model:nodes="nodes"
     :min-zoom="1"
@@ -36,6 +37,8 @@
     @viewport-change="syncFlowToViewport"
     @node-click="nodeClick"
     @pane-click="paneClick"
+    @drop="onDrop"
+    @dragover="onDragOver"
     fit-view-on-init class="behavior-tree-edit"> 
 
     <!-- 核心修复：增加空值保护，避免 node 为 undefined 时报错 -->
@@ -144,10 +147,6 @@
       :behaviorGroupList="behaviorGroupList"
       :expandedGroups="expandedGroups"
       :searchText="searchText"
-      @toggle-group="toggleGroup"
-      @expand-all="expandAll"
-      @fold-all="foldAll"
-      @drag-end="handleDragEnd"
     />
   </VueFlow>
 </template>
@@ -208,7 +207,7 @@ export default {
   },
   setup() {
     const position = ref({ x: 0, y: 0, zoom: 1 })
-    const { nodesDraggable, setViewport, getViewport,onMoveEnd} = useVueFlow()
+    const { nodesDraggable, setViewport, getViewport,onMoveEnd } = useVueFlow()
     
     onMoveEnd(() => {
       position.value = getViewport()
@@ -254,7 +253,13 @@ export default {
       //选中节点对象
       selectedNode: null,
 
-      flowMethods: null
+      flowMethods: null,
+
+      //全部空节点
+      allNullNode:[],
+
+      //提示消息
+      hintMMessage : '提示消息',
     }
   },
   created() {
@@ -282,9 +287,11 @@ export default {
       this.tree = treeInfo.tree
       //获取全部行为节点信息
       const Allbehavior = await getAllBehavior()
-      this.behaviorGroupList = Allbehavior
+      this.behaviorGroupList = structuredClone(baseData.BasebehaviorGroupList.concat(Allbehavior)),
       this.behaviorGroupList.forEach(group => {
-        this.expandedGroups[group.id] = false
+        group.behaviors.forEach(item => {
+          this.expandedGroups[item.id] = {name: item.name, behavior_id: item.id, desc: item.desc}
+        })
       })
     },
     //初始化基础节点类型
@@ -386,6 +393,7 @@ export default {
       this.nodeMap = {}
       this.nodes = []
       this.edges = []
+      this.allNullNode = []
       this.tempEdges = []
       this.selectedNode = null
       await this.init()
@@ -396,8 +404,8 @@ export default {
     initViewport(){
       const containerEl = document.querySelector('.vue-flow')
       this.flowMethods.setViewport({
-        x: -this.rootNodePosition.x/1+ containerEl.clientWidth/2 - 56, 
-        y: -this.rootNodePosition.y + containerEl.clientHeight/2 + 56, 
+        x: -this.rootNodePosition.x + containerEl.clientWidth/2 - 56, 
+        y: -this.rootNodePosition.y + containerEl.clientHeight/2 - 56, 
         zoom: this.viewport.zoom
       })
     },
@@ -408,7 +416,7 @@ export default {
       const containerEl = document.querySelector('.vue-flow')
       let newPosition = {
         x: -position.x/1+ containerEl.clientWidth/2 - 56, 
-        y: -position.y + containerEl.clientHeight/2 + 56, 
+        y: -position.y + containerEl.clientHeight/2 -56, 
         zoom: this.position.zoom
       }
       setTimeout(() => {
@@ -513,10 +521,14 @@ export default {
         this.nodes.push(node)
         //缓存根节点位置
         if(treeNode.node_type === 'root'){
-          this.rootNodePosition = { x: node.position.x, y: 100 }
+          this.rootNodePosition = { x: node.position.x, y: node.position.y }
         }
         //缓存节点名-原始treeNode 映射
         this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx,position:node.position,node_id:nodeId}
+        // 缓存空节点信息
+        if(treeNode.node_type === 'null_node'){
+          this.allNullNode.push({parentId:parentId,position:node.position,index:idx})
+        }
         return { node: node, nextX: startX + 150 }
       }
 
@@ -573,7 +585,7 @@ export default {
 
       //缓存根节点位置
       if(treeNode.node_type === 'root'){
-        this.rootNodePosition = { x: node.position.x, y: 100 }
+        this.rootNodePosition = { x: node.position.x, y:  node.position.y }
       }
       this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx,position:node.position,node_id:nodeId}
       return { node: node, nextX: currentX }
@@ -679,18 +691,58 @@ export default {
       
       this.edges.push(newEdge)
     },
-    toggleGroup(groupid) {
-      this.expandedGroups[groupid] = !this.expandedGroups[groupid]
+    onDragOver (e)  {
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'move'
     },
-    expandAll() {
-      this.behaviorGroupList.forEach(group => {
-        this.expandedGroups[group.id] = true
-      })
+    onDrop(event) {
+      try {
+        // 获取行为id
+        const json = event.dataTransfer.getData('application/json')
+        if (!json) return
+        const behaviorId = JSON.parse(json).behavior_id
+        console.log('behaviorId',behaviorId)
+        // 1. 获取容器偏移
+        const rect = this.flowMethods.vueFlowRef.value.getBoundingClientRect()
+        // 2. 相对容器坐标
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+        // 3. 转为 Vue Flow 画布坐标（自动处理缩放 & 平移）
+        const flowPos = this.flowMethods.project({ x, y })
+        // 计算节点左上角的实际坐标（空节点存储的是左上角坐标）
+        flowPos.x = flowPos.x - 58  // 坐标减去自定义节点宽度的一半
+        flowPos.y = flowPos.y - 24// 坐标减去自定义节点高度的一半
+        // 4. 查找最近空节点
+        const nearestNullNode = this.findNearestInRange(this.allNullNode, flowPos)
+        if(nearestNullNode){
+          //实际添加节点
+          console.log('添加节点',nearestNullNode)
+        }
+      } catch (err) {
+        console.error('拖放失败', err)
+      }
     },
-    foldAll() {
-      this.behaviorGroupList.forEach(group => {
-        this.expandedGroups[group.id] = false
-      })
+    //查找最近的空节点
+    findNearestInRange(list, target, range = 50) {
+      if (!list || list.length === 0) return null
+      let nearestItem = null
+      let minDistance = Infinity
+      for (const item of list) {
+        // 必须有 x y 才计算
+        if (typeof item.position.x !== 'number' || typeof item.position.y !== 'number') continue
+        const dx = Math.abs(item.position.x - target.x)
+        const dy = Math.abs(item.position.y - target.y)
+        // 1. 先筛选：上下左右都在范围内
+        if (dx > range || dy > range) continue
+        // 2. 计算直线距离
+        const distance = Math.sqrt(dx * dx + dy * dy)
+        // 3. 保留最近的
+        if (distance < minDistance) {
+          minDistance = distance
+          nearestItem = item
+        }
+      }
+      return nearestItem
     }
   }
 }
