@@ -22,18 +22,33 @@
         <Minus v-else />
       </el-icon>
     </el-button>
+
+    <el-button 
+    v-if="isHaveArgs.bool"  
+    type="primary" 
+    size="small" 
+    circle 
+    class="absolute bottom-1 right-1 p-0.5 icon-shrink-btn"
+    :title="isHaveArgs.msg"
+    >
+      <el-icon><InfoFilled /></el-icon>
+    </el-button>
+    
+
   </div>
 </template>
 
 <script>
-import { Delete, Plus,Minus } from '@element-plus/icons-vue'
+import { Delete, Plus,Minus ,InfoFilled} from '@element-plus/icons-vue'
+import { Object } from 'core-js/web';
 
 export default {
   name: 'NodeActionButtons',
   components: {
     Delete,
     Plus,
-    Minus
+    Minus,
+    InfoFilled
   },
   props: {
     // 是否可以删除
@@ -50,6 +65,11 @@ export default {
     isCollapsed: {
       type: Boolean,
       default: true
+    },
+    // 是否有参数
+    isHaveArgs: {
+      type: Object,
+      default: () => ({bool:false,msg:''})
     }
   },
   methods: {
