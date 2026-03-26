@@ -76,6 +76,10 @@ const nodeinfo = {
             args:[]
         },
         node_name: '叶节点',  //对于行为节点来说，这个参数没啥用
+    },
+    'null_node': {
+        nodeTreeStruct: nullNode,
+        node_name: '空节点',
     }
 }
 
@@ -119,8 +123,21 @@ export function  getBaseGroupBehavior() {
 }
 
 //根据节点类型获取节点信息
-export function getNodeInfo(nodeType) {
-    return JSON.parse(JSON.stringify(nodeinfo[nodeType]))
+export function getNodeInfo(nodeType = 'leaf',behavior = {id :0, name:'', args:[]}) {
+    if(nodeType === 'leaf'){
+        const localleafNode = JSON.parse(JSON.stringify(nodeinfo['leaf']))
+        localleafNode.nodeTreeStruct.behavior_id = behavior.id
+        localleafNode.nodeTreeStruct.args = behavior.args.map((arg)=> 
+            {
+              if(arg.type === 'int') return 0
+              if(arg.type === 'string') return ''  
+              if(arg.type === 'atom') return '' 
+            })
+        localleafNode.node_name = behavior.name
+        return localleafNode
+    } else {
+        return JSON.parse(JSON.stringify(nodeinfo[nodeType]))
+    }
 }
 
 //根据树节点类型获取流节点类型

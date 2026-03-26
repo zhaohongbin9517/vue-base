@@ -26,7 +26,7 @@
     <el-button type="primary" @click="unfold()">全部展开</el-button>
     <el-button type="primary" @click="fold()">全部收起</el-button>
     <el-button type="success" @click="saveTreee()">保存</el-button>
-    <el-input v-model="hintMMessage"  style="width: 500px; margin-left: 20px;" />
+    <!-- <el-input v-model="hintMMessage"  style="width: 500px; margin-left: 20px;" /> -->
   </div>
   <VueFlow 
     ref="vueFlowRef"
@@ -172,9 +172,9 @@ import { MiniMap } from '@vue-flow/minimap'
 import NodeSelectInfo from './BehaviorTreeEditChile/NodeSelectInfo.vue'
 import BehaviorNodePanel from './BehaviorNodePanel.vue'
 
-import { getBehaviorTree, getAllBehavior } from '@/api/behavior/behavior'
+import { getBehaviorTree, getAllBehavior, updateBehaviorTree } from '@/api/behavior/behavior'
 
-import {getBaseGroupBehavior, getBaseNodeInfo, getTreeNodeTypeToVueFlowNodeType } from '@/store/node'
+import {getBaseGroupBehavior, getBaseNodeInfo, getTreeNodeTypeToVueFlowNodeType,getNodeInfo } from '@/store/node'
 
 // 生成唯一节点ID（解决Date.now()重复问题）
 let nodeIndex = 0
@@ -669,41 +669,25 @@ export default {
       const behavior = this.expandedGroups[BehaviorId] || {}
       let treeNode = this.nodeMap[parentId].node
       // 父节点只能有一个节点，且这个节点目前是空节点，使用新节点替换
-      if(treeNode.node && treeNode.node.node_type !== 'null_node'){
-        return
+      const addNode= getNodeInfo(behavior.node_type,behavior)
+      addNode.nodeTreeStruct.isUnfold = true
+      if(treeNode.node && treeNode.node.node_type === 'null_node'){
+        treeNode.node = addNode.nodeTreeStruct
       }
-      console.log('添加节点',behavior,treeNode,idx)
-    },
-    //行为节点转换为树节点
-    behaviorNodeToTreeNode(behavior){
-      switch(behavior.type){
-        case 'always_true_node' : 
-        case 'negation_node' :
-          return {
-            node_type: 'negation_node',
-            child: null
-          }
-        case 'leaf':
-          return {
-            node_type: 'leaf',
-            behavior_id: behavior.id,
-            name: behavior.name,
-            desc: behavior.desc,
-            args: behavior.args || []
-          }
-        case 'ifelse_node':
-          return {
-            node_type: 'ifelse_node',
-            check: null,
-            success: null,
-            fail: null,
-            unknown: null
-          }
-        default:
-          return {
-            node_type: 'null_node'
-          }
+      // 父节点有多个子节点,排除ifelse_node 节点
+      else if(treeNode.nodes && treeNode.node_type !== 'ifelse_node'){
+        treeNode.nodes[idx] = addNode.nodeTreeStruct  //替换空节点
       }
+      //ifelse 节点特殊处理
+      else if(treeNode.node_type === 'ifelse_node'){
+        if(idx === 0)  treeNode.check = addNode.nodeTreeStruct
+        else if(idx === 1)  treeNode.success = addNode.nodeTreeStruct
+        else if(idx === 2)  treeNode.fail = addNode.nodeTreeStruct
+        else if(idx === 3)  treeNode.unknown = addNode.nodeTreeStruct
+      }else {
+        return 
+      }
+      this.resetInit()
     },
     //查找最近的空节点
     findNearestInRange(list, target, range = 50) {
@@ -726,6 +710,31 @@ export default {
         }
       }
       return nearestItem
+    },
+    //保存行为树
+    async saveTreee(){
+      const saveTreeInfo = structuredClone(this.treeInfo)
+      const fittleTreeRemoveIsUnfold = (treeNode)=>{
+        delete treeNode.isUnfold
+        if(treeNode.node){
+          fittleTreeRemoveIsUnfold(treeNode.node)
+        }else if(treeNode.nodes){
+          treeNode.nodes.forEach(child => fittleTreeRemoveIsUnfold(child))
+        }else if(treeNode.node_type === 'ifelse_node'){
+          fittleTreeRemoveIsUnfold(treeNode.check)
+          fittleTreeRemoveIsUnfold(treeNode.success)
+          fittleTreeRemoveIsUnfold(treeNode.fail)
+          fittleTreeRemoveIsUnfold(treeNode.unknown)
+        }
+      }
+      fittleTreeRemoveIsUnfold(saveTreeInfo.tree)
+      const res  = await updateBehaviorTree(saveTreeInfo)
+      if(res.id === saveTreeInfo.id){
+        this.$message.success('保存成功')
+        console.log('保存行为树',res)
+      }else{
+        this.$message.error('保存失败')
+      }
     }
   }
 }
