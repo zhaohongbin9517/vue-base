@@ -290,7 +290,7 @@ export default {
       this.behaviorGroupList = structuredClone(baseData.BasebehaviorGroupList.concat(Allbehavior)),
       this.behaviorGroupList.forEach(group => {
         group.behaviors.forEach(item => {
-          this.expandedGroups[item.id] = {name: item.name, behavior_id: item.id, desc: item.desc}
+          this.expandedGroups[item.id] = item
         })
       })
     },
@@ -654,43 +654,6 @@ export default {
       // event.preventDefault()
       // event.dataTransfer.dropEffect = 'copy'
     },
-    // 点击添加节点
-    addBehaviorNode(behavior) {
-      console.log(behavior)
-      // const viewport = this.position
-      const containerEl = document.querySelector('.vue-flow')
-      const containerRect = containerEl.getBoundingClientRect()
-      const centerX = containerRect.width / 2 + this.rootNodePosition.x
-      const centerY = containerRect.height / 2 + this.rootNodePosition.y
-      
-      const newNode = {
-        id: `behavior-${behavior.id}-${Date.now()}`,
-        type: 'leaf',
-        position: { x: centerX, y: centerY },
-        data: {
-          label: behavior.name,
-          node_id: `behavior-${behavior.id}-${Date.now()}`,
-          // node_data: behavior,
-          behaviorId: behavior.id,
-          node_data: {
-            ...behavior,
-            args: behavior.args || []
-          }
-        }
-      }
-      
-      this.nodes.push(newNode)
-      
-      const newEdge = {
-        id: `e${this.tree.tree_id}-${newNode.id}`,
-        source: this.tree.tree_id,
-        target: newNode.id,
-        deletable: false,
-        type: this.edgesType
-      }
-      
-      this.edges.push(newEdge)
-    },
     onDragOver (e)  {
       e.preventDefault()
       e.dataTransfer.dropEffect = 'move'
@@ -701,7 +664,7 @@ export default {
         const json = event.dataTransfer.getData('application/json')
         if (!json) return
         const behaviorId = JSON.parse(json).behavior_id
-        console.log('behaviorId',behaviorId)
+        if(!behaviorId || behaviorId === -2) return // -2 为根节点 不能添加
         // 1. 获取容器偏移
         const rect = this.flowMethods.vueFlowRef.value.getBoundingClientRect()
         // 2. 相对容器坐标
@@ -716,11 +679,20 @@ export default {
         const nearestNullNode = this.findNearestInRange(this.allNullNode, flowPos)
         if(nearestNullNode){
           //实际添加节点
-          console.log('添加节点',nearestNullNode)
+          this.addBehaviorNode(behaviorId,nearestNullNode.parentId,nearestNullNode.index)
         }
       } catch (err) {
         console.error('拖放失败', err)
       }
+    },
+    /**
+     * @param BehaviorId  节点id
+     * @param parentId  父节点id
+     * @param idx  所处位置
+     */
+    addBehaviorNode(BehaviorId,parentId,idx){
+      const behavior = this.expandedGroups[BehaviorId] || {}
+      console.log('添加节点',behavior,parentId,idx)
     },
     //查找最近的空节点
     findNearestInRange(list, target, range = 50) {
