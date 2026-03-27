@@ -1,6 +1,6 @@
 <template>
     <div 
-    :class="{'node_selected': selected, 'node_args': isArgsValid()}"
+    :class="{'node_selected': selected}"
     class="w-28 h-12 border-2 border-green-500 rounded-lg flex items-center justify-center relative">
         <Handle type="target" :position="Position.Top" />
         <h1 class="leaf-label">{{data.label}}</h1>
@@ -56,9 +56,5 @@ export default {
 .leaf-label {
   font-size: 12px;
   margin-right: 18px;
-}
-
-.node_args{
-  border-color: rgb(255, 0, 221);
 }
 </style>

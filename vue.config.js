@@ -21,19 +21,19 @@ module.exports = defineConfig({
         changeOrigin: true
       },
       '/behavior_file': {
-        target: 'http://127.0.0.1:8326',
+        target: 'http://127.0.0.1:8426',
         changeOrigin: true
       },
       '/snapshot': {
-        target: 'http://127.0.0.1:8326',
+        target: 'http://127.0.0.1:8426',
         changeOrigin: true
       },
       '/behavior': {
-        target: 'http://127.0.0.1:8326',
+        target: 'http://127.0.0.1:8426',
         changeOrigin: true
       },
       '/behavior_tree': {
-        target: 'http://127.0.0.1:8326',
+        target: 'http://127.0.0.1:8426',
         changeOrigin: true
       }
     }

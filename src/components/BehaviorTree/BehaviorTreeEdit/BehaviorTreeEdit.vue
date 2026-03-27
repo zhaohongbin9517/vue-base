@@ -497,10 +497,15 @@ export default {
           treeNode.nodes.push({node_type: 'null_node'})
           children = treeNode.nodes
         } else if (treeNode.node_type === 'ifelse_node') {
-          children.push(treeNode.check ? treeNode.check : {node_type: 'null_node'})
-          children.push(treeNode.success ? treeNode.success : {node_type: 'null_node'})
-          children.push(treeNode.fail ? treeNode.fail : {node_type: 'null_node'})
-          children.push(treeNode.unknown ? treeNode.unknown : {node_type: 'null_node'})
+          treeNode.check = treeNode.check || {node_type: 'null_node'}
+          treeNode.success = treeNode.success || {node_type: 'null_node'}
+          treeNode.fail = treeNode.fail || {node_type: 'null_node'}
+          treeNode.unknown = treeNode.unknown || {node_type: 'null_node'}
+          
+          children.push(treeNode.check)
+          children.push(treeNode.success)
+          children.push(treeNode.fail)
+          children.push(treeNode.unknown)
         }
       }
 
@@ -728,7 +733,9 @@ export default {
         if(treeNode.node){
           fittleTreeRemoveIsUnfold(treeNode.node)
         }else if(treeNode.nodes){
-          treeNode.nodes.forEach(child => fittleTreeRemoveIsUnfold(child))
+          treeNode.nodes.forEach(child => {
+          fittleTreeRemoveIsUnfold(child)}
+        )
         }else if(treeNode.node_type === 'ifelse_node'){
           fittleTreeRemoveIsUnfold(treeNode.check)
           fittleTreeRemoveIsUnfold(treeNode.success)
