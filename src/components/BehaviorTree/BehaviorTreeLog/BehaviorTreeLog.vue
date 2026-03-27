@@ -30,6 +30,7 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
+    <span style="margin-left: 20px;">总条数：{{ wsInfo.msgList.length }} 当前显示：{{nowShowLogIndex + 1}}</span>
   </div>
   <VueFlow 
     ref="vueFlowRef"
