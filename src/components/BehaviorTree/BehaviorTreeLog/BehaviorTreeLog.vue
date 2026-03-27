@@ -133,6 +133,15 @@
     </template>
 
     <Background />
+
+    <logNodeSelectInfo 
+       :selectedNode="selectedNode" 
+       :nodeMap="nodeMap"
+       :nodeTypeMap="nodeTypeMap"
+       :expandedGroups="expandedGroups"
+       @collapse-expand="collapseExpand"
+     />
+
   </VueFlow>
 </template>
 
@@ -153,6 +162,7 @@ import negationNode from '../BehaviorTreeEdit/BehaviorTreeEditChile/nodes/Negati
 import parallelNode from '../BehaviorTreeEdit/BehaviorTreeEditChile/nodes/ParallelNode.vue'
 import leafNode from '../BehaviorTreeEdit/BehaviorTreeEditChile/nodes/LeafNode.vue'
 import nullNode from '../BehaviorTreeEdit/BehaviorTreeEditChile/nodes/NullNode.vue'
+import logNodeSelectInfo from '../BehaviorTreeLog/LogNodeSelectInfo.vue'
 
 import { getBehaviorTree, getAllBehavior,getAllBehaviorTree } from '@/api/behavior/behavior'
 
@@ -182,6 +192,7 @@ export default {
     leafNode,
     nullNode,
     ArrowDown,
+    logNodeSelectInfo
   },
   setup() {
     const position = ref({ x: 0, y: 0, zoom: 1 })
@@ -567,6 +578,7 @@ export default {
           type: nodeType,
           position: { x: this.calcXPoint(treeNode.node_type, startX), y },
           data: { 
+            log_info: log.info ? log.info : {},
             run_result: log.node_type === treeNode.node_type ? log.result : 'unknown',
             label: this.getNodeLabel(treeNode), 
             node_id : nodeId,
@@ -582,7 +594,7 @@ export default {
           this.rootNodePosition = { x: node.position.x, y: node.position.y }
         }
         //缓存节点名-原始treeNode 映射
-        this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx,position:node.position,node_id:nodeId}
+        this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx,position:node.position,node_id:nodeId,log_info: log.info ? log.info : {}}
         // 缓存空节点信息
         if(treeNode.node_type === 'null_node'){
           this.allNullNode.push({parentId:parentId,position:node.position,index:idx})
@@ -632,6 +644,7 @@ export default {
         type: nodeType,
         position: { x: this.calcXPoint(treeNode.node_type, (startX - 150 + currentX) / 2), y },
         data: { 
+          log_info: log.info ? log.info : {},
           run_result: log.node_type === treeNode.node_type ? log.result : 'unknown',
           label: this.getNodeLabel(treeNode), 
           node_id : nodeId,
@@ -646,7 +659,7 @@ export default {
       if(treeNode.node_type === 'root'){
         this.rootNodePosition = { x: node.position.x, y:  node.position.y }
       }
-      this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx,position:node.position,node_id:nodeId}
+      this.nodeMap[nodeId] = {node:treeNode,parentId:parentId,index:idx,position:node.position,node_id:nodeId,log_info:log.info ? log.info : {}}
       return { node: node, nextX: currentX }
     },
     // 节点标签映射

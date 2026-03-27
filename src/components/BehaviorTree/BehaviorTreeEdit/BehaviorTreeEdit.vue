@@ -3,7 +3,7 @@
     <el-tag type="primary" round style="margin-right: 20px; margin-left: 350px;">
       {{ treeInfo.name || '行为树' }}
     </el-tag>
-    <el-dropdown @command="handleEdgeTypeChange" style="margin-right: 20px;">
+    <el-dropdown @command="handleEdgeTypeChange">
       <el-button type="primary">
         边线类型 <el-icon class="el-icon--right"><arrow-down /></el-icon>
       </el-button>
@@ -21,12 +21,11 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-    
-    <!-- <el-button type="primary" @click="printTree">打印</el-button> -->
-    <el-button type="primary" @click="unfold()">全部展开</el-button>
-    <el-button type="primary" @click="fold()">全部收起</el-button>
-    <el-button type="success" @click="saveTreee()">保存</el-button>
-    <!-- <el-input v-model="hintMMessage"  style="width: 500px; margin-left: 20px;" /> -->
+    <el-button-group style="margin-left: 20px;">
+      <el-button type="primary" @click="unfold()">展开</el-button>
+      <el-button type="primary" @click="fold()">收起</el-button>
+      <el-button type="success" @click="saveTreee()">保存</el-button>
+    </el-button-group>
   </div>
   <VueFlow 
     ref="vueFlowRef"
