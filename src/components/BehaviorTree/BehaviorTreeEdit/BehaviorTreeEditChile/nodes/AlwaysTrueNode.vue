@@ -39,7 +39,11 @@ export default {
 
 <template>
     <div 
-    :class="{'node_selected': selected}"
+    :class="{
+      'node_selected': selected,
+      'node_run_success':data.run_result === 'success',
+      'node_run_fail':data.run_result === 'failure'
+      }"
     class="w-28 h-11 border-2 border-green-500 rounded-lg flex items-center justify-center">
         <Handle type="target" :position="Position.Top" :connectable="handleConnectable" />
         <h1>永真节点</h1>

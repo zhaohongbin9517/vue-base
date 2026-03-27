@@ -26,6 +26,7 @@ import Snapshot from '../components/BehaviorTree/BTChild/Snapshot.vue'
 import NodeManager from '../components/BehaviorTree/BTChild/NodeManager.vue'
 import BehaviorTreeManager from '../components/BehaviorTree/BTChild/BehaviorTreeManager.vue'
 import BehaviorTreeEdit from '../components/BehaviorTree/BehaviorTreeEdit/BehaviorTreeEdit.vue'
+import BehaviorTreeLog from '../components/BehaviorTree/BehaviorTreeLog/BehaviorTreeLog.vue'
 
 const routes = [
   {
@@ -78,6 +79,11 @@ const routes = [
         path: 'edit-tree',
         name: 'BehaviorTreeEdit',
         component: BehaviorTreeEdit
+      },
+      {
+        path: 'monitor',
+        name: 'Monitor',
+        component: BehaviorTreeLog
       },
       // 行为树路由
       {

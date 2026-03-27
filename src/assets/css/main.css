@@ -67,3 +67,10 @@ body,
     box-shadow:0 0 0 2px #aedaff;
     background:#aedaff
 }
+
+.node_run_success {
+    background:#10b981
+}
+.node_run_fail {
+    background:#f94144
+}

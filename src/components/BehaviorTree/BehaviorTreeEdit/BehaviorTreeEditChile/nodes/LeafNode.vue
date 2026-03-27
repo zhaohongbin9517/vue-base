@@ -1,6 +1,10 @@
 <template>
     <div 
-    :class="{'node_selected': selected}"
+    :class="{
+      'node_selected': selected,
+      'node_run_success':data.run_result === 'success',
+      'node_run_fail':data.run_result === 'failure'
+      }"
     class="w-28 h-12 border-2 border-green-500 rounded-lg flex items-center justify-center relative">
         <Handle type="target" :position="Position.Top" />
         <h1 class="leaf-label">{{data.label}}</h1>
@@ -39,6 +43,12 @@ export default {
     }
   },
   methods: {
+    success(){
+      return this.data.run_result === 'success'
+    },
+    fail(){
+      return this.data.run_result === 'fail'
+    },
     isArgsValid(){
       return {bool:this.data.node_data.args.length > 0,msg:this.data.node_data.args.join(',')}
     },

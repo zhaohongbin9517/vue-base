@@ -30,7 +30,7 @@
                 <span class="menu-text">数据管理</span>
               </div>
             </template>
-            <el-menu-item index="/behavior-tree/monitor" class="sub-menu-item">
+            <el-menu-item index="/monitor" class="sub-menu-item">
               <span class="sub-menu-text">运行监控</span>
             </el-menu-item>
             <el-menu-item index="/behavior-tree/snapshot" class="sub-menu-item">
