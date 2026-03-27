@@ -1,7 +1,12 @@
 <template>
   <div class="behavior-tree-edit-container">
-    <span style="margin-left: 20px;">缓存条数：</span>
-    <el-input-number v-model="wsInfo.msgCacheLength" placeholder="缓存条数" style="width: 120px;"> </el-input-number>
+    <el-button type="primary" style="margin-left: 20px;" @click="backpage()">
+      <el-icon ><ArrowLeft /> </el-icon>
+       返回
+    </el-button>
+    <span style="margin-left: 20px;">缓存条数：
+      <el-input-number v-model="wsInfo.msgCacheLength" placeholder="缓存条数" style="width: 120px;"> </el-input-number>
+    </span>
     <el-input v-model="subscribeObjectId" placeholder="请输入对象id" style="margin-left: 10px;width: 200px;"></el-input>
     <el-button-group style="margin-left: 20px;">
       <el-button type="primary" size="mini" @click="subscribe" :loading = "subscribeStatus">订阅</el-button>
@@ -193,6 +198,7 @@ export default {
     leafNode,
     nullNode,
     ArrowDown,
+    ArrowLeft,
     logNodeSelectInfo
   },
   setup() {
@@ -209,8 +215,7 @@ export default {
       position,
       setViewport,
       getViewport,
-      nodesDraggable,
-      ArrowLeft
+      nodesDraggable
     }
   },
   data() {
@@ -279,6 +284,10 @@ export default {
     await this.getBehaviorInfo()
   },
   methods: {
+     // 返回上一页
+    backpage(){
+      this.$router.back()
+    },
     //prevLog 上一条日志
     prevLog(){
       if (this.nowShowLogIndex <= 0) return;

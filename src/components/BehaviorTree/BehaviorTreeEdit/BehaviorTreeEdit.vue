@@ -1,5 +1,9 @@
 <template>
   <div class="behavior-tree-edit-container">
+    <el-button type="primary" style="margin-left: 20px;" @click="backpage()">
+      <el-icon ><arrow-left /> </el-icon>
+       返回
+    </el-button>
     <el-tag type="primary" round style="margin-right: 20px; margin-left: 350px;">
       {{ treeInfo.name || '行为树' }}
     </el-tag>
@@ -154,7 +158,7 @@
 import { ref, nextTick } from 'vue'
 import { Background } from '@vue-flow/background'
 import { MarkerType, VueFlow, useVueFlow } from '@vue-flow/core'
-import { ArrowDown } from '@element-plus/icons-vue'
+import { ArrowDown,ArrowLeft } from '@element-plus/icons-vue'
 
 import rootNode from './BehaviorTreeEditChile/nodes/root.vue'
 import alwaysTrueNode from './BehaviorTreeEditChile/nodes/AlwaysTrueNode.vue'
@@ -201,7 +205,7 @@ export default {
     nullNode,
     NodeSelectInfo,
     BehaviorNodePanel,
-    ArrowDown
+    ArrowDown,ArrowLeft
   },
   setup() {
     const position = ref({ x: 0, y: 0, zoom: 1 })
@@ -439,6 +443,10 @@ export default {
       }else {
         this.selectedNode = null
       }
+    },
+    // 返回上一页
+    backpage(){
+      this.$router.back()
     },
     // 全部展开
     async unfold() {
