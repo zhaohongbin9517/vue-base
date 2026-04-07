@@ -78,7 +78,8 @@ const getRedirectPath = () => {
   if (typeof redirect === 'string' && redirect.startsWith('/')) {
     return redirect
   }
-  return '/config'
+  return '/behavior-tree/node-manager'
+  // return '/config'
 }
 
 const submitLogin = async () => {
@@ -123,8 +124,10 @@ const submitLogin = async () => {
     setRememberedUser(loginForm.account.trim(), rememberUser.value)
 
     const redirectPath = getRedirectPath()
-    const fallbackPath = getFirstAuthorizedPath()
-    router.replace(fallbackPath === '/403' ? '/403' : redirectPath)
+    // const fallbackPath = getFirstAuthorizedPath()
+    console.log(fallbackPath)
+    // router.replace(fallbackPath === '/403' ? '/403' : redirectPath)
+    router.replace(redirectPath)
   } catch (error) {
     ElMessage({
       message: '登录请求失败，请稍后重试',
