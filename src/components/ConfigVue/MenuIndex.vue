@@ -63,16 +63,22 @@
               </div>
             </template>
             <el-menu-item index="/custom-submenu/measure-manage" @click="handleJumpHtml('measure-manage')" class="sub-menu-item">
-              <span class="sub-menu-text">计量站监控</span>
+              <span class="sub-menu-text">计量-计量站监控</span>
             </el-menu-item>
             <el-menu-item index="/custom-submenu/batch-operator" @click="handleJumpHtml('batch-operator')" class="sub-menu-item">
-              <span class="sub-menu-text">计划管理</span>
+              <span class="sub-menu-text">计量-计划管理</span>
             </el-menu-item>
             <el-menu-item index="/custom-submenu/measure-control" @click="handleJumpHtml('measure-control')"  class="sub-menu-item">
-              <span class="sub-menu-text">计量监控</span>
+              <span class="sub-menu-text">计量-计量监控</span>
             </el-menu-item>
             <el-menu-item index="/custom-submenu/history-data-splitpanes" @click="handleJumpHtml('history-data-splitpanes')" class="sub-menu-item">
-              <span class="sub-menu-text">结果监控</span>
+              <span class="sub-menu-text">计量-结果监控</span>
+            </el-menu-item>
+            <el-menu-item index="/custom-submenu/history-data-splitpanes" @click="handleJumpHtml('behavior-tree-manage')" class="sub-menu-item">
+              <span class="sub-menu-text">行为树-管理</span>
+            </el-menu-item>
+            <el-menu-item index="/custom-submenu/history-data-splitpanes" @click="handleJumpHtml('server-control')" class="sub-menu-item">
+              <span class="sub-menu-text">服务控制-管理</span>
             </el-menu-item>
           </el-sub-menu>
 <!--           
@@ -115,13 +121,17 @@ export default {
   data() {
     return {
       webPort: '',
-      configWebPort: ''
+      configWebPort: '',
+      behavior_web_port: '',
+      server_control_web_port: '',
     }
   },
   mounted() {
     getWebPort().then(res => {
       this.webPort = res.measure_web
       this.configWebPort = res.config_web
+      this.behavior_web_port = res.behavior_web_port
+      this.server_control_web_port = res.server_control_web_port
     })
   },
   methods: {
@@ -135,24 +145,37 @@ export default {
       const authUser = getAuthUser()
       const authAlias = getAuthAlias()
       const authPermissionKeys = getAuthPermissionKeys()
-      
+
       // 构建包含认证信息的URL参数
-      let url = `http://${ip}:${this.webPort}/#/${pageName}`
-      // let url = `http://${ip}:${this.configWebPort}/#/config/blank`
-      if (authToken) {
-        // 处理token，删除前缀"Bearer "
-        const processedToken = authToken.replace(/^Bearer\s+/i, '')
-        
-        // 在URL中添加认证信息参数
-        const authInfo = encodeURIComponent(JSON.stringify({
-          token: processedToken,
-          user: authUser,
-          alias: authAlias,
-          permissionKeys: authPermissionKeys
-        }))
-        url = `${url}?authInfo=${authInfo}`
+      let url = ''
+      // 根据页面名称构建URL
+      switch (pageName) {
+        case 'behavior-tree-manage':
+          if(this.behavior_web_port === 'null' || this.behavior_web_port === '') return
+          url = `http://${ip}:${this.behavior_web_port}/`
+          console.log(url)
+          break;
+        case 'server-control':
+          if(this.server_control_web_port === 'null' || this.server_control_web_port === '') return
+          url = `http://${ip}:${this.server_control_web_port}/`
+          console.log(url)
+          break;
+        default:
+          url = `http://${ip}:${this.webPort}/#/${pageName}`
+          break;
       }
-      console.log(url)
+      if (authToken) {
+            // 处理token，删除前缀"Bearer "
+            const processedToken = authToken.replace(/^Bearer\s+/i, '')
+            // 在URL中添加认证信息参数
+            const authInfo = encodeURIComponent(JSON.stringify({
+              token: processedToken,
+              user: authUser,
+              alias: authAlias,
+              permissionKeys: authPermissionKeys
+            }))
+            url = `${url}?authInfo=${authInfo}`
+      }
       // 打开新窗口
       window.open(url, '_blank')
     },
