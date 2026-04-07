@@ -31,17 +31,19 @@ const normalizePermissionKeys = (items) => {
 }
 
 export const getFirstAuthorizedPath = () => {
-  const permissions = new Set(getAuthPermissionKeys())
+  // const permissions = new Set(getAuthPermissionKeys())
 
-  if (permissions.has('license:read')) {
-    return '/config/blank'
-  }
+  // if (permissions.has('license:read')) {
+  //   return '/config/blank'
+  // }
 
-  if (permissions.has('user_manage:read')) {
-    return '/user-center/users'
-  }
+  // if (permissions.has('user_manage:read')) {
+  //   return '/user-center/users'
+  // }
 
-  return '/403'
+  // return '/403'
+
+  return '/behavior-tree/node-manager'
 }
 
 export const refreshAuthPermissions = async (force = false) => {
