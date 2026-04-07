@@ -582,16 +582,29 @@ export default {
       this.initDeviceMappings= config.init_device || []
 
       //计量结果配置
+      if(config.result){
+        if(Object.prototype.toString.call(config.result) === "[object Object]"){
+          config.result = [config.result]
+        }
+      }else {
+        config.result = []
+      }
       this.resultTableInfo= {
-        resultGroups: config.result ? config.result.map(item => ({
+        resultGroups:  
+        config.result.map(item => ({
           name: item.name || 'result1',
           save_type: item.save_type || '',
           table: item.table || '',
           column: Object.entries(item.column || {}).map(([key, value]) => ({ dbColumnField: key,  params: value })) || [{ dbColumnField: '', params: [] }]
-        })) : []
+        }))
       }
-
       //出结果判断
+      if(config.check_result){
+        if(Object.prototype.toString.call(config.check_result) === "[object Object]"){
+          const newConfigResult = {relation:"and",condition:[config.check_result]}
+          config.check_result = newConfigResult
+        }
+      }
       this.resultCheck= 
       config.check_result ? {
         relation: config.check_result.relation || '',
