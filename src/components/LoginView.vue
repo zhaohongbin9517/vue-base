@@ -125,7 +125,7 @@ const submitLogin = async () => {
 
     const redirectPath = getRedirectPath()
     // const fallbackPath = getFirstAuthorizedPath()
-    console.log(fallbackPath)
+    // console.log(fallbackPath)
     // router.replace(fallbackPath === '/403' ? '/403' : redirectPath)
     router.replace(redirectPath)
   } catch (error) {
