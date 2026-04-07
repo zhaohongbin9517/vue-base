@@ -18,6 +18,18 @@
         <span class="label">节点描述：</span>
         <span class="content">{{ getNodeDesc(selectedNode.node.node_type) }}</span>
       </div>
+      <div v-if="selectedNode.node.node_type === 'leaf'" class="info-item-desc">
+        <span class="label">模块：</span>
+        <span class="content">{{ getNodeModule(selectedNode.node.node_type) }}</span>
+      </div>
+      <div v-if="selectedNode.node.node_type === 'leaf'"  class="info-item-desc">
+        <span class="label">模块：</span>
+        <span class="content">{{ getNodeFunc(selectedNode.node.node_type) }}</span>
+      </div>
+      <div  class="info-item-desc">
+        <span class="label">节点描述：</span>
+        <span class="content">{{ getNodeDesc(selectedNode.node.node_type) }}</span>
+      </div>
       <div v-if="isShowArgs()" class="info-item-desc">
         <span class="label">参数：</span>
         <div class="content">
@@ -184,6 +196,20 @@ export default {
       }
       return this.nodeTypeMap[nodeType]?.description || '无描述'
     },
+    //获取节点函数
+    getNodeFunc(nodeType) {
+      if (nodeType === 'leaf') {
+        return this.expandedGroups[this.selectedNode.node.behavior_id]?.func || '无函数'
+      }
+      return  '无函数'
+    },
+    //获取节点模块
+    getNodeModule(nodeType) {
+      if (nodeType === 'leaf') {
+        return this.expandedGroups[this.selectedNode.node.behavior_id]?.module || '无模块'
+      }
+      return '无模块'
+    },
     //是否可以左移
     isCanLeftMove(){
       if(!this.selectedNode.parentId) return false  //没有父节点，不能左移
@@ -278,7 +304,7 @@ export default {
 
 .info-content {
   margin-bottom: 16px;
-  max-height: 300px;
+  max-height: 400px;
   overflow-y: auto;
 }
 
