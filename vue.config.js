@@ -1,5 +1,11 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
+  pages: {
+    index: {
+      entry: 'src/main.js',
+      title: '计量管理' // 自定义标题
+    }
+  },
   transpileDependencies: true,
   devServer: {
     client: {

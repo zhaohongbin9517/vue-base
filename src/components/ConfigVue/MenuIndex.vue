@@ -74,10 +74,10 @@
             <el-menu-item index="/custom-submenu/history-data-splitpanes" @click="handleJumpHtml('history-data-splitpanes')" class="sub-menu-item">
               <span class="sub-menu-text">计量-结果监控</span>
             </el-menu-item>
-            <el-menu-item index="/custom-submenu/history-data-splitpanes" @click="handleJumpHtml('behavior-tree-manage')" class="sub-menu-item">
+            <el-menu-item index="/custom-submenu/behavior-tree-manage" @click="handleJumpHtml('behavior-tree-manage')" class="sub-menu-item">
               <span class="sub-menu-text">行为树-管理</span>
             </el-menu-item>
-            <el-menu-item index="/custom-submenu/history-data-splitpanes" @click="handleJumpHtml('server-control')" class="sub-menu-item">
+            <el-menu-item index="/custom-submenu/server-control" @click="handleJumpHtml('server-control')" class="sub-menu-item">
               <span class="sub-menu-text">服务控制-管理</span>
             </el-menu-item>
           </el-sub-menu>

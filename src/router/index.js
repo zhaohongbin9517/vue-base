@@ -131,7 +131,17 @@ const routes = [
             path: 'history-data-splitpanes',
             name: 'HistoryDataSplitpanes',
             component: BlankConfig
-          }
+          },
+          {
+            path: 'behavior-tree-manage',
+            name: 'BehaviorTreeManage',
+            component: BlankConfig
+          },
+          {
+            path: 'server-control',
+            name: 'ServerControl',
+            component: BlankConfig
+          },
         ]
       },
       {
