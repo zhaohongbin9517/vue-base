@@ -610,7 +610,7 @@ export default {
         relation: config.check_result.relation || '',
         checks:  config.check_result.condition.map(item => ({ param: item.code_id || '', expression: item.expression || '' })) || [] 
       } : 
-      { relation: '',  checks: []  }
+      { relation: '',  checks: [] }
 
       //可变参数选择
       this.changeParam= {
@@ -670,6 +670,14 @@ export default {
       };
 
       //设备状态枚举
+      const localDeviceStatus = config.device_status || {}
+      if( localDeviceStatus.code_id){ //适配旧结构
+        config.device_status.code_ids = [config.device_status.code_id]
+        config.device_status.status = localDeviceStatus.status.map(item =>({
+            tag_value:[{code_id:localDeviceStatus.code_id,value:item.value || 0}],
+            status:item.status || ''
+        }))
+      }
       this.deviceStatusConfig = {
         allParam:config.device_status ? config.device_status.code_ids || []: [],
         enums: config.device_status ? structuredClone(config.device_status.status) || [{  tag_value: [],    status: ''  }]: [],
