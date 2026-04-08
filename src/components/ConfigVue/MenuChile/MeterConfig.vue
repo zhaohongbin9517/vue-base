@@ -285,6 +285,19 @@
         @save-config="saveConfig"
       />
     </div>
+
+    <!-- 计量井人工状态检查 -->
+    <div id="check-manual-status">
+      <MeterConfigCheckMmanualStatusSetting 
+        v-model:checkMeasureStatusBase="checkMeasureStatusBase"
+        :title="'计量井人工状态检查'"
+        :tips="''"
+        :name="'checkMeasureStatusSetting'"
+        :paramOptions="paramOptions"
+        @update-measure-status="updateMeasureStatus"
+        @save-config="saveConfig"
+      />
+    </div>
     
   </div>
    <!-- 快速导航菜单 -->
@@ -331,6 +344,7 @@ import MeterConfigEmphasisPlanSetting from './MeterConfigChild/MeterConfigEmphas
 import MeterConfigExtendConfigSetting from './MeterConfigChild/MeterConfigExtendConfigSetting.vue'
 import MeterConfigLoopMeterSetting from './MeterConfigChild/MeterConfigLoopMeterSetting.vue'
 import MeterConfigAddConfig from './MeterConfigChild/MeterConfigAddConfig.vue'
+import MeterConfigCheckMmanualStatusSetting from './MeterConfigChild/MeterConfigCheckMmanualStatusSetting.vue'
 import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName,updateMeterConfig,getExtendConfigEnum} from '@/api/configUtils/config'
 import { getAllObjectInfoMap } from '@/api/configUtils/cacheData'
 import { getAuthPermission } from '@/api/login/auth'
@@ -355,7 +369,8 @@ export default {
     MeterConfigEmphasisPlanSetting,
     MeterConfigExtendConfigSetting,
     MeterConfigLoopMeterSetting,
-    MeterConfigAddConfig
+    MeterConfigAddConfig,
+    MeterConfigCheckMmanualStatusSetting
   },
   props: {
     isShowHeader: {
@@ -389,7 +404,8 @@ export default {
         { id: 'change-param', title: '可修改参数选择' },
         { id: 'secondary-measurement', title: '二次计量' },
         { id: 'extend-info', title: '扩展信息' },
-        { id: 'loop-meter-info', title: '循环计量信息' }
+        { id: 'loop-meter-info', title: '循环计量信息' },
+        { id: 'check-manual-status', title: '计量井人工状态检查' }
       ],
       PromiseWrite: getAuthPermission('config:write'),
       PromiseRead: getAuthPermission('config:read'),
@@ -477,6 +493,11 @@ export default {
       },
       //参数解压
       paramUncompress: [{ code_id: '', value: 0 }],
+      //计量人工状态检查
+      checkMeasureStatusBase: {
+        station:{},  //站检查信息
+        well:{}     //井检查信息
+      },
 
 
       //模块选择
@@ -599,7 +620,7 @@ export default {
         }))
       }
       //出结果判断
-      if(config.check_result){
+      if(!config.check_result.relation){
         if(Object.prototype.toString.call(config.check_result) === "[object Object]"){
           const newConfigResult = {relation:"and",condition:[config.check_result]}
           config.check_result = newConfigResult
@@ -611,6 +632,11 @@ export default {
         checks:  config.check_result.condition.map(item => ({ param: item.code_id || '', expression: item.expression || '' })) || [] 
       } : 
       { relation: '',  checks: [] }
+
+      console.log('resultCheck',this.resultCheck)
+      console.log('check_result',config.check_result)
+      //计量人工状态检查
+      this.checkMeasureStatusBase = config.check_measure_status_base ? config.check_measure_status_base : this.checkMeasureStatusBase
 
       //可变参数选择
       this.changeParam= {
@@ -744,7 +770,7 @@ export default {
         'startCode', 'checkStartCode', 'stopCode', 'checkStopCode',
         'deviceStatusCode', 'wnChannelNumber', 'wmChannelNumber', 'planSetinfo',
         'initDeviceSetting', 'resultSetting', 'checkResultSetting', 'paramUncompress',
-        'changeParamSetting', 'emphasisPlanSetting', 'extendConfigSetting', 'loopMeterSetting'
+        'changeParamSetting', 'emphasisPlanSetting', 'extendConfigSetting', 'loopMeterSetting', 'checkMeasureStatusSetting'
       ];
       
       // 遍历并检查每个配置项的更新结果
@@ -943,6 +969,9 @@ export default {
             delete this.baseData.config.meter_loop
           }
           break
+        case "checkMeasureStatusSetting":
+          this.baseData.config.check_measure_status_base = this.checkMeasureStatusBase
+          break
       }
       return {result:true,error:''}
     },
@@ -1063,6 +1092,12 @@ export default {
       if(type === 'run_status' || type === 'stop_status'){
         this.deviceStatusConfig.statusEnumClassification[type] = value
       }
+    },
+    //更新计量检查
+    updateMeasureStatus(name, newMeasureStatus){
+      if(name !== 'checkMeasureStatusSetting') return
+      this.checkMeasureStatusBase = newMeasureStatus
+      console.log(this.checkMeasureStatusBase)
     },
 
     //通道号设置变更
