@@ -633,8 +633,6 @@ export default {
       } : 
       { relation: '',  checks: [] }
 
-      console.log('resultCheck',this.resultCheck)
-      console.log('check_result',config.check_result)
       //计量人工状态检查
       this.checkMeasureStatusBase = config.check_measure_status_base ? config.check_measure_status_base : this.checkMeasureStatusBase
 
@@ -1097,7 +1095,6 @@ export default {
     updateMeasureStatus(name, newMeasureStatus){
       if(name !== 'checkMeasureStatusSetting') return
       this.checkMeasureStatusBase = newMeasureStatus
-      console.log(this.checkMeasureStatusBase)
     },
 
     //通道号设置变更

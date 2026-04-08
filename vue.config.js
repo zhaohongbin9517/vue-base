@@ -7,6 +7,8 @@ module.exports = defineConfig({
     }
   },
   transpileDependencies: true,
+  outputDir: 'dist',
+  assetsDir: 'static',
   devServer: {
     client: {
       // 完全禁用 overlay 弹窗（推荐，开发时看控制台日志即可）
