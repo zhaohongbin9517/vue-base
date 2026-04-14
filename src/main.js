@@ -5,7 +5,8 @@ import 'element-plus/dist/index.css'
 import router from './router'
 import './styles.css'
 import './assets/css/tailwind.css' // 引入 Tailwind 样式
-
+import './assets/iconfont/iconfont.css'
+import SvgIcon from './components/SvgIcon.vue'
 
 // 备份原生警告方法
 const originalWarn = console.warn
@@ -27,5 +28,9 @@ console.warn = function (...args) {
 
 const app = createApp(App)
 app.use(ElementPlus)
+
+// 👇 全局注册
+app.component('svg-icon', SvgIcon)
+
 app.use(router)
 app.mount('#app')

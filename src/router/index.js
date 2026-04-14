@@ -13,6 +13,14 @@ import UserChangePassword from '../components/UserCenter/MenuChile/UserChangePas
 import UserAuth from '../components/UserCenter/MenuChile/UserAuth.vue'
 import UserRoles from '../components/UserCenter/MenuChile/UserRoles.vue'
 
+// 任务管理路由
+import TaskManagerMenu from '../components/TaskManager/TaskMenu.vue'
+import BlankConfig from '../components/TaskManager/BlankConfig.vue'
+import TaskManager from '../components/TaskManager/TaskChild/TaskManager.vue'
+
+
+
+
 //登录路由
 import Login from '../components/LoginView.vue'
 
@@ -28,13 +36,46 @@ const routes = [
   {
     path: '/',
     component: MainLayout,
-    redirect: '/user-center',
+    redirect: '/task-manager',
     children: [
       {
         path: '403',
         name: 'Forbidden',
         component: ForbiddenView,
         meta: { title: '无权限' }
+      },
+      {
+        path: 'task-manager',
+        name: 'TaskManagerMenu',
+        component: TaskManagerMenu,
+        redirect: '/task-manager/taskManager',
+        children: [
+          {
+            path: 'taskManager',
+            name: 'TaskManager',
+            component: TaskManager
+          },
+          {
+            path: 'configManager',
+            name: 'ConfigManager',
+            component: BlankConfig
+          },
+          {
+            path: 'fileManager',
+            name: 'FileManager',
+            component: BlankConfig
+          },
+          {
+            path: 'pluginManager',
+            name: 'PluginManager',
+            component: BlankConfig
+          },
+          {
+            path: 'systemDescription',
+            name: 'SystemDescription',
+            component: BlankConfig
+          },
+        ]
       },
       {
         path: 'user-center',

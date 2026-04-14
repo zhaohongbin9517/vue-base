@@ -3,7 +3,7 @@
     <div class="page-title">
         <div class="page-content" @click="handleTitleClick">
             <img src="@/assets/logo.png" alt="logo" class="title-logo" />
-            <span>后端管理</span>
+            <span>任务管理</span>
         </div>
         <!-- 导航菜单 显示在中间 -->
         <div class="navigation-menu">
@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { User,Setting,Back,ArrowDown,UserFilled,Key } from '@element-plus/icons-vue'
+import { User,Setting,Back,ArrowDown,UserFilled,Key,Postcard,SetUp,FolderRemove,HelpFilled,QuestionFilled } from '@element-plus/icons-vue'
 import { getDisplayName, clearAuthSession } from '@/api/userUtils/auth'
 export default {
   name: 'MainLayout',
@@ -75,29 +75,33 @@ export default {
     Back,
     ArrowDown,
     UserFilled,
-    Key
+    Key,
+    Postcard,
+    SetUp,
+    FolderRemove,
+    HelpFilled,
+    QuestionFilled
   },
   data() {
     return {
       userName: '',
       nowChooseItem: '',
       menuItem: [
-        // {
-        //   icon: User,
-        //   name: '点表管理',
-        //   children: [
-        //     { icon: Setting,  name: '用户管理' ,command: 'userManager' },
-        //     { icon: Setting,  name: '角色管理' ,command: 'roleManager' },
-        //     { icon: Setting,  name: '用户管理' ,command: 'userManager' }
-        //   ]
-        // },
+        {
+          icon: Postcard,
+          name: '任务管理',
+          children: [
+            { icon: Postcard,  name: '任务管理' ,command: 'taskManager' },
+            { icon: QuestionFilled,  name: '系统说明' ,command: 'systemDescription' },
+          ]
+        },
         {
           icon: Setting,
           name: '用户设置',
           children: [
-            { icon: User,  name: '用户管理' ,command: 'userManager' },
-            { icon: UserFilled,  name: '角色管理' ,command: 'roleManager' },
-            { icon: Key,  name: '授权管理' ,command: 'authManager' }
+            {icon: User,  name: '用户管理' ,command: 'userManager' },
+            {icon: UserFilled,  name: '角色管理' ,command: 'roleManager' },
+            {icon: Key,  name: '授权管理' ,command: 'authManager' }
           ]
         }
       ]
@@ -135,6 +139,14 @@ export default {
           // console.log('点击了退出登录')
           clearAuthSession()
           this.$router.push('/login')
+          break
+        case 'taskManager':
+          // console.log('点击了任务管理')
+          this.$router.push('/task-manager/taskManager')
+          break
+        case 'systemDescription':
+          // console.log('点击了系统说明')
+          this.$router.push('/task-manager/systemDescription')
           break
       }
     }

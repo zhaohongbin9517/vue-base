@@ -7,41 +7,30 @@
           class="el-menu-vertical"
           router
         >
-          <el-sub-menu index="user-manage" popper-class="custom-submenu">
+          <el-sub-menu
+            v-for="item in menuItem"
+            :key="item.name"
+            :index="item.name"
+            popper-class="custom-submenu"
+          >
             <template #title>
               <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><User /></el-icon>
-                <span class="menu-text">用户管理</span>
+                <el-icon class="menu-icon">
+                  <component :is="item.icon" />
+                </el-icon>
+                <span class="menu-text">{{ item.name }}</span>
               </div>
             </template>
-            <el-menu-item v-if="canRead1" index="/user-center/users" class="sub-menu-item">
-              <span class="sub-menu-text">用户管理</span>
-            </el-menu-item>
-            <el-menu-item index="/user-center/change-password" class="sub-menu-item">
-              <span class="sub-menu-text">密码修改</span>
-            </el-menu-item>
-          </el-sub-menu>
-
-          <el-sub-menu v-if="canRead2" index="role-manage" popper-class="custom-submenu">
-            <template #title>
-              <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><UserFilled /></el-icon>
-                <span class="sub-menu-text">角色管理</span>
-              </div>
-            </template>
-            <el-menu-item index="/user-center/roles" class="sub-menu-item">
-              <span class="sub-menu-text">角色管理</span>
-            </el-menu-item>
-          </el-sub-menu>
-          <el-sub-menu v-if="canRead3" index="auth-manage" popper-class="custom-submenu">
-            <template #title>
-              <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><Key /></el-icon>
-                <span class="sub-menu-text">授权管理</span>
-              </div>
-            </template>
-            <el-menu-item index="/user-center/auth" class="sub-menu-item">
-              <span class="sub-menu-text">授权管理</span>
+            <el-menu-item
+              v-for="child in item.children"
+              :key="child.name"
+              :index="child.command || '/'"
+              class="sub-menu-item"
+            >
+              <el-icon v-if="child.icon" class="sub-menu-icon">
+                <component :is="child.icon" />
+              </el-icon>
+              <span class="sub-menu-text">{{ child.name }}</span>
             </el-menu-item>
           </el-sub-menu>
         </el-menu>
@@ -58,17 +47,31 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { User, UserFilled, Key } from '@element-plus/icons-vue'
-import { hasAuthPermission } from '@/api/userUtils/auth'
-
-const canRead1 = computed(() => hasAuthPermission('user_manage:read'))
-const canRead2 = computed(() => hasAuthPermission('role:read'))
-const canRead3 = computed(() => hasAuthPermission('auth:read'))
+import { Postcard, SetUp, FolderRemove, HelpFilled, QuestionFilled } from '@element-plus/icons-vue'
 
 const route = useRoute()
 
+const menuItem = [
+  {
+    icon: Postcard,
+    name: '任务管理',
+    children: [
+      { icon: Postcard,  name: '任务管理' , command: '/task-manager/taskManager'},
+      { icon: SetUp,  name: '配置管理' ,command: '/task-manager/configManager' },
+      { icon: FolderRemove,  name: '文件管理' ,command: '/task-manager/fileManager' },
+      { icon: HelpFilled,  name: '插件管理' ,command: '/task-manager/pluginManager' }
+    ]
+  },
+  {
+    icon: Postcard,
+    name: '系统说明',
+    children: [
+      { icon: QuestionFilled,  name: '系统说明' ,command: '/task-manager/systemDescription' },
+    ]
+  },
+]
+
 const activeMenu = computed(() => route.path)
-console.log('user',activeMenu)
 </script>
 
 <style scoped>
@@ -147,12 +150,22 @@ console.log('user',activeMenu)
   color: #606266;
 }
 
+.sub-menu-icon {
+  font-size: 16px;
+  color: #409eff;
+  margin-right: 8px;
+}
+
 /* 子菜单项悬停效果 */
 .sub-menu-item:hover {
   background-color: #ecf5ff !important;
 }
 
 .sub-menu-item:hover .sub-menu-text {
+  color: #409eff;
+}
+
+.sub-menu-item:hover .sub-menu-icon {
   color: #409eff;
 }
 
@@ -164,6 +177,10 @@ console.log('user',activeMenu)
 .sub-menu-item.is-active .sub-menu-text {
   color: #409eff;
   font-weight: 500;
+}
+
+.sub-menu-item.is-active .sub-menu-icon {
+  color: #409eff;
 }
 
 .main {
