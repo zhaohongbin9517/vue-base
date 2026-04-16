@@ -1,126 +1,206 @@
-/* 空白配置组件 */
 <template>
-  <div class="blank-config">
-    <el-empty description="这里什么也没有">
-      <template #image>
-        <div class="animated-icon">
-          <div class="box">
-            <div class="face front"></div>
-            <div class="face back"></div>
-            <div class="face right"></div>
-            <div class="face left"></div>
-            <div class="face top"></div>
-            <div class="face bottom"></div>
-          </div>
-        </div>
-      </template>
-    </el-empty>
+  <div class="task-manager-container">
+    <div class="task-header">
+      <h2 class="task-title">任务列表</h2>
+      <div class="task-actions">
+        <el-input
+          v-model="searchQuery"
+          placeholder="搜索任务..."
+          class="search-input"
+          clearable
+        />
+        <el-button type="primary" class="action-button" @click="handleDownloadAll">下载全部</el-button>
+        <el-button type="warning" class="action-button" @click="handleUpload">上传</el-button>
+        <el-button type="primary" class="action-button" @click="addTask">新增任务</el-button>
+      </div>
+    </div>
+    
+    <el-table :data="tasks" stripe  class="el-table task-table">
+      <el-table-column prop="task_id" label="ID"  width="100" align="center"/>
+      <el-table-column prop="task_desp" label="任务名称" />
+      <el-table-column prop="corn" label="Cron表达式"   align="center"/>
+      <el-table-column prop="config_id" label="配置ID"  width="100" align="center"/>
+      <el-table-column prop="config_name" label="配置名称" />
+      <el-table-column prop="status" label="状态" width="100"  align="center">
+        <template #default="scope">
+          <span :class="scope.row.status === false ? 'status-disabled' : 'status-enabled'">
+           {{ scope.row.status === true ? '启用' : '禁用' }}
+          </span>
+        </template>
+      </el-table-column> 
+      <el-table-column label="操作" width="500" fixed="right" align="center">
+        <template #default="scope">
+          <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button 
+            size="small" 
+            type="primary" 
+            @click="handleEnable(scope.row)"
+          >
+            {{ scope.row.status === false ? '启用' : '禁用' }}
+          </el-button>
+          <el-button size="small" type="success" @click="handleRun(scope.row)">运行</el-button>
+          <el-button size="small" type="info" @click="handleLog(scope.row)">日志</el-button>
+          <el-button size="small" type="primary" @click="handleDownload(scope.row)">下载</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
   </div>
 </template>
 
 <script>
+import { get_all_tasks, delete_task ,get_all_config_modules} from '@/api/taskConfigUtils/taskConfig'
+
 export default {
-  name: 'BlankConfig'
+  name: 'TaskManager',
+  data() {
+    return {
+      tasks: [
+        // {
+        //   task_id: 1,
+        //   task_desp: 'zhushui',
+        //   corn: '0 10 * * *',
+        //   config_id: 1,
+        //   config_name: 'zhushui1',
+        //   status: false
+        // }
+      ],
+      searchQuery:'',
+      config_modules: []
+    }
+  },
+
+  mounted() {
+    this.get_all_tasks()
+    this.get_all_config_modules()
+  },
+  methods: {
+    //获取全部任务配置
+    async get_all_tasks() {
+      const res = await get_all_tasks()
+      this.tasks = res
+      console.log(res)
+    },
+    //获取全部配置模块
+    async get_all_config_modules() {
+      const res = await get_all_config_modules()
+      this.config_modules = res
+      console.log(res)
+    },
+
+    handleDownloadAll() {
+      console.log('下载全部任务')
+      // 模拟下载操作
+    },
+
+    handleUpload() {
+      console.log('上传任务')
+      // 模拟上传操作
+    },
+
+    addTask() {
+      console.log('新增任务')
+      // 模拟新增操作
+    },
+
+    handleEdit(task) {
+      console.log('编辑任务:', task)
+      // 模拟编辑操作
+    },
+
+    async handleDelete(task) {
+      const res =  await delete_task(task.task_id)
+      if(res === 'ok'){
+        this.get_all_tasks()
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+      }
+    },
+
+    handleEnable(task) {
+      task.status = task.status === true ? false : true
+    },
+
+    handleRun(task) {
+      console.log('运行任务:', task)
+      // 模拟运行操作
+    },
+
+    handleLog(task) {
+      console.log('查看任务日志:', task)
+      // 模拟查看日志操作
+    },
+
+    handleDownload(task) {
+      console.log('下载任务:', task)
+      // 模拟下载操作
+    }
+  }
 }
 </script>
 
 <style scoped>
-/* 空白配置容器样式 */
-.blank-config {
-  /* 高度占满父容器 */
-  height: 100%;
-  /* 使用flex布局 */
+
+.el-table {
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.task-manager-container {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.task-header {
+  margin-bottom: 20px;
+}
+
+.task-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 15px;
+}
+
+.task-actions {
   display: flex;
-  /* 垂直方向居中对齐 */
+  gap: 10px;
   align-items: center;
-  /* 水平方向居中对齐 */
-  justify-content: center;
-  
-  min-height: 85vh;
-  max-height: 85vh;
-  overflow-y: auto;
 }
 
-/* 深度选择器：覆盖Element Plus的el-empty图片容器样式 */
-:deep(.el-empty__image) {
-  /* 宽度设置为100% */
-  width: 100%;
-  /* 使用flex布局 */
-  display: flex;
-  /* 水平方向居中对齐 */
-  justify-content: center;
+.search-input {
+  width: 300px;
+  margin-right: 10px;
 }
 
-/* 动画图标容器样式 */
-.animated-icon {
-  /* 容器宽度 */
-  width: 60px;
-  /* 容器高度 */
-  height: 60px;
-  /* 3D透视效果，值越小透视越强 */
-  perspective: 200px;
-  /* 使用flex布局 */
-  display: flex;
-  /* 垂直方向居中对齐 */
-  align-items: center;
-  /* 水平方向居中对齐 */
-  justify-content: center;
+.action-button {
+  flex-shrink: 0;
 }
 
-/* 3D立方体容器样式 */
-.box {
-  /* 立方体宽度 */
-  width: 40px;
-  /* 立方体高度 */
-  height: 40px;
-  /* 相对定位，用于子元素绝对定位参考 */
-  position: relative;
-  /* 保留3D变换效果 */
-  transform-style: preserve-3d;
-  /* 旋转动画：3秒完成一次，无限循环，线性速度 */
-  animation: rotate 3s infinite linear;
+.el-table {
+  width: 100% !important;
+  table-layout: fixed;
 }
 
-/* 立方体每个面的通用样式 */
-.face {
-  /* 绝对定位，相对于.box定位 */
-  position: absolute;
-  /* 面的宽度 */
-  width: 40px;
-  /* 面的高度 */
-  height: 40px;
-  /* 渐变背景色，从#409eff到#79bbff */
-  background: linear-gradient(135deg, #409eff 0%, #79bbff 100%);
-  /* 白色边框 */
-  border: 2px solid #fff;
-  /* 透明度0.8，稍微透明 */
-  opacity: 0.8;
+.task-table {
+  margin-top: 20px;
 }
 
-/* 前面：绕Y轴旋转0度，沿Z轴向前移动20px */
-.front  { transform: rotateY(0deg) translateZ(20px); }
-/* 后面：绕Y轴旋转180度，沿Z轴向前移动20px */
-.back   { transform: rotateY(180deg) translateZ(20px); }
-/* 右面：绕Y轴旋转90度，沿Z轴向前移动20px */
-.right  { transform: rotateY(90deg) translateZ(20px); }
-/* 左面：绕Y轴旋转-90度，沿Z轴向前移动20px */
-.left   { transform: rotateY(-90deg) translateZ(20px); }
-/* 顶面：绕X轴旋转90度，沿Z轴向前移动20px */
-.top    { transform: rotateX(90deg) translateZ(20px); }
-/* 底面：绕X轴旋转-90度，沿Z轴向前移动20px */
-.bottom { transform: rotateX(-90deg) translateZ(20px); }
+.status-disabled {
+  color: #f56c6c;
+  font-weight: 500;
+}
 
-/* 旋转动画关键帧定义 */
-@keyframes rotate {
-  /* 动画起始状态 */
-  0% {
-    /* X轴和Y轴都不旋转 */
-    transform: rotateX(0deg) rotateY(0deg);
-  }
-  /* 动画结束状态 */
-  100% {
-    /* X轴和Y轴都旋转360度，完成一周旋转 */
-    transform: rotateX(360deg) rotateY(360deg);
-  }
+.status-enabled {
+  color: #67c23a;
+  font-weight: 500;
+}
+
+:deep(.el-button--small) {
+  margin-right: 5px;
 }
 </style>

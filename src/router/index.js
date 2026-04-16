@@ -17,7 +17,8 @@ import UserRoles from '../components/UserCenter/MenuChile/UserRoles.vue'
 import TaskManagerMenu from '../components/TaskManager/TaskMenu.vue'
 import BlankConfig from '../components/TaskManager/BlankConfig.vue'
 import TaskManager from '../components/TaskManager/TaskChild/TaskManager.vue'
-
+import ConfigManager from '../components/TaskManager/TaskChild/ConfigManager.vue'
+import FileManager from '../components/TaskManager/TaskChild/FileManager.vue'
 
 
 
@@ -58,12 +59,12 @@ const routes = [
           {
             path: 'configManager',
             name: 'ConfigManager',
-            component: BlankConfig
+            component: ConfigManager
           },
           {
             path: 'fileManager',
             name: 'FileManager',
-            component: BlankConfig
+            component: FileManager
           },
           {
             path: 'pluginManager',
