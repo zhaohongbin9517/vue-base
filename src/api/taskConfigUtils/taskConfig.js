@@ -48,6 +48,6 @@ export function update_task(task) { return post(TASK_URL_UPDATE_TASK, task)}
 export function add_task(task) { return post(TASK_URL_ADD_TASK, task)}
 export function add_config(config) { return post(TASK_URL_ADD_CONFIG, config)}
 export function update_config(config) { return post(TASK_URL_UPDATE_CONFIG, config)}
-export function run_task(taskId) { return post(TASK_URL_RUN_TASK , {task_id: taskId})}
+export function run_task(runTask) { return post(TASK_URL_RUN_TASK , runTask)}
 export function delete_task(taskId) { return post(TASK_URL_DELETE_TASK , {task_id: taskId})}
 export function delete_config(configId) { return post(TASK_URL_DELETE_CONFIG , {config_id: configId})}

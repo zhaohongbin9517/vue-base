@@ -64,6 +64,7 @@
 
 <script>
 import CronBuilder from './CronBuilder.vue'
+import { add_task, update_task } from '@/api/taskConfigUtils/taskConfig'
 
 export default {
   name: 'TaskForm',
@@ -161,12 +162,10 @@ export default {
     },
     
     async handleSubmit() {
-      this.localFormData.config_name = this.configOptions.find(config => config.config_id === this.localFormData.config_id)?.config_name || ''
       if (this.isEdit) {
-       
-        console.log('update',this.localFormData)
+        await update_task(this.localFormData)
       }else{
-        console.log('add',this.localFormData)
+        await add_task(this.localFormData)
       }
       //更新任务通知外部更新列表里的任务列表
       this.$emit('update:refreshTaskList', false)

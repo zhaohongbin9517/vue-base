@@ -56,41 +56,42 @@
       @update:refreshTaskList="get_all_tasks"
       @submit="handleFormSubmit"
     />
+    <!-- 运行任务弹窗 -->
+    <RunTaskFrom
+      v-model="runDialogVisible"
+      :dialogTitle="runDialogTitle"
+      :dialogVisible="runDialogVisible"
+      @update:dialogVisible="runDialogVisible = $event"
+    />
   </div>
 </template>
 
 <script>
 import { get_all_tasks, delete_task ,get_all_configs,get_all_config_modules} from '@/api/taskConfigUtils/taskConfig'
 import TaskForm from './SmallComponents/TaskForm.vue'
+import RunTaskFrom from './SmallComponents/RunTaskFrom.vue'
 
 export default {
   name: 'TaskManager',
   components: {
-    TaskForm
+    TaskForm,
+    RunTaskFrom
   },
   data() {
     return {
-      tasks: [
-        // {
-        //   task_id: 1,
-        //   task_desp: 'zhushui',
-        //   corn: '0 10 * * *',
-        //   config_id: 1,
-        //   config_name: 'zhushui1',
-        //   status: false
-        // }
-      ],
+      tasks: [],
       configs: [],
       searchQuery:'',
       config_modules: [],
       dialogVisible: false,
+      runDialogVisible: false,
+      runDialogTitle: '运行任务',
       isEdit: false,
       formData: {
         task_id: null,
         task_desp: '',
         corn: '',
         config_id: '',
-        config_name: '',
         status: false
       }
     }
@@ -135,7 +136,6 @@ export default {
         task_desp: '',
         corn: '* * * * * *',
         config_id: '',
-        config_name: '',
         status: false
       }
       this.dialogVisible = true
@@ -173,11 +173,13 @@ export default {
       task.status = task.status === true ? false : true
     },
 
-    handleRun(task) {
+    async handleRun(task) {
       console.log('运行任务:', task)
-      // 模拟运行操作
+      this.runDialogVisible = true
+      this.runDialogTitle = task.task_desp + ' -运行'
     },
-
+    
+    //查看任务日志
     handleLog(task) {
       console.log('查看任务日志:', task)
       // 模拟查看日志操作
