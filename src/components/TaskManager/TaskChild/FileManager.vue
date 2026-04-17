@@ -26,7 +26,7 @@
       <el-table-column prop="size" label="大小" width="100" />
       <el-table-column prop="createdAt" label="创建时间" width="180" />
       <el-table-column prop="updatedAt" label="最后修改时间" width="180" />
-      <el-table-column label="操作" width="200" fixed="right">
+      <el-table-column label="操作" width="350"  align="center">
         <template #default="scope">
           <el-button size="small" type="primary" @click="handlePreview(scope.row)">预览</el-button>
           <el-button size="small" type="info" @click="handleDownload(scope.row)">下载</el-button>

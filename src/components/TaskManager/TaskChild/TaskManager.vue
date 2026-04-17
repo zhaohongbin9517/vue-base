@@ -45,14 +45,29 @@
         </template>
       </el-table-column>
     </el-table>
+    
+    <!-- 任务表单弹窗 -->
+    <TaskForm
+      v-model="dialogVisible"
+      :isEdit="isEdit"
+      :formData="formData"
+      :configOptions="configs"
+      @update:dialogVisible="dialogVisible = $event"
+      @update:refreshTaskList="get_all_tasks"
+      @submit="handleFormSubmit"
+    />
   </div>
 </template>
 
 <script>
-import { get_all_tasks, delete_task ,get_all_config_modules} from '@/api/taskConfigUtils/taskConfig'
+import { get_all_tasks, delete_task ,get_all_configs,get_all_config_modules} from '@/api/taskConfigUtils/taskConfig'
+import TaskForm from './SmallComponents/TaskForm.vue'
 
 export default {
   name: 'TaskManager',
+  components: {
+    TaskForm
+  },
   data() {
     return {
       tasks: [
@@ -65,13 +80,25 @@ export default {
         //   status: false
         // }
       ],
+      configs: [],
       searchQuery:'',
-      config_modules: []
+      config_modules: [],
+      dialogVisible: false,
+      isEdit: false,
+      formData: {
+        task_id: null,
+        task_desp: '',
+        corn: '',
+        config_id: '',
+        config_name: '',
+        status: false
+      }
     }
   },
 
   mounted() {
     this.get_all_tasks()
+    this.get_all_configs()
     this.get_all_config_modules()
   },
   methods: {
@@ -79,13 +106,16 @@ export default {
     async get_all_tasks() {
       const res = await get_all_tasks()
       this.tasks = res
-      console.log(res)
+    },
+    //获取全部配置
+    async get_all_configs() {
+      const res = await get_all_configs()
+      this.configs = res
     },
     //获取全部配置模块
     async get_all_config_modules() {
       const res = await get_all_config_modules()
       this.config_modules = res
-      console.log(res)
     },
 
     handleDownloadAll() {
@@ -99,13 +129,33 @@ export default {
     },
 
     addTask() {
-      console.log('新增任务')
-      // 模拟新增操作
+      this.isEdit = false
+      this.formData = {
+        task_id: null,
+        task_desp: '',
+        corn: '* * * * * *',
+        config_id: '',
+        config_name: '',
+        status: false
+      }
+      this.dialogVisible = true
     },
 
     handleEdit(task) {
-      console.log('编辑任务:', task)
-      // 模拟编辑操作
+      this.isEdit = true
+      this.formData = { ...task }
+      this.dialogVisible = true
+    },
+
+    handleFormSubmit(formData) {
+      console.log('提交任务:', formData)
+      // 模拟表单提交
+      // 提交成功后刷新任务列表
+      this.get_all_tasks()
+      this.$message({
+        message: this.isEdit ? '编辑成功' : '新增成功',
+        type: 'success'
+      })
     },
 
     async handleDelete(task) {

@@ -24,10 +24,10 @@
           <span class="config-content">{{ scope.row.content }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="250" fixed="right">
+      <el-table-column label="操作" width="350"  align="center">
         <template #default="scope">
-          <el-button size="small" type="primary" @click="handleDetail(scope.row)">详情</el-button>
-          <el-button size="small" type="info" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button size="small" type="info" @click="handleDetail(scope.row)">详情</el-button>
+          <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
           <el-button size="small" type="success" @click="handleDownload(scope.row)">下载</el-button>
         </template>
