@@ -5,21 +5,26 @@
 import { get, post } from './taskConfigRequest'
 
 // 任务，配置相关接口
-const TASK_URL_GET_ALL_TASKS = '/api/tasks/get_all_tasks'
-const TASK_URL_GET_ALL_CONFIGS = '/api/tasks/get_all_configs'
-const TASK_URL_GET_TASK = '/api/tasks/get_task'
-const TASK_URL_GET_CONFIG = '/api/tasks/get_config'
-const TASK_URL_GET_TASK_LOGS = '/api/tasks/get_task_logs'
-const TASK_URL_GET_ALL_CONFIG_MODULES = '/api/tasks/get_all_config_modules'
+const TASK_URL_GET_ALL_TASKS = '/api/tasks_new/get_all_tasks'
+const TASK_URL_GET_ALL_CONFIGS = '/api/tasks_new/get_all_configs'
+const TASK_URL_GET_TASK = '/api/tasks_new/get_task'
+const TASK_URL_GET_CONFIG = '/api/tasks_new/get_config'
+const TASK_URL_GET_TASK_LOGS = '/api/tasks_new/get_task_logs'
+const TASK_URL_GET_ALL_CONFIG_MODULES = '/api/tasks_new/get_all_config_modules'
 
-const TASK_URL_UPDATE_TASK = '/api/tasks/update_task'
-const TASK_URL_ADD_TASK = '/api/tasks/add_task'
-const TASK_URL_ADD_CONFIG = '/api/tasks/add_config'
-const TASK_URL_UPDATE_CONFIG = '/api/tasks/update_config'
-const TASK_URL_RUN_TASK = '/api/tasks/run_task'
+const TASK_URL_UPDATE_TASK = '/api/tasks_new/update_task'
+const TASK_URL_ADD_TASK = '/api/tasks_new/add_task'
+const TASK_URL_ADD_CONFIG = '/api/tasks_new/add_config'
+const TASK_URL_UPDATE_CONFIG = '/api/tasks_new/update_config'
+const TASK_URL_RUN_TASK = '/api/tasks_new/run_task'
 
-const TASK_URL_DELETE_TASK = '/api/tasks/delete_task'
-const TASK_URL_DELETE_CONFIG = '/api/tasks/delete_config'
+const TASK_URL_DELETE_TASK = '/api/tasks_new/delete_task'
+const TASK_URL_DELETE_CONFIG = '/api/tasks_new/delete_config'
+
+//配置上传下载
+const TASK_URL_DOWNLOAD_ONE_DATA = '/api/export_new/download_one_data'
+const TASK_URL_DOWNLOAD_TASK = '/api/export_new/download_all_tasks'
+const TASK_URL_DOWNLOAD_CONFIG = '/api/export_new/download_all_configs'
 
 
 // // 配置相关接口
@@ -51,3 +56,8 @@ export function update_config(config) { return post(TASK_URL_UPDATE_CONFIG, conf
 export function run_task(runTask) { return post(TASK_URL_RUN_TASK , runTask)}
 export function delete_task(taskId) { return post(TASK_URL_DELETE_TASK , {task_id: taskId})}
 export function delete_config(configId) { return post(TASK_URL_DELETE_CONFIG , {config_id: configId})}
+
+//配置上传下载
+export function download_one_data(data_type, id) { return get(TASK_URL_DOWNLOAD_ONE_DATA , {data_type: data_type,id: id})}
+export function download_all_tasks() { return get(TASK_URL_DOWNLOAD_TASK)}
+export function download_all_configs() { return get(TASK_URL_DOWNLOAD_CONFIG)}

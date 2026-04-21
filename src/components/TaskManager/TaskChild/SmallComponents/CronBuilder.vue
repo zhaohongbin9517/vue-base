@@ -126,6 +126,7 @@ export default {
       const year = getVal(this.cornTemp[5])
       this.localCornVal = `${minute} ${hour} ${day} ${month} ${week} ${year}`
       this.getRecentExecTimes()
+      this.updateCornVal()
     },
 
     // ====================== 核心：获取最近5次执行时间 ======================

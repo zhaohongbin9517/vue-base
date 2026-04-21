@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { get_all_tasks, delete_task ,get_all_configs,get_all_config_modules} from '@/api/taskConfigUtils/taskConfig'
+import { get_all_tasks, delete_task ,get_all_configs,get_all_config_modules,update_task,download_one_data} from '@/api/taskConfigUtils/taskConfig'
 import TaskForm from './SmallComponents/TaskForm.vue'
 import RunTaskFrom from './SmallComponents/RunTaskFrom.vue'
 
@@ -171,6 +171,8 @@ export default {
 
     handleEnable(task) {
       task.status = task.status === true ? false : true
+      update_task(task)
+      this.get_all_tasks()
     },
 
     async handleRun(task) {
@@ -185,9 +187,11 @@ export default {
       // 模拟查看日志操作
     },
 
-    handleDownload(task) {
+    async handleDownload(task) {
       console.log('下载任务:', task)
       // 模拟下载操作
+      const res = await download_one_data('task', task.task_id)
+      
     }
   }
 }
