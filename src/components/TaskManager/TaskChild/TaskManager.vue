@@ -67,7 +67,9 @@
 </template>
 
 <script>
-import { get_all_tasks, delete_task ,get_all_configs,get_all_config_modules,update_task,download_one_data} from '@/api/taskConfigUtils/taskConfig'
+import { get_all_tasks, delete_task ,get_all_configs,get_all_config_modules,
+  update_task,download_one_data,download_all_tasks,get_task_logs
+} from '@/api/taskConfigUtils/taskConfig'
 import TaskForm from './SmallComponents/TaskForm.vue'
 import RunTaskFrom from './SmallComponents/RunTaskFrom.vue'
 
@@ -119,9 +121,13 @@ export default {
       this.config_modules = res
     },
 
-    handleDownloadAll() {
-      console.log('下载全部任务')
+    //下载全部任务配置
+    async handleDownloadAll() {
       // 模拟下载操作
+      const res = await download_all_tasks()
+      const fileName = res.file_name
+      delete res.file_name
+      this.exportJsonFile(res, fileName);
     },
 
     handleUpload() {
@@ -129,6 +135,7 @@ export default {
       // 模拟上传操作
     },
 
+    //新增任务
     addTask() {
       this.isEdit = false
       this.formData = {
@@ -147,6 +154,7 @@ export default {
       this.dialogVisible = true
     },
 
+    //提交任务表单
     handleFormSubmit(formData) {
       console.log('提交任务:', formData)
       // 模拟表单提交
@@ -158,6 +166,7 @@ export default {
       })
     },
 
+    //删除任务
     async handleDelete(task) {
       const res =  await delete_task(task.task_id)
       if(res === 'ok'){
@@ -169,6 +178,7 @@ export default {
       }
     },
 
+    //启用/禁用任务
     handleEnable(task) {
       task.status = task.status === true ? false : true
       update_task(task)
@@ -182,16 +192,34 @@ export default {
     },
     
     //查看任务日志
-    handleLog(task) {
+    async handleLog(task) {
       console.log('查看任务日志:', task)
+      const res = await get_task_logs(task.task_id,10,0)
+      console.log(res)
       // 模拟查看日志操作
     },
 
+    //下载任务配置
     async handleDownload(task) {
-      console.log('下载任务:', task)
       // 模拟下载操作
       const res = await download_one_data('task', task.task_id)
-      
+      const fileName = res.file_name
+      delete res.file_name
+      this.exportJsonFile(res, fileName);
+    },
+
+    // 通用工具函数：导出JSON文件
+    exportJsonFile(data, filename = 'data.json') {
+      const jsonString = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
   }
 }

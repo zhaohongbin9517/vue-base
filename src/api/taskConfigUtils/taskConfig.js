@@ -46,7 +46,7 @@ export function get_all_tasks() { return get(TASK_URL_GET_ALL_TASKS)}
 export function get_all_configs() { return get(TASK_URL_GET_ALL_CONFIGS)}
 export function get_task(taskId) { return get(TASK_URL_GET_TASK + taskId)}
 export function get_config(configId) { return get(TASK_URL_GET_CONFIG + configId)}
-export function get_task_logs(taskId) { return get(TASK_URL_GET_TASK_LOGS + taskId)}
+export function get_task_logs(taskId,pagesize,index) { return get(TASK_URL_GET_TASK_LOGS ,{task_id: taskId,pagesize: pagesize,index: index})}
 export function get_all_config_modules() { return get(TASK_URL_GET_ALL_CONFIG_MODULES)}
 
 export function update_task(task) { return post(TASK_URL_UPDATE_TASK, task)}
