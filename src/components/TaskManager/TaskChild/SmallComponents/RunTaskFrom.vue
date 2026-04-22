@@ -15,11 +15,11 @@
         <el-date-picker
           v-model="dateRange"
           type="datetimerange"
+          :shortcuts="shortcuts"
+          range-separator="To"
           start-placeholder="Start date"
           end-placeholder="End date"
-          format="YYYY-MM-DD HH:mm:ss"
-          date-format="YYYY/MM/DD ddd"
-          time-format="A hh:mm:ss"
+          value-format="x"
         />
       </el-form-item>
     </el-form>
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-
+import { run_task } from '@/api/taskConfigUtils/taskConfig'
 export default {
   name: 'RunTaskFrom',
   components: {
@@ -46,7 +46,36 @@ export default {
   data() {
     return {
       localDialogVisible: false,
-      dateRange: ''
+      dateRange: '',
+      shortcuts : [
+        {
+          text: 'Last week',
+          value: () => {
+            const end = new Date()
+            const start = new Date()
+            start.setDate(start.getDate() - 7)
+            return [start, end]
+          },
+        },
+        {
+          text: 'Last month',
+          value: () => {
+            const end = new Date()
+            const start = new Date()
+            start.setMonth(start.getMonth() - 1)
+            return [start, end]
+          },
+        },
+        {
+          text: 'Last 3 months',
+          value: () => {
+            const end = new Date()
+            const start = new Date()
+            start.setMonth(start.getMonth() - 3)
+            return [start, end]
+          },
+        },
+      ]
     }
   },
   methods: {
@@ -54,7 +83,13 @@ export default {
       this.$emit('update:dialogVisible', false)
     },
     handleSubmit() {
-      this.$emit('update:dialogVisible', false)
+      console.log(this.dateRange)
+      run_task({
+        task_id: this.taskId,
+        start_time: this.dateRange[0],
+        end_time: this.dateRange[1]
+      })
+      // this.$emit('update:dialogVisible', false)
     }
   }
 }

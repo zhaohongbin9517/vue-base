@@ -63,21 +63,30 @@
       :dialogVisible="runDialogVisible"
       @update:dialogVisible="runDialogVisible = $event"
     />
+    
+    <!-- 任务日志弹窗 -->
+    <TaskLogDialog
+      v-model:dialogVisible="logDialogVisible"
+      :taskId="currentTaskId"
+      @update:dialogVisible="logDialogVisible = $event"
+    />
   </div>
 </template>
 
 <script>
 import { get_all_tasks, delete_task ,get_all_configs,get_all_config_modules,
-  update_task,download_one_data,download_all_tasks,get_task_logs
+  update_task,download_one_data,download_all_tasks
 } from '@/api/taskConfigUtils/taskConfig'
 import TaskForm from './SmallComponents/TaskForm.vue'
 import RunTaskFrom from './SmallComponents/RunTaskFrom.vue'
+import TaskLogDialog from './SmallComponents/TaskLogDialog.vue'
 
 export default {
   name: 'TaskManager',
   components: {
     TaskForm,
-    RunTaskFrom
+    RunTaskFrom,
+    TaskLogDialog
   },
   data() {
     return {
@@ -88,6 +97,8 @@ export default {
       dialogVisible: false,
       runDialogVisible: false,
       runDialogTitle: '运行任务',
+      logDialogVisible: false,
+      currentTaskId: null,
       isEdit: false,
       formData: {
         task_id: null,
@@ -194,9 +205,8 @@ export default {
     //查看任务日志
     async handleLog(task) {
       console.log('查看任务日志:', task)
-      const res = await get_task_logs(task.task_id,10,0)
-      console.log(res)
-      // 模拟查看日志操作
+      this.currentTaskId = task.task_id
+      this.logDialogVisible = true
     },
 
     //下载任务配置
