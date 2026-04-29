@@ -298,6 +298,18 @@
         @save-config="saveConfig"
       />
     </div>
+    <!-- 就地远程组件 -->
+    <div id="long-range">
+      <MeterConfigLongRangeSetting 
+        v-model:config="longRangeConfig"
+        :title="'就地远程组件'"
+        :tips="''"
+        :name="'longRangeSetting'"
+        :paramOptions="paramOptions"
+        @update-long-range="updateLongRange"
+        @save-config="saveConfig"
+      />
+    </div>
     
   </div>
    <!-- 快速导航菜单 -->
@@ -348,6 +360,7 @@ import MeterConfigCheckMmanualStatusSetting from './MeterConfigChild/MeterConfig
 import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName,updateMeterConfig,getExtendConfigEnum} from '@/api/configUtils/config'
 import { getAllObjectInfoMap } from '@/api/configUtils/cacheData'
 import { getAuthPermission } from '@/api/login/auth'
+import MeterConfigLongRangeSetting from './MeterConfigChild/MeterConfigLongRangeSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -370,7 +383,8 @@ export default {
     MeterConfigExtendConfigSetting,
     MeterConfigLoopMeterSetting,
     MeterConfigAddConfig,
-    MeterConfigCheckMmanualStatusSetting
+    MeterConfigCheckMmanualStatusSetting,
+    MeterConfigLongRangeSetting
   },
   props: {
     isShowHeader: {
@@ -405,7 +419,8 @@ export default {
         { id: 'secondary-measurement', title: '二次计量' },
         { id: 'extend-info', title: '扩展信息' },
         { id: 'loop-meter-info', title: '循环计量信息' },
-        { id: 'check-manual-status', title: '计量井人工状态检查' }
+        { id: 'check-manual-status', title: '计量井人工状态检查' },
+        { id: 'long-range', title: '就地远程组件' },
       ],
       PromiseWrite: getAuthPermission('config:write'),
       PromiseRead: getAuthPermission('config:read'),
@@ -470,6 +485,11 @@ export default {
         checks: [
           { param: '', expression: '' }
         ]
+      },
+      longRangeConfig: {
+        show:{enable: false, code_id: '',  values:  { long_range: 1 , locally:0}},
+        set: { enable: false, isCheck: false, code_id: '', values: { long_range: 1 ,locally:0} },
+        check: { enable: false, code_id: '', value: 0 }
       },
       //可变参数选择
       changeParam: {
@@ -650,6 +670,8 @@ export default {
         paramName: config.meter_loop ? config.meter_loop.code_id || '' : '',
         enable: config.meter_loop_enable|| false
       }
+      //就地远程组件
+      this.longRangeConfig= config.long_range? config.long_range : this.longRangeConfig
 
       //扩展信息
       // 扩展信息：全链路判空，避免任意层级属性/方法调用报错
@@ -768,7 +790,8 @@ export default {
         'startCode', 'checkStartCode', 'stopCode', 'checkStopCode',
         'deviceStatusCode', 'wnChannelNumber', 'wmChannelNumber', 'planSetinfo',
         'initDeviceSetting', 'resultSetting', 'checkResultSetting', 'paramUncompress',
-        'changeParamSetting', 'emphasisPlanSetting', 'extendConfigSetting', 'loopMeterSetting', 'checkMeasureStatusSetting'
+        'changeParamSetting', 'emphasisPlanSetting', 'extendConfigSetting', 'loopMeterSetting', 
+        'checkMeasureStatusSetting','longRangeSetting'
       ];
       
       // 遍历并检查每个配置项的更新结果
@@ -793,22 +816,6 @@ export default {
       }
     },
     updateConfig(name) {
-      //startCode
-      //checkStartCode
-      //stopCode
-      //checkStopCode
-      //deviceStatusCode
-      //wnChannelNumber
-      //wmChannelNumber
-      //planSetinfo
-      //initDeviceSetting
-      //resultSetting
-      //checkResultSetting
-      //paramUncompress
-      //changeParamSetting
-      //emphasisPlanSetting
-      //extendConfigSetting
-      //loopMeterSetting
       switch(name){
         case "startCode":
           this.baseData.config.start_device = this.startParameters.filter(item => item.code_id !== '')
@@ -970,6 +977,12 @@ export default {
         case "checkMeasureStatusSetting":
           this.baseData.config.check_measure_status_base = this.checkMeasureStatusBase
           break
+        case "longRangeSetting":
+          this.baseData.config.long_range = this.longRangeConfig
+          break
+      }
+      if(this.baseData.configId === ''){
+        return {result:false,error:'请先选择配置'}
       }
       return {result:true,error:''}
     },
@@ -1095,6 +1108,11 @@ export default {
     updateMeasureStatus(name, newMeasureStatus){
       if(name !== 'checkMeasureStatusSetting') return
       this.checkMeasureStatusBase = newMeasureStatus
+    },
+    //就地远程组件
+    updateLongRange(name, newLongRange){
+      if(name !== 'longRangeSetting') return
+      this.longRangeConfig = newLongRange
     },
 
     //通道号设置变更
