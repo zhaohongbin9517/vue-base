@@ -176,8 +176,8 @@ export default {
         this.localStationCheck.push({
           column: ColumnName,
           data_type: valueObj.data_type || '',
-          one_for_one: valueObj.one_for_one.join(','),
-          one_for_all: valueObj.one_for_all.join(','),
+          one_for_one: valueObj.one_for_one ? valueObj.one_for_one.join(',') : '',
+          one_for_all: valueObj.one_for_all ? valueObj.one_for_all.join(',') : '',
         })
       })
       Object.keys(well).forEach(ColumnName => {
@@ -186,8 +186,8 @@ export default {
         this.localWellCheck.push({
           column: ColumnName,
           data_type: valueObj.data_type || '',
-          one_for_one: valueObj.one_for_one.join(','),
-          one_for_all: valueObj.one_for_all.join(','),
+          one_for_one: valueObj.one_for_one ? valueObj.one_for_one.join(',') : '',
+          one_for_all: valueObj.one_for_all ? valueObj.one_for_all.join(',') : '',
         })
       })
     },
