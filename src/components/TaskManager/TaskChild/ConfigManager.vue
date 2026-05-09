@@ -9,7 +9,6 @@
           class="search-input"
           clearable
         />
-        <el-button type="primary" class="action-button" @click="handleRefresh">刷新</el-button>
         <el-button type="info" class="action-button" @click="handleDownloadAll">下载全部</el-button>
         <el-button type="warning" class="action-button" @click="handleUpload">上传</el-button>
         <el-button type="primary" class="action-button" @click="handleCreateConfig">创建配置</el-button>
@@ -51,8 +50,9 @@
 </template>
 
 <script>
-import {get_all_configs, get_all_config_modules  } from '@/api/taskConfigUtils/taskConfig'
+import {get_all_configs, get_all_config_modules ,delete_config,download_all_configs,download_one_data} from '@/api/taskConfigUtils/taskConfig'
 import ConfigForm from './ConfigSmallComponents/ConfigForm.vue'
+import {exportJsonFile} from '@/utils/utils'
 
 export default {
   components: {
@@ -95,13 +95,12 @@ export default {
       this.configs = res
     },
     // 操作方法
-    handleRefresh() {
-      console.log('刷新配置列表')
-      // 模拟刷新操作
-    },
-    handleDownloadAll() {
-      console.log('下载全部配置')
+    async handleDownloadAll() {
       // 模拟下载操作
+      const res = await download_all_configs()  
+      const fileName = res.file_name
+      delete res.file_name
+      exportJsonFile(res, fileName);
     },
     handleUpload() {
       console.log('上传配置')
@@ -122,28 +121,27 @@ export default {
       this.currentConfig = config
       this.dialogVisible = true
     },
-    handleConfigSubmit(configData) {
-      console.log('配置提交:', configData)
+    handleConfigSubmit() {
       // 根据模式执行不同操作
-      if (this.configMode === 'create') {
-        // 这里应该调用创建配置的API
-        console.log('创建新配置:', configData)
-        // 创建成功后刷新列表
-        this.init_configs()
-      } else if (this.configMode === 'edit') {
-        // 这里应该调用更新配置的API
-        console.log('更新配置:', configData)
-        // 更新成功后刷新列表
+      if (this.configMode === 'view') {
+        return
+      } else {
         this.init_configs()
       }
     },
-    handleDelete(config) {
-      console.log('删除配置:', config)
-      // 模拟删除操作
+    async handleDelete(config) {
+      await delete_config(config.config_id)
+      this.init_configs()
+      this.$message({
+        message: '删除成功',
+        type: 'success'
+      })
     },
-    handleDownload(config) {
-      console.log('下载配置:', config)
-      // 模拟下载操作
+    async handleDownload(config) {
+      const res = await download_one_data('config',config.config_id) 
+      const fileName = res.file_name
+      delete res.file_name
+      exportJsonFile(res, fileName);
     }
   }
 }

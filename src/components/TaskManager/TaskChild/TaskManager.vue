@@ -81,6 +81,7 @@ import { get_all_tasks, delete_task ,get_all_configs,get_all_config_modules,
 import TaskForm from './TaskSmallComponents/TaskForm.vue'
 import RunTaskFrom from './TaskSmallComponents/RunTaskFrom.vue'
 import TaskLogDialog from './TaskSmallComponents/TaskLogDialog.vue'
+import {exportJsonFile} from '@/utils/utils'
 
 export default {
   name: 'TaskManager',
@@ -157,7 +158,7 @@ export default {
       const res = await download_all_tasks()
       const fileName = res.file_name
       delete res.file_name
-      this.exportJsonFile(res, fileName);
+      exportJsonFile(res, fileName);
     },
 
     handleUpload() {
@@ -235,22 +236,9 @@ export default {
       const res = await download_one_data('task', task.task_id)
       const fileName = res.file_name
       delete res.file_name
-      this.exportJsonFile(res, fileName);
+      exportJsonFile(res, fileName);
     },
 
-    // 通用工具函数：导出JSON文件
-    exportJsonFile(data, filename = 'data.json') {
-      const jsonString = JSON.stringify(data, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
   }
 }
 </script>

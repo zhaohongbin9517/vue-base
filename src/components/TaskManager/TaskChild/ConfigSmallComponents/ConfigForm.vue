@@ -41,9 +41,13 @@
           :disabled="mode === 'view'"
           type="textarea"
           rows="10"
-          placeholder="请输入配置内容"
+          placeholder="请输入JSON格式的配置内容"
           class="config-textarea"
+          @blur="formatJson"
         />
+        <div class="json-hint" v-if="mode !== 'view'">
+          提示：支持JSON格式，失去焦点时会自动格式化
+        </div>
       </el-form-item>
     </el-form>
     
@@ -59,6 +63,7 @@
 </template>
 
 <script>
+import {add_config, update_config } from '@/api/taskConfigUtils/taskConfig'
 export default {
   name: 'ConfigForm',
   props: {
@@ -99,7 +104,8 @@ export default {
           { required: true, message: '请选择配置模块', trigger: 'change' }
         ],
         config: [
-          { required: true, message: '请输入配置内容', trigger: 'blur' }
+          { required: true, message: '请输入配置内容', trigger: 'blur' },
+          { validator: this.validateJson, trigger: 'blur' }
         ]
       }
     }
@@ -149,13 +155,45 @@ export default {
     handleClose() {
       this.$emit('update:dialogVisible', false)
     },
-    async handleSubmit() {
+    // 格式化JSON
+    formatJson() {
+      if (this.mode === 'view' || !this.localFormData.config) return
+      
+      try {
+        const parsed = JSON.parse(this.localFormData.config)
+        this.localFormData.config = JSON.stringify(parsed, null, 2)
+      } catch (error) {
+        // JSON格式错误，不进行格式化
+      }
+    },
+    
+    // 验证JSON格式
+    validateJson(rule, value, callback) {
+      if (!value) {
+        callback()
+        return
+      }
+      
+      try {
+        JSON.parse(value)
+        callback()
+      } catch (error) {
+        callback(new Error('请输入有效的JSON格式'))
+      }
+    },
+    
+    handleSubmit() {
       this.$refs.configForm.validate(async (valid) => {
         if (valid) {
           this.loading = true
           try {
             // 发送数据到父组件处理
-            this.$emit('submit', this.localFormData)
+            if (this.mode === 'create') {
+              await add_config(this.localFormData)
+            } else {
+              await update_config(this.localFormData)
+            }
+            this.$emit('submit')
             this.$message({
               message: this.mode === 'create' ? '创建成功' : '编辑成功',
               type: 'success'
@@ -190,5 +228,12 @@ export default {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.json-hint {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 8px;
+  line-height: 1.5;
 }
 </style>
