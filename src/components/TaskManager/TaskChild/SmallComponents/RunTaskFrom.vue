@@ -27,7 +27,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="loading">确定</el-button>
       </span>
     </template>
   </el-dialog>
@@ -40,6 +40,7 @@ export default {
   components: {
   },
   props: {
+    taskId: { type: String, default: '' },
     dialogTitle: { type: String, default: '运行任务'},
     dialogVisible: { type: Boolean, default: false },
   },
@@ -47,6 +48,7 @@ export default {
     return {
       localDialogVisible: false,
       dateRange: '',
+      loading: false,
       shortcuts : [
         {
           text: 'Last week',
@@ -82,14 +84,22 @@ export default {
     handleClose() {
       this.$emit('update:dialogVisible', false)
     },
-    handleSubmit() {
-      console.log(this.dateRange)
-      run_task({
+    async handleSubmit() {
+      //为确定按钮添加转圈标识
+      this.loading = true
+      await run_task({
         task_id: this.taskId,
         start_time: this.dateRange[0],
         end_time: this.dateRange[1]
       })
-      // this.$emit('update:dialogVisible', false)
+      //为确定按钮取消转圈标识
+      this.loading = false
+      //添加执行成功提示
+      this.$message({
+        message: '任务执行完成',
+        type: 'success'
+      })
+      this.$emit('update:dialogVisible', false)
     }
   }
 }

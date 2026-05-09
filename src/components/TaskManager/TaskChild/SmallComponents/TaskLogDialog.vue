@@ -2,28 +2,36 @@
   <el-dialog
     title="任务日志"
     v-model="localDialogVisible"
-    width="800px"
+    width="1000px"
     @close="handleClose"
   >
     <div class="task-log-container">
       <el-table
         :data="logData"
         stripe
-        style="width: 100%"
+        style="width: 100% ; height: 400px"
         class="log-table"
       >
-        <el-table-column prop="configId" label="配置ID" width="100" />
-        <el-table-column prop="configName" label="配置名称" />
-        <el-table-column prop="time" label="时间" width="180" />
-        <el-table-column prop="executionTime" label="任务执行时间" width="180" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="config_id" label="配置ID" width="100" align="center" />
+        <el-table-column prop="config_name" label="配置名称" align="center" />
+        <el-table-column prop="log_time" label="时间" width="180" align="center">
           <template #default="scope">
-            <span :class="scope.row.status === '成功' ? 'status-success' : 'status-failed'">
-              {{ scope.row.status }}
+            {{ formatTime(scope.row.log_time) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="task_run_time" label="任务执行时间" width="180" align="center">
+          <template #default="scope">
+            {{ formatTime(scope.row.task_run_time) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="result" label="状态" width="100" align="center">
+          <template #default="scope">
+            <span :class="scope.row.result === '成功' ? 'status-success' : 'status-failed'">
+              {{ scope.row.result }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="remark" label="备注" />
+        <el-table-column prop="remark" label="备注" align="center" />
       </el-table>
       
       <div v-if="logData.length === 0" class="no-data">
@@ -64,6 +72,8 @@
 </template>
 
 <script>
+import { get_task_logs } from '@/api/taskConfigUtils/taskConfig'
+
 export default {
   name: 'TaskLogDialog',
   props: {
@@ -107,12 +117,10 @@ export default {
     handleClose() {
       this.$emit('update:dialogVisible', false)
     },
-    loadLogData() {
-      // 模拟加载日志数据
-      console.log('加载任务日志:', this.taskId)
-      // 这里可以替换为真实的API调用
-      this.logData = []
-      this.total = 0
+    async loadLogData() {
+      const res = await get_task_logs(this.taskId,  this.pageSize, this.currentPage)
+      this.logData = res.logs
+      this.total = res.count
     },
     handlePageSizeChange(size) {
       this.pageSize = size
@@ -122,6 +130,18 @@ export default {
     handleCurrentChange(page) {
       this.currentPage = page
       this.loadLogData()
+    },
+    // 格式化时间戳为日期时间格式
+    formatTime(timestamp) {
+      if (!timestamp) return ''
+      const date = new Date(timestamp * 1000)
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      const seconds = String(date.getSeconds()).padStart(2, '0')
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
     }
   }
 }
@@ -150,6 +170,7 @@ export default {
 }
 
 .pagination-left {
+  width: 100px;
   flex-shrink: 0;
 }
 

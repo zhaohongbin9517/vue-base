@@ -59,6 +59,7 @@
     <!-- 运行任务弹窗 -->
     <RunTaskFrom
       v-model="runDialogVisible"
+      :taskId="currentTaskId"
       :dialogTitle="runDialogTitle"
       :dialogVisible="runDialogVisible"
       @update:dialogVisible="runDialogVisible = $event"
@@ -198,6 +199,7 @@ export default {
 
     async handleRun(task) {
       console.log('运行任务:', task)
+      this.currentTaskId = task.task_id
       this.runDialogVisible = true
       this.runDialogTitle = task.task_desp + ' -运行'
     },
