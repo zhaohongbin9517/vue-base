@@ -15,12 +15,12 @@
       </div>
     </div>
     
-    <el-table :data="tasks" stripe  class="el-table task-table">
-      <el-table-column prop="task_id" label="ID"  width="100" align="center"/>
-      <el-table-column prop="task_desp" label="任务名称" />
-      <el-table-column prop="corn" label="Cron表达式"   align="center"/>
-      <el-table-column prop="config_id" label="配置ID"  width="100" align="center"/>
-      <el-table-column prop="config_name" label="配置名称" />
+    <el-table :data="filteredTasks" stripe  class="el-table task-table">
+      <!-- <el-table-column prop="task_id" label="ID"  width="100" align="center"/> -->
+      <el-table-column prop="task_desp" label="任务名称" width="180" align="center" />
+      <el-table-column prop="corn" label="Cron表达式"  width="180"  align="center"/>
+      <!-- <el-table-column prop="config_id" label="配置ID"  width="100" align="center"/> -->
+      <el-table-column prop="config_name" width="180"  label="配置名称" align="center" />
       <el-table-column prop="status" label="状态" width="100"  align="center">
         <template #default="scope">
           <span :class="scope.row.status === false ? 'status-disabled' : 'status-enabled'">
@@ -28,7 +28,7 @@
           </span>
         </template>
       </el-table-column> 
-      <el-table-column label="操作" width="500" fixed="right" align="center">
+      <el-table-column label="操作"  fixed="right" align="center">
         <template #default="scope">
           <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
@@ -78,9 +78,9 @@
 import { get_all_tasks, delete_task ,get_all_configs,get_all_config_modules,
   update_task,download_one_data,download_all_tasks
 } from '@/api/taskConfigUtils/taskConfig'
-import TaskForm from './SmallComponents/TaskForm.vue'
-import RunTaskFrom from './SmallComponents/RunTaskFrom.vue'
-import TaskLogDialog from './SmallComponents/TaskLogDialog.vue'
+import TaskForm from './TaskSmallComponents/TaskForm.vue'
+import RunTaskFrom from './TaskSmallComponents/RunTaskFrom.vue'
+import TaskLogDialog from './TaskSmallComponents/TaskLogDialog.vue'
 
 export default {
   name: 'TaskManager',
@@ -108,6 +108,24 @@ export default {
         config_id: '',
         status: false
       }
+    }
+  },
+  computed: {
+    // 根据搜索关键词过滤任务列表
+    filteredTasks() {
+      if (!this.searchQuery) {
+        return this.tasks
+      }
+      const query = this.searchQuery.toLowerCase()
+      return this.tasks.filter(task => {
+        // 在任务名称、配置名称、Cron表达式和配置ID中搜索
+        return (
+          task.task_desp.toLowerCase().includes(query) 
+          // || (task.config_name && task.config_name.toLowerCase().includes(query)) ||
+          // (task.corn && task.corn.toLowerCase().includes(query)) ||
+          // task.config_id.toString().includes(query)
+        )
+      })
     }
   },
 

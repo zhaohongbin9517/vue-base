@@ -12,16 +12,21 @@
         <el-button type="primary" class="action-button" @click="handleRefresh">刷新</el-button>
         <el-button type="info" class="action-button" @click="handleDownloadAll">下载全部</el-button>
         <el-button type="warning" class="action-button" @click="handleUpload">上传</el-button>
+        <el-button type="primary" class="action-button" @click="handleCreateConfig">创建配置</el-button>
       </div>
     </div>
     
-    <el-table :data="filteredConfigs" stripe style="width: 100%" class="config-table">
-      <el-table-column prop="id" label="配置ID" width="100" />
-      <el-table-column prop="name" label="配置名称" />
-      <el-table-column prop="module" label="配置模块" />
-      <el-table-column prop="content" label="配置内容" width="400">
+    <el-table :data="filteredTasks" stripe style="width: 100%" class="config-table">
+      <!-- <el-table-column prop="config_id" label="配置ID" width="100" align="center" /> -->
+      <el-table-column prop="config_name" label="配置名称" width="150" align="center" />
+      <el-table-column prop="config_module" label="配置模块" width="150" align="center" >
         <template #default="scope">
-          <span class="config-content">{{ scope.row.content }}</span>
+          {{ modules.find(item => item.config_module === scope.row.config_module)?.config_module_name || '未知模块' }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="config" label="配置内容"  align="center">
+        <template #default="scope">
+          <span class="config-content">{{ scope.row.config }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="350"  align="center">
@@ -37,46 +42,42 @@
 </template>
 
 <script>
+import {get_all_configs, get_all_config_modules  } from '@/api/taskConfigUtils/taskConfig'
+
 export default {
   data() {
     return {
-      // 模拟配置数据
-      configs: [
-        {
-          id: 1,
-          name: 'zhushui1',
-          module: '注水数据写入实时库',
-          content: '{"task_file":":注..."}'
-        },
-        {
-          id: 2,
-          name: 'backup1',
-          module: '数据备份模块',
-          content: '{"backup_path":":/data/backup"}'
-        },
-        {
-          id: 3,
-          name: 'cleanup1',
-          module: '数据清理模块',
-          content: '{"cleanup_days":":7"}'
-        }
-      ],
+      configs: [],
+      modules: [],
       searchQuery: ''
     }
   },
   computed: {
-    // 过滤配置
-    filteredConfigs() {
+    // 根据搜索关键词过滤任务列表
+    filteredTasks() {
       if (!this.searchQuery) {
         return this.configs
       }
-      return this.configs.filter(config => 
-        config.name.includes(this.searchQuery) ||
-        config.module.includes(this.searchQuery)
-      )
+      const query = this.searchQuery.toLowerCase()
+      return this.configs.filter(config => {
+        const moduleName = this.modules.find(item => item.config_module === config.config_module)?.config_module_name || '未知模块'
+        return (
+          config.config_name.toLowerCase().includes(query) ||
+          moduleName.toLowerCase().includes(query)
+        )
+      })
     }
   },
+  mounted() {
+    this.init_configs()
+  },
   methods: {
+    async init_configs(){
+      const res = await get_all_configs()
+      const modules = await get_all_config_modules()
+      this.modules = modules
+      this.configs = res
+    },
     // 操作方法
     handleRefresh() {
       console.log('刷新配置列表')
@@ -89,6 +90,10 @@ export default {
     handleUpload() {
       console.log('上传配置')
       // 模拟上传操作
+    },
+    handleCreateConfig() {
+      console.log('创建配置')
+      // 模拟创建操作
     },
     handleDetail(config) {
       console.log('查看配置详情:', config)
