@@ -38,18 +38,34 @@
         </template>
       </el-table-column>
     </el-table>
+    
+    <!-- 配置表单弹窗 -->
+    <ConfigForm
+      v-model:dialogVisible="dialogVisible"
+      :configData="currentConfig"
+      :configModules="modules"
+      :mode="configMode"
+      @submit="handleConfigSubmit"
+    />
   </div>
 </template>
 
 <script>
 import {get_all_configs, get_all_config_modules  } from '@/api/taskConfigUtils/taskConfig'
+import ConfigForm from './ConfigSmallComponents/ConfigForm.vue'
 
 export default {
+  components: {
+    ConfigForm
+  },
   data() {
     return {
       configs: [],
       modules: [],
-      searchQuery: ''
+      searchQuery: '',
+      dialogVisible: false,
+      currentConfig: {},
+      configMode: 'create' // create, view, edit
     }
   },
   computed: {
@@ -92,16 +108,34 @@ export default {
       // 模拟上传操作
     },
     handleCreateConfig() {
-      console.log('创建配置')
-      // 模拟创建操作
+      this.configMode = 'create'
+      this.currentConfig = {}
+      this.dialogVisible = true
     },
     handleDetail(config) {
-      console.log('查看配置详情:', config)
-      // 模拟查看详情操作
+      this.configMode = 'view'
+      this.currentConfig = config
+      this.dialogVisible = true
     },
     handleEdit(config) {
-      console.log('编辑配置:', config)
-      // 模拟编辑操作
+      this.configMode = 'edit'
+      this.currentConfig = config
+      this.dialogVisible = true
+    },
+    handleConfigSubmit(configData) {
+      console.log('配置提交:', configData)
+      // 根据模式执行不同操作
+      if (this.configMode === 'create') {
+        // 这里应该调用创建配置的API
+        console.log('创建新配置:', configData)
+        // 创建成功后刷新列表
+        this.init_configs()
+      } else if (this.configMode === 'edit') {
+        // 这里应该调用更新配置的API
+        console.log('更新配置:', configData)
+        // 更新成功后刷新列表
+        this.init_configs()
+      }
     },
     handleDelete(config) {
       console.log('删除配置:', config)
