@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import {get_all_configs, get_all_config_modules ,delete_config,download_all_configs,download_one_data} from '@/api/taskConfigUtils/taskConfig'
+import {get_all_configs, get_all_config_modules ,delete_config,download_all_configs,download_one_data,upload_data} from '@/api/taskConfigUtils/taskConfig'
 import ConfigForm from './ConfigSmallComponents/ConfigForm.vue'
 import {exportJsonFile} from '@/utils/utils'
 
@@ -102,9 +102,41 @@ export default {
       delete res.file_name
       exportJsonFile(res, fileName);
     },
-    handleUpload() {
-      console.log('上传配置')
-      // 模拟上传操作
+    async handleUpload() {
+      const fileInput = document.createElement('input')
+      fileInput.type = 'file'
+      // 限制只能选择CSV文件
+      fileInput.accept = '.json'
+      fileInput.click()
+      
+      fileInput.onchange = async () => {
+        const file = fileInput.files[0]
+        if (!file) return
+        
+        // 再次验证文件类型（防止绕过accept属性）
+        if (!file.name.toLowerCase().endsWith('.json')) {
+          this.$message({
+            message: '请选择JSON格式的文件',
+            type: 'warning'
+          })
+          return
+        }
+        
+        try {
+          await upload_data(file)
+          this.init_configs()
+          this.$message({
+            message: '文件上传成功',
+            type: 'success'
+          })
+        } catch (error) {
+          console.error('上传文件失败:', error)
+          this.$message({
+            message: '上传文件失败: ' + (error.message || '未知错误'),
+            type: 'error'
+          })
+        }
+      }
     },
     handleCreateConfig() {
       this.configMode = 'create'

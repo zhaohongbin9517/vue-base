@@ -16,7 +16,7 @@
     </div>
     
     <el-table :data="filteredTasks" stripe  class="el-table task-table">
-      <!-- <el-table-column prop="task_id" label="ID"  width="100" align="center"/> -->
+      <el-table-column prop="task_id" label="ID"  width="100" align="center"/>
       <el-table-column prop="task_desp" label="任务名称" width="180" align="center" />
       <el-table-column prop="corn" label="Cron表达式"  width="180"  align="center"/>
       <!-- <el-table-column prop="config_id" label="配置ID"  width="100" align="center"/> -->
@@ -76,7 +76,7 @@
 
 <script>
 import { get_all_tasks, delete_task ,get_all_configs,get_all_config_modules,
-  update_task,download_one_data,download_all_tasks
+  update_task,download_one_data,download_all_tasks,upload_data
 } from '@/api/taskConfigUtils/taskConfig'
 import TaskForm from './TaskSmallComponents/TaskForm.vue'
 import RunTaskFrom from './TaskSmallComponents/RunTaskFrom.vue'
@@ -161,9 +161,42 @@ export default {
       exportJsonFile(res, fileName);
     },
 
-    handleUpload() {
-      console.log('上传任务')
-      // 模拟上传操作
+    async handleUpload() {
+      const fileInput = document.createElement('input')
+      fileInput.type = 'file'
+      // 限制只能选择CSV文件
+      fileInput.accept = '.json'
+      fileInput.click()
+      
+      fileInput.onchange = async () => {
+        const file = fileInput.files[0]
+        if (!file) return
+        
+        // 再次验证文件类型（防止绕过accept属性）
+        if (!file.name.toLowerCase().endsWith('.json')) {
+          this.$message({
+            message: '请选择JSON格式的文件',
+            type: 'warning'
+          })
+          return
+        }
+        
+        try {
+          await upload_data(file)
+          this.get_all_tasks()
+          this.get_all_configs()
+          this.$message({
+            message: '文件上传成功',
+            type: 'success'
+          })
+        } catch (error) {
+          console.error('上传文件失败:', error)
+          this.$message({
+            message: '上传文件失败: ' + (error.message || '未知错误'),
+            type: 'error'
+          })
+        }
+      }
     },
 
     //新增任务

@@ -25,6 +25,7 @@ const TASK_URL_DELETE_CONFIG = '/api/tasks_new/delete_config'
 const TASK_URL_DOWNLOAD_ONE_DATA = '/api/export_new/download_one_data'
 const TASK_URL_DOWNLOAD_TASK = '/api/export_new/download_all_tasks'
 const TASK_URL_DOWNLOAD_CONFIG = '/api/export_new/download_all_configs'
+const TASK_URL_UPLOAD_DATA = '/api/export_new/upload_data'
 
 //文件管理
 const TASK_URL_GET_ALL_FILES = '/api/files_new/get_all_files'
@@ -66,6 +67,11 @@ export function delete_config(configId) { return post(TASK_URL_DELETE_CONFIG , {
 export function download_one_data(data_type, id) { return get(TASK_URL_DOWNLOAD_ONE_DATA , {data_type: data_type,id: id})}
 export function download_all_tasks() { return get(TASK_URL_DOWNLOAD_TASK)}
 export function download_all_configs() { return get(TASK_URL_DOWNLOAD_CONFIG)}
+export function upload_data(file) { 
+    const formData = new FormData()
+    formData.append('file', file)
+    return post(TASK_URL_UPLOAD_DATA, formData)
+}
 
 //文件管理
 export function get_all_files() { return get(TASK_URL_GET_ALL_FILES)}
