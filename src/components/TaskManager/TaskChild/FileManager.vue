@@ -9,6 +9,7 @@
           class="search-input"
           clearable
         />
+        <el-button type="primary" class="action-button" @click="handleUpload">上传文件</el-button>
       </div>
     </div>
     
@@ -47,7 +48,7 @@
 
 <script>
 import { Document } from '@element-plus/icons-vue'
-import {get_all_files} from '@/api/taskConfigUtils/taskConfig'
+import {get_all_files,delete_file} from '@/api/taskConfigUtils/taskConfig'
 import CsvPreviewDialog from './ConfigSmallComponents/CsvPreviewDialog.vue'
 
 
@@ -93,12 +94,46 @@ export default {
       this.previewDialogVisible = true
     },
     handleDownload(file) {
-      console.log('下载文件:', file)
-      // 模拟下载操作
+      if (!file || !file.file_name) return
+      
+      try {
+        // 处理中文文件名编码
+        const encodedFilename = encodeURIComponent(file.file_name)
+        const url = `/config/${encodedFilename}`
+        
+        // 创建下载链接
+        const link = document.createElement('a')
+        link.href = url
+        
+        // 设置下载文件名
+        link.setAttribute('download', file.file_name)
+        
+        // 隐藏链接并添加到DOM
+        link.style.display = 'none'
+        document.body.appendChild(link)
+        
+        // 触发下载
+        link.click()
+        
+        // 清理
+        document.body.removeChild(link)
+        
+        console.log('文件下载开始:', file.file_name)
+      } catch (error) {
+        console.error('下载文件失败:', error)
+        this.$message({
+          message: '下载文件失败，请稍后重试',
+          type: 'error'
+        })
+      }
     },
-    handleDelete(file) {
-      console.log('删除文件:', file)
-      // 模拟删除操作
+    async handleDelete(file) {
+      await delete_file(file.file_name)
+      this.initFiles()
+      this.$message({
+        message: '删除文件成功',
+        type: 'success'
+      })
     },
     // 将字节转换为标准文件大小格式
     formatFileSize(bytes) {
