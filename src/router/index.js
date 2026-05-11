@@ -15,10 +15,12 @@ import UserRoles from '../components/UserCenter/MenuChile/UserRoles.vue'
 
 // 任务管理路由
 import TaskManagerMenu from '../components/TaskManager/TaskMenu.vue'
-import BlankConfig from '../components/TaskManager/BlankConfig.vue'
+import BlankConfig from '../components/BlankConfig.vue'
 import TaskManager from '../components/TaskManager/TaskChild/TaskManager.vue'
 import ConfigManager from '../components/TaskManager/TaskChild/ConfigManager.vue'
 import FileManager from '../components/TaskManager/TaskChild/FileManager.vue'
+// 系统说明路由
+import SystemDescriptionMenu from '../components/TaskManager/SystemDescription/SystemDescriptionMenu.vue'
 
 
 
@@ -71,10 +73,18 @@ const routes = [
             name: 'PluginManager',
             component: BlankConfig
           },
+        ]
+      },
+      {
+        path: 'system-description',
+        name: 'SystemDescriptionMenu',
+        component: TaskManagerMenu,
+        redirect: '/system-description/systemDescription',
+        children: [
           {
             path: 'systemDescription',
             name: 'SystemDescription',
-            component: BlankConfig
+            component: SystemDescriptionMenu
           },
         ]
       },

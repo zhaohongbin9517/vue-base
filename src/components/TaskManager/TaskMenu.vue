@@ -47,7 +47,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Postcard, SetUp, FolderRemove, HelpFilled,QuestionFilled } from '@element-plus/icons-vue'
+import { Postcard, SetUp, FolderRemove, HelpFilled,QuestionFilled, Document } from '@element-plus/icons-vue'
 
 const route = useRoute()
 
@@ -68,7 +68,8 @@ const menuItem = [
     name: '系统说明',
     is_show:true,
     children: [
-      { icon: QuestionFilled,  name: '系统说明' ,command: '/task-manager/systemDescription',is_show:true },
+      { icon: QuestionFilled,  name: '任务配置说明' ,command: '/system-description/systemDescription?type=task-config',is_show:true },
+      { icon: Document,  name: '任务配置流程' ,command: '/system-description/systemDescription?type=task-flow',is_show:true },
     ]
   },
 ]
