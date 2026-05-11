@@ -79,8 +79,12 @@ export default {
           throw new Error('文件加载失败')
         }
         
-        const rawContent = await response.text()
-        // 直接将markdown文本赋值给v-md-editor
+        let rawContent = await response.text()
+        
+        // 处理图片路径，确保正确显示
+        rawContent = processImagePaths(rawContent)
+        
+        // 将处理后的markdown文本赋值给v-md-editor
         markdownContent.value = rawContent
       } catch (err) {
         error.value = `加载失败: ${err.message}`
@@ -92,7 +96,27 @@ export default {
     
 
     
-    // 监听路由查询参数变化，重新加载markdown
+    // 处理markdown内容中的图片路径，确保正确显示
+    const processImagePaths = (content) => {
+      // 获取当前markdown文件的目录路径
+      const type = route.query.type || 'default'
+      const fileConfig = markdownFiles[type] || markdownFiles.default
+      const basePath = fileConfig.path.substring(0, fileConfig.path.lastIndexOf('/'))
+      
+      // 正则表达式匹配markdown图片语法：![alt](path)
+      const imageRegex = /!\[(.*?)\]\((.*?)\)/g
+      
+      // 替换图片路径
+      return content.replace(imageRegex, (match, alt, src) => {
+        // 如果是相对路径，转换为绝对路径
+        if (src && !src.startsWith('http') && !src.startsWith('/')) {
+          src = `${basePath}/${src}`
+        }
+        return `![${alt}](${src})`
+      })
+    }
+    
+    // 监听路由变化，重新加载markdown
     watch(() => route.query.type, () => {
       loadMarkdown()
     })
