@@ -50,9 +50,9 @@ export default {
       }
     }
     
-    // 根据路由参数获取当前页面标题
+    // 根据路由查询参数获取当前页面标题
     const pageTitle = computed(() => {
-      const type = route.params.type || 'default'
+      const type = route.query.type || 'default'
       return markdownFiles[type] ? markdownFiles[type].title : markdownFiles.default.title
     })
     
@@ -63,7 +63,7 @@ export default {
       markdownContent.value = ''
       
       try {
-        const type = route.params.type || 'default'
+        const type = route.query.type || 'default'
         const fileConfig = markdownFiles[type] || markdownFiles.default
         
         // 构建完整路径
@@ -99,7 +99,7 @@ export default {
           if (src && !src.startsWith('http') && !src.startsWith('/')) {
 
             // 获取当前markdown文件的目录路径
-            const type = route.params.type || 'default'
+            const type = route.query.type || 'default'
             const fileConfig = markdownFiles[type] || markdownFiles.default
             const basePath = fileConfig.path.substring(0, fileConfig.path.lastIndexOf('/'))
             
@@ -119,8 +119,8 @@ export default {
       }, 0)
     }
     
-    // 监听路由变化，重新加载markdown
-    watch(() => route.params.type, () => {
+    // 监听路由查询参数变化，重新加载markdown
+    watch(() => route.query.type, () => {
       loadMarkdown()
     })
     
