@@ -7,6 +7,8 @@ import './styles.css'
 import './assets/css/tailwind.css' // 引入 Tailwind 样式
 import './assets/iconfont/iconfont.css'
 import SvgIcon from './components/SvgIcon.vue'
+// 引入中文语言包
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
 // 备份原生警告方法
 const originalWarn = console.warn
@@ -27,7 +29,9 @@ console.warn = function (...args) {
 }
 
 const app = createApp(App)
-app.use(ElementPlus)
+app.use(ElementPlus, {
+  locale: zhCn
+})
 
 // 👇 全局注册
 app.component('svg-icon', SvgIcon)

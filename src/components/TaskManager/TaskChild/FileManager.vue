@@ -36,24 +36,35 @@
         </template>
       </el-table-column>
     </el-table>
+    
+    <!-- CSV预览弹窗 -->
+    <CsvPreviewDialog
+      v-model:dialogVisible="previewDialogVisible"
+      :file="currentPreviewFile"
+    />
   </div>
 </template>
 
 <script>
 import { Document } from '@element-plus/icons-vue'
 import {get_all_files} from '@/api/taskConfigUtils/taskConfig'
+import CsvPreviewDialog from './ConfigSmallComponents/CsvPreviewDialog.vue'
 
 
 export default {
   name: 'FileManager',
   components: {
-    Document
+    Document,
+    CsvPreviewDialog
   },
   data() {
     return {
       // 模拟文件数据
       files: [],
-      searchQuery: ''
+      searchQuery: '',
+      // 预览弹窗相关
+      previewDialogVisible: false,
+      currentPreviewFile: {}
     }
   },
   computed: {
@@ -78,8 +89,8 @@ export default {
     },
     // 操作方法
     handlePreview(file) {
-      console.log('预览文件:', file)
-      // 模拟预览操作
+      this.currentPreviewFile = file
+      this.previewDialogVisible = true
     },
     handleDownload(file) {
       console.log('下载文件:', file)
