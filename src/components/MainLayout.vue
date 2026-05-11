@@ -146,7 +146,7 @@ export default {
           break
         case 'systemDescription':
           // console.log('点击了系统说明')
-          this.$router.push('/task-manager/systemDescription')
+          this.$router.push('/system-description/systemDescription?type=task-flow')
           break
       }
     }

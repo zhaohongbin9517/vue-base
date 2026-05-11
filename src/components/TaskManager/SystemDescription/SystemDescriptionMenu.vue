@@ -98,7 +98,13 @@ export default {
     
     // 处理markdown内容中的图片路径，确保正确显示
     const processImagePaths = (content) => {
-      // 获取当前markdown文件的目录路径
+      // 针对任务配置流程页面的图片路径处理
+      if (route.query.type === 'task-flow') {
+        // 直接将assets/替换为正确的绝对路径
+        return content.replace(/!\[(.*?)\]\((assets\/.*?)\)/g, '![$1](/doc/任务配置流程/$2)')
+      }
+      
+      // 其他页面的图片路径处理
       const type = route.query.type || 'default'
       const fileConfig = markdownFiles[type] || markdownFiles.default
       const basePath = fileConfig.path.substring(0, fileConfig.path.lastIndexOf('/'))
