@@ -5,7 +5,7 @@
         <div class="login-brand">
           <img :src="logo" alt="logo" class="login-brand__logo" />
           <div>
-            <h1 class="login-brand__title">授权信息系统</h1>
+            <h1 class="login-brand__title">任务系统</h1>
             <p class="login-brand__subtitle">用户登录</p>
           </div>
         </div>
