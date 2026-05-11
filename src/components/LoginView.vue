@@ -78,7 +78,7 @@ const getRedirectPath = () => {
   if (typeof redirect === 'string' && redirect.startsWith('/')) {
     return redirect
   }
-  return '/config'
+  return '/task-manager/taskManager'
 }
 
 const submitLogin = async () => {
