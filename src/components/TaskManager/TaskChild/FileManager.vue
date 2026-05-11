@@ -9,24 +9,26 @@
           class="search-input"
           clearable
         />
-        <el-button type="warning" class="action-button" @click="handleRefresh">刷新</el-button>
       </div>
     </div>
     
     <el-table :data="filteredFiles" stripe style="width: 100%" class="file-table">
-      <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="name" label="文件名" width="300">
+      <el-table-column prop="file_name" label="文件名" width="300">
         <template #default="scope">
           <div class="file-name">
             <el-icon class="file-icon"><Document /></el-icon>
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.file_name }}</span>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="size" label="大小" width="100" />
-      <el-table-column prop="createdAt" label="创建时间" width="180" />
-      <el-table-column prop="updatedAt" label="最后修改时间" width="180" />
-      <el-table-column label="操作" width="350"  align="center">
+      <el-table-column prop="file_size" label="大小" width="100"  align="center">
+        <template #default="scope">
+          {{ formatFileSize(scope.row.file_size) }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="created_at" label="创建时间" width="180"  align="center" />
+      <el-table-column prop="updated_at" label="最后修改时间" width="180"  align="center" />
+      <el-table-column label="操作"   align="center">
         <template #default="scope">
           <el-button size="small" type="primary" @click="handlePreview(scope.row)">预览</el-button>
           <el-button size="small" type="info" @click="handleDownload(scope.row)">下载</el-button>
@@ -37,73 +39,65 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue'
+<script>
 import { Document } from '@element-plus/icons-vue'
+import {get_all_files} from '@/api/taskConfigUtils/taskConfig'
 
-// 模拟文件数据
-const files = ref([
-  {
-    id: 1,
-    name: '注水模板.csv',
-    size: '37 B',
-    createdAt: '2026-04-15 15:44:05',
-    updatedAt: '2026-04-15 15:20:04'
+
+export default {
+  name: 'FileManager',
+  components: {
+    Document
   },
-  {
-    id: 2,
-    name: '关系库数据写入虚拟点模板.csv',
-    size: '1015 B',
-    createdAt: '2026-02-05 16:22:28',
-    updatedAt: '2026-02-04 14:56:08'
+  data() {
+    return {
+      // 模拟文件数据
+      files: [],
+      searchQuery: ''
+    }
   },
-  {
-    id: 3,
-    name: '运行状态模板.csv',
-    size: '103 B',
-    createdAt: '2025-12-05 17:56:00',
-    updatedAt: '2025-12-05 17:56:00'
+  computed: {
+    // 过滤文件
+    filteredFiles() {
+      if (!this.searchQuery) {
+        return this.files
+      }
+      return this.files.filter(file => 
+        file.file_name.includes(this.searchQuery)
+      )
+    }
   },
-  {
-    id: 4,
-    name: '拉油罐模板.csv',
-    size: '117 B',
-    createdAt: '2026-04-15 15:24:56',
-    updatedAt: '2025-12-05 17:56:00'
+  mounted() {
+    this.initFiles()
+  },
+  methods: {
+    async initFiles() {
+      const res = await get_all_files()
+      this.files = res
+      console.log('files',this.files)
+    },
+    // 操作方法
+    handlePreview(file) {
+      console.log('预览文件:', file)
+      // 模拟预览操作
+    },
+    handleDownload(file) {
+      console.log('下载文件:', file)
+      // 模拟下载操作
+    },
+    handleDelete(file) {
+      console.log('删除文件:', file)
+      // 模拟删除操作
+    },
+    // 将字节转换为标准文件大小格式
+    formatFileSize(bytes) {
+      if (bytes === 0) return '0 B'
+      const k = 1024
+      const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+      const i = Math.floor(Math.log(bytes) / Math.log(k))
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+    }
   }
-])
-
-const searchQuery = ref('')
-
-// 过滤文件
-const filteredFiles = computed(() => {
-  if (!searchQuery.value) {
-    return files.value
-  }
-  return files.value.filter(file => 
-    file.name.includes(searchQuery.value)
-  )
-})
-
-// 操作方法
-const handleRefresh = () => {
-  console.log('刷新文件列表')
-  // 模拟刷新操作
-}
-
-const handlePreview = (file) => {
-  console.log('预览文件:', file)
-  // 模拟预览操作
-}
-
-const handleDownload = (file) => {
-  console.log('下载文件:', file)
-  // 模拟下载操作
-}
-
-const handleDelete = (file) => {
-  console.log('删除文件:', file)
-  // 模拟删除操作
 }
 </script>
 
