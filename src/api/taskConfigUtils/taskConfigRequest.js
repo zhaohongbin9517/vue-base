@@ -57,7 +57,7 @@ async function requestFile(url, options = {}) {
 
   const token = getAuthToken()
   const headers = {
-    'Content-Type': 'multipart/form-data',
+    // 不要手动设置Content-Type，浏览器会自动为FormData添加正确的Content-Type和boundary
     ...options.headers
   }
 

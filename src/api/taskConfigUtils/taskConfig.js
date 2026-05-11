@@ -29,6 +29,7 @@ const TASK_URL_DOWNLOAD_CONFIG = '/api/export_new/download_all_configs'
 //文件管理
 const TASK_URL_GET_ALL_FILES = '/api/files_new/get_all_files'
 const TASK_URL_DELETE_FILE = '/api/files_new/delete_file'
+const TASK_URL_UPLOAD_FILE = '/api/files_new/upload_file'
 
 
 // // 配置相关接口
@@ -69,3 +70,8 @@ export function download_all_configs() { return get(TASK_URL_DOWNLOAD_CONFIG)}
 //文件管理
 export function get_all_files() { return get(TASK_URL_GET_ALL_FILES)}
 export function delete_file(fileName) { return get(TASK_URL_DELETE_FILE , {file_name: fileName})}
+export function upload_file(file) { // 上传文件
+    const formData = new FormData()
+    formData.append('file', file)
+    return post(TASK_URL_UPLOAD_FILE, formData)
+}

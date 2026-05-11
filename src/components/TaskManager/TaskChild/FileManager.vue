@@ -48,7 +48,7 @@
 
 <script>
 import { Document } from '@element-plus/icons-vue'
-import {get_all_files,delete_file} from '@/api/taskConfigUtils/taskConfig'
+import {get_all_files,delete_file,upload_file} from '@/api/taskConfigUtils/taskConfig'
 import CsvPreviewDialog from './ConfigSmallComponents/CsvPreviewDialog.vue'
 
 
@@ -92,6 +92,42 @@ export default {
     handlePreview(file) {
       this.currentPreviewFile = file
       this.previewDialogVisible = true
+    },
+    async handleUpload() {
+      const fileInput = document.createElement('input')
+      fileInput.type = 'file'
+      // 限制只能选择CSV文件
+      fileInput.accept = '.csv'
+      fileInput.click()
+      
+      fileInput.onchange = async () => {
+        const file = fileInput.files[0]
+        if (!file) return
+        
+        // 再次验证文件类型（防止绕过accept属性）
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+          this.$message({
+            message: '请选择CSV格式的文件',
+            type: 'warning'
+          })
+          return
+        }
+        
+        try {
+          await upload_file(file)
+          this.initFiles()
+          this.$message({
+            message: '文件上传成功',
+            type: 'success'
+          })
+        } catch (error) {
+          console.error('上传文件失败:', error)
+          this.$message({
+            message: '上传文件失败: ' + (error.message || '未知错误'),
+            type: 'error'
+          })
+        }
+      }
     },
     handleDownload(file) {
       if (!file || !file.file_name) return
