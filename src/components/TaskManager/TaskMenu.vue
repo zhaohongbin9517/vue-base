@@ -8,7 +8,7 @@
           router
         >
           <el-sub-menu
-            v-for="item in menuItem"
+            v-for="item in filteredMenu"
             :key="item.name"
             :index="item.name"
             popper-class="custom-submenu"
@@ -47,7 +47,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Postcard, SetUp, FolderRemove, HelpFilled, QuestionFilled } from '@element-plus/icons-vue'
+import { Postcard, SetUp, FolderRemove, HelpFilled,QuestionFilled } from '@element-plus/icons-vue'
 
 const route = useRoute()
 
@@ -55,21 +55,33 @@ const menuItem = [
   {
     icon: Postcard,
     name: '任务管理',
+    is_show:true,
     children: [
-      { icon: Postcard,  name: '任务管理' , command: '/task-manager/taskManager'},
-      { icon: SetUp,  name: '配置管理' ,command: '/task-manager/configManager' },
-      { icon: FolderRemove,  name: '文件管理' ,command: '/task-manager/fileManager' },
-      { icon: HelpFilled,  name: '插件管理' ,command: '/task-manager/pluginManager' }
+      { icon: Postcard,  name: '任务管理' , command: '/task-manager/taskManager',is_show:true},
+      { icon: SetUp,  name: '配置管理' ,command: '/task-manager/configManager',is_show:true },
+      { icon: FolderRemove,  name: '文件管理' ,command: '/task-manager/fileManager',is_show:true },
+      { icon: HelpFilled,  name: '插件管理' ,command: '/task-manager/pluginManager',is_show:false }
     ]
   },
   {
     icon: Postcard,
     name: '系统说明',
+    is_show:true,
     children: [
-      { icon: QuestionFilled,  name: '系统说明' ,command: '/task-manager/systemDescription' },
+      { icon: QuestionFilled,  name: '系统说明' ,command: '/task-manager/systemDescription',is_show:true },
     ]
   },
 ]
+
+// 过滤显示的菜单
+const filteredMenu = computed(() => {
+  return menuItem
+    .filter(item => item.is_show)
+    .map(item => ({
+      ...item,
+      children: item.children.filter(child => child.is_show)
+    }))
+})
 
 const activeMenu = computed(() => route.path)
 </script>
