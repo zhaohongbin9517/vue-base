@@ -54,6 +54,15 @@
             <el-menu-item index="/config/measure-web-temp" class="sub-menu-item">
               <span class="sub-menu-text">显示模板配置</span>
             </el-menu-item>
+            <el-menu-item index="/config/changelog" @click="handleJumpHtml('changelog')" class="sub-menu-item">
+              <span class="sub-menu-text">变更日志</span>
+            </el-menu-item>
+            <el-menu-item index="/config/template-config-versions" @click="handleJumpHtml('template-config/versions')" class="sub-menu-item">
+              <span class="sub-menu-text">模板版本管理</span>
+            </el-menu-item>
+            <el-menu-item index="/config/template-config" @click="handleJumpHtml('template-config')" class="sub-menu-item">
+              <span class="sub-menu-text">模板配置管理</span>
+            </el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="4" popper-class="custom-submenu">
             <template #title>

@@ -54,6 +54,21 @@ const routes = [
         redirect: '/config/plan',
         children: [
           {
+            path: 'changelog',
+            name: 'Changelog',
+            component: BlankConfig
+          },
+          {
+            path: 'template-config',
+            name: 'TemplateConfig',
+            component: BlankConfig
+          },
+          {
+            path: 'template-config-versions',
+            name: 'TemplateConfigVersions',
+            component: BlankConfig
+          },
+          {
             path: 'blank',
             name: 'Blank',
             component: BlankConfig
