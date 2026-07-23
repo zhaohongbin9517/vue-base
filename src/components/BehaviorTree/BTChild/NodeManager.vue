@@ -50,7 +50,7 @@
               <!-- 节点名称和描述 -->
               <div class="node-info">
                 <span class="node-name">{{ node.name }}</span>
-                <span class="node-desc">{{ node.desc }}</span>
+                <span class="node-desc">{{'描述：'+ node.desc + ' 模块：' + node.module+ ' 函数：' + node.func }}</span>
               </div>
               <div class="node-args" >
                 <div v-for="arg in node.args" :key="arg.name" class="node-arg-item">
