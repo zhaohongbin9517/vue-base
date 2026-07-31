@@ -1,11 +1,414 @@
-html,
-body,
-#app {
+/* ============================================================
+   设计系统 · 极简编辑风 (Editorial Minimalism)
+   浅色主题 · 衬线字体 · 细线分割 · 大量留白
+   ============================================================ */
+
+:root {
+  /* —— 色彩令牌 —— */
+  /* 背景层：暖白纸张感 */
+  --bg-canvas: #faf9f7;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f5f4f1;
+  --bg-hover: #efede8;
+
+  /* 边框：极细线条 */
+  --border-hair: #e7e5e0;
+  --border-soft: #d8d5ce;
+  --border-strong: #1677ff;
+
+  /* 文字：石阶灰 */
+  --ink-1: #0958d9;      /* 标题 - 深蓝 */
+  --ink-2: #1f2937;      /* 正文 - 深灰蓝 */
+  --ink-3: #595959;      /* 次要 */
+  --ink-4: #a8a29e;      /* 辅助/占位 */
+
+  /* 强调色：科技蓝为主 */
+  --accent: #1677ff;
+  --accent-hover: #4096ff;
+  --highlight: #722ed1;   /* 紫色 - 链接/关键操作 */
+  --highlight-soft: #f9f0ff;
+
+  /* 语义色 */
+  --danger: #dc2626;
+  --success: #16a34a;
+  --warning: #d97706;
+
+  /* —— 字体令牌 —— */
+  --font-display: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+  --font-serif: 'Noto Serif SC', 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* —— 间距令牌（8pt 栅格） —— */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* —— 圆角：编辑风偏直角 —— */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+
+  /* —— 阴影：克制，仅浮层使用 —— */
+  --shadow-sm: 0 1px 2px rgba(9, 88, 217, 0.04);
+  --shadow-md: 0 4px 16px rgba(9, 88, 217, 0.06);
+  --shadow-lg: 0 12px 40px rgba(9, 88, 217, 0.08);
+
+  /* —— 过渡 —— */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration: 240ms;
+
+  /* ============================================================
+     Element Plus 主题覆盖
+     ============================================================ */
+  --el-color-primary: #1677ff;
+  --el-color-primary-light-3: #4096ff;
+  --el-color-primary-light-5: #69b1ff;
+  --el-color-primary-light-7: #91caff;
+  --el-color-primary-light-8: #bae0ff;
+  --el-color-primary-light-9: #e6f4ff;
+  --el-color-primary-dark-2: #0958d9;
+
+  --el-color-success: #16a34a;
+  --el-color-warning: #d97706;
+  --el-color-danger: #dc2626;
+  --el-color-info: #595959;
+
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: #faf9f7;
+  --el-bg-color-overlay: #ffffff;
+
+  --el-text-color-primary: #0958d9;
+  --el-text-color-regular: #1f2937;
+  --el-text-color-secondary: #595959;
+  --el-text-color-placeholder: #a8a29e;
+
+  --el-border-color: #e7e5e0;
+  --el-border-color-light: #f0eeea;
+  --el-border-color-lighter: #f5f4f1;
+  --el-border-color-extra-light: #faf9f7;
+  --el-border-color-dark: #d8d5ce;
+
+  --el-fill-color: #f5f4f1;
+  --el-fill-color-light: #faf9f7;
+  --el-fill-color-lighter: #fdfcfa;
+  --el-fill-color-blank: #ffffff;
+
+  --el-font-family: 'Noto Serif SC', 'Playfair Display', Georgia, serif;
+  --el-border-radius-small: 2px;
+  --el-border-radius-base: 3px;
+  --el-border-radius-round: 2px;
+}
+
+/* ============================================================
+   基础重置
+   ============================================================ */
+html, body, #app {
   width: 100%;
   height: 100%;
   margin: 0;
 }
 
 body {
-  background: #f5f7fa;
+  background: var(--bg-canvas);
+  font-family: var(--font-serif);
+  color: var(--ink-2);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* —— 排版基础 —— */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--ink-1);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+h1 { font-size: 2.5rem; font-weight: 700; }
+h2 { font-size: 1.75rem; font-weight: 600; }
+h3 { font-size: 1.375rem; font-weight: 600; }
+h4 { font-size: 1.125rem; font-weight: 600; }
+
+a {
+  color: var(--highlight);
+  text-decoration: none;
+  transition: color var(--duration) var(--ease);
+}
+a:hover { color: var(--ink-1); }
+
+/* ============================================================
+   Element Plus 组件深度定制
+   ============================================================ */
+
+/* —— 按钮：编辑风 - 朴素、细边框 —— */
+.el-button {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-sm);
+  transition: all var(--duration) var(--ease);
+}
+
+.el-button--default {
+  border-color: var(--border-soft);
+  color: var(--ink-2);
+}
+.el-button--default:hover {
+  border-color: var(--ink-1);
+  color: var(--ink-1);
+  background: var(--bg-surface);
+}
+
+.el-button--primary {
+  background: var(--ink-1);
+  border-color: var(--ink-1);
+  color: var(--bg-surface);
+}
+.el-button--primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.el-button--danger {
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+/* —— 输入框/选择框：底部细线风格 —— */
+.el-input__wrapper,
+.el-textarea__inner {
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 1px var(--border-hair) inset !important;
+  transition: box-shadow var(--duration) var(--ease);
+}
+.el-input__wrapper:hover,
+.el-textarea__inner:hover {
+  box-shadow: 0 0 0 1px var(--border-soft) inset !important;
+}
+.el-input__wrapper.is-focus,
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--ink-1) inset !important;
+}
+.el-input__inner {
+  font-family: var(--font-serif);
+  color: var(--ink-1);
+}
+
+/* —— 表格：编辑风 - 无边框、横线分割、衬线表头 —— */
+.el-table {
+  font-family: var(--font-serif);
+  --el-table-border-color: var(--border-hair);
+  --el-table-header-bg-color: var(--bg-surface);
+  --el-table-row-hover-bg-color: var(--bg-subtle);
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: transparent;
+}
+.el-table th.el-table__cell {
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid var(--ink-1) !important;
+  font-weight: 600;
+  color: var(--ink-1);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.el-table td.el-table__cell {
+  border-bottom: 1px solid var(--border-hair) !important;
+  color: var(--ink-2);
+}
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: var(--bg-subtle) !important;
+}
+
+/* —— 菜单：编辑风 - 朴素文字、左侧标记 —— */
+.el-menu {
+  background: transparent;
+  border-right: none !important;
+}
+.el-menu-item {
+  font-family: var(--font-serif);
+  color: var(--ink-3);
+  border-radius: 0;
+  transition: all var(--duration) var(--ease);
+}
+.el-menu-item:hover {
+  background: transparent;
+  color: var(--ink-1);
+}
+.el-menu-item.is-active {
+  background: transparent;
+  color: var(--ink-1);
+  font-weight: 600;
+  position: relative;
+}
+.el-menu-item.is-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 60%;
+  background: var(--ink-1);
+}
+.el-sub-menu__title {
+  font-family: var(--font-serif);
+  color: var(--ink-3);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* —— 对话框：编辑风 - 顶部细线标题 —— */
+.el-dialog {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-family: var(--font-serif);
+}
+.el-dialog__header {
+  border-bottom: 1px solid var(--border-hair);
+  padding-bottom: var(--space-4);
+}
+.el-dialog__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink-1);
+  font-size: 1.25rem;
+}
+
+/* —— 表单标签：大写小字距 —— */
+.el-form-item__label {
+  font-family: var(--font-serif);
+  color: var(--ink-3);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* —— 卡片：极简、仅细边框 —— */
+.el-card {
+  border: 1px solid var(--border-hair);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  background: var(--bg-surface);
+}
+.el-card__header {
+  border-bottom: 1px solid var(--border-hair);
+  padding: var(--space-4) var(--space-5);
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink-1);
+}
+
+/* —— 分页：朴素 —— */
+.el-pagination {
+  font-family: var(--font-serif);
+  --el-pagination-button-color: var(--ink-2);
+  --el-pagination-hover-color: var(--ink-1);
+}
+
+/* —— 消息提示 —— */
+.el-message {
+  font-family: var(--font-serif);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-hair);
+  box-shadow: var(--shadow-md);
+}
+
+/* —— 开关 —— */
+.el-switch.is-checked .el-switch__core {
+  background-color: var(--ink-1) !important;
+  border-color: var(--ink-1) !important;
+}
+
+/* —— Tag —— */
+.el-tag {
+  font-family: var(--font-serif);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+/* —— 滚动条：纤细 —— */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-soft);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-4);
+}
+
+/* —— 选中文本 —— */
+::selection {
+  background: var(--ink-1);
+  color: var(--bg-surface);
+}
+
+/* ============================================================
+   通用工具类
+   ============================================================ */
+.editorial-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ink-1);
+  letter-spacing: -0.02em;
+}
+
+.editorial-rule {
+  border: none;
+  border-top: 1px solid var(--ink-1);
+  margin: var(--space-5) 0;
+}
+
+.editorial-caption {
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+.editorial-number {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* —— 页面淡入 —— */
+@keyframes editorial-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.editorial-fade-in {
+  animation: editorial-fade-in 480ms var(--ease) both;
+}
+
+/* —— 错落入场（用于列表/卡片） —— */
+@keyframes editorial-stagger {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }

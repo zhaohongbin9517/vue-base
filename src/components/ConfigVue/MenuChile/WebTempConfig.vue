@@ -160,129 +160,115 @@ export default {
 </script>
 
 <style scoped>
-
 .base-config {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
   flex-wrap: wrap;
 }
 
 .web-ws-config {
-  padding: 24px;
-  background: #f5f7fa;
-  min-height: 85vh;
-  max-height: 85vh;
+  padding: 0;
+  background: transparent;
   overflow-y: auto;
 }
 
-.web-ws-config::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-.web-ws-config {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
 .page-header {
-  margin-bottom: 24px;
-  text-align: center;
+  margin-bottom: var(--space-5);
 }
 
 .page-title {
-  font-size: 22px;
-  color: #303133;
-  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--ink-1);
+  margin: 0 0 var(--space-2) 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .title-icon {
   font-size: 26px;
-  color: #409eff;
+  color: var(--ink-1);
 }
 
 .page-desc {
   font-size: 14px;
-  color: #606266;
+  color: var(--ink-2);
   margin: 0;
 }
 
 .button-area {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-5);
   display: flex;
-  justify-content: flex-start;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--border-hair);
 }
 
 .config-card {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-5);
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   font-weight: 600;
+  color: var(--ink-1);
 }
 
 .header-icon {
-  color: #409eff;
+  color: var(--ink-1);
 }
 
 .editor-container {
-  margin-top: 16px;
+  margin-top: var(--space-4);
 }
 
 label {
   display: inline-flex;
   align-items: center;
   font-weight: 500;
-  color: #606266;
-  margin-right: 8px;
+  color: var(--ink-2);
+  margin-right: var(--space-2);
 }
 
-/* 针对base-config中的输入框单独设置宽度 */
 .base-config .el-input {
   width: 300px;
 }
 
-/* 为文件输入框设置特定样式 */
 .file-input {
   width: 300px;
-  margin-right: 8px;
+  margin-right: var(--space-2);
 }
 
 .json-editor {
   width: 100%;
   height: 500px;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  font-family: 'Courier New', Courier, monospace;
+  border: 1px solid var(--border-hair);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
   font-size: 14px;
   line-height: 1.5;
   resize: vertical;
-  transition: border-color 0.3s;
+  transition: border-color var(--duration) var(--ease);
 }
 
 .json-editor :deep(.jsoneditor-outer) {
-   height: 500px;
+  height: 500px;
 }
 
 .json-editor:focus {
   outline: none;
-  border-color: #409eff;
-  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+  border-color: var(--ink-2);
 }
 
-
 .error-message {
-  margin-top: 8px;
-  color: #f56c6c;
+  margin-top: var(--space-2);
+  color: var(--danger);
   font-size: 12px;
 }
 </style>

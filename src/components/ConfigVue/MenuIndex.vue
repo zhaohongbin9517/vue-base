@@ -1,132 +1,105 @@
 <template>
-  <div class="page-wrapper">
-    <el-container class="layout-container">
-      <el-aside width="200px" class="aside">
-        <el-menu
-          :default-active="$route.path"
-          class="el-menu-vertical"
-          router
-          @open="handleOpen"
-          @close="handleClose"
-        >
-          <el-sub-menu index="1" popper-class="custom-submenu">
-            <template #title>
-              <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><setting /></el-icon>
-                <span class="menu-text">通用配置</span>
-              </div>
-            </template>
-            <el-menu-item index="/config/plan" class="sub-menu-item">
-              <span class="sub-menu-text">计划配置</span>
-            </el-menu-item>
-            <el-menu-item index="/config/result" class="sub-menu-item">
-              <span class="sub-menu-text">结果配置</span>
-            </el-menu-item>
-          </el-sub-menu>
-          <el-sub-menu index="2" popper-class="custom-submenu">
-            <template #title>
-              <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><Operation /></el-icon>
-                <span class="menu-text">计量配置</span>
-              </div>
-            </template>
-            <el-menu-item index="/config/all-station" class="sub-menu-item">
-              <span class="sub-menu-text">计量站一览</span>
-            </el-menu-item>
-            <el-menu-item index="/config/all-meter" class="sub-menu-item">
-              <span class="sub-menu-text">配置一览</span>
-            </el-menu-item>
-            <el-menu-item index="/config/meter" class="sub-menu-item">
-              <span class="sub-menu-text">修改配置</span>
-            </el-menu-item>
-          </el-sub-menu>
-      
-          <el-sub-menu index="3" popper-class="custom-submenu">
-            <template #title>
-              <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><DocumentCopy /></el-icon>
-                <span class="menu-text">web配置</span>
-              </div>
-            </template>
-            <el-menu-item index="/config/measure-web-ws" class="sub-menu-item">
-              <span class="sub-menu-text">ws配置</span>
-            </el-menu-item>
-            <el-menu-item index="/config/measure-web-temp" class="sub-menu-item">
-              <span class="sub-menu-text">显示模板配置</span>
-            </el-menu-item>
-            <el-menu-item index="/config/changelog" @click="handleJumpHtml('changelog')" class="sub-menu-item">
-              <span class="sub-menu-text">变更日志</span>
-            </el-menu-item>
-            <el-menu-item index="/config/template-config-versions" @click="handleJumpHtml('template-config/versions')" class="sub-menu-item">
-              <span class="sub-menu-text">模板版本管理</span>
-            </el-menu-item>
-            <el-menu-item index="/config/template-config" @click="handleJumpHtml('template-config')" class="sub-menu-item">
-              <span class="sub-menu-text">模板配置管理</span>
-            </el-menu-item>
-          </el-sub-menu>
-          <el-sub-menu index="4" popper-class="custom-submenu">
-            <template #title>
-              <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><Position /></el-icon>
-                <span class="menu-text">导航</span>
-              </div>
-            </template>
-            <el-menu-item index="/custom-submenu/measure-manage" @click="handleJumpHtml('measure-manage')" class="sub-menu-item">
-              <span class="sub-menu-text">计量-计量站监控</span>
-            </el-menu-item>
-            <el-menu-item index="/custom-submenu/batch-operator" @click="handleJumpHtml('batch-operator')" class="sub-menu-item">
-              <span class="sub-menu-text">计量-计划管理</span>
-            </el-menu-item>
-            <el-menu-item index="/custom-submenu/measure-control" @click="handleJumpHtml('measure-control')"  class="sub-menu-item">
-              <span class="sub-menu-text">计量-计量监控</span>
-            </el-menu-item>
-            <el-menu-item index="/custom-submenu/history-data-splitpanes" @click="handleJumpHtml('history-data-splitpanes')" class="sub-menu-item">
-              <span class="sub-menu-text">计量-结果监控</span>
-            </el-menu-item>
-            <el-menu-item index="/custom-submenu/behavior-tree-manage" @click="handleJumpHtml('behavior-tree-manage')" class="sub-menu-item">
-              <span class="sub-menu-text">行为树-管理</span>
-            </el-menu-item>
-            <el-menu-item index="/custom-submenu/server-control" @click="handleJumpHtml('server-control')" class="sub-menu-item">
-              <span class="sub-menu-text">服务控制-管理</span>
-            </el-menu-item>
-          </el-sub-menu>
-<!--           
-          <el-sub-menu index="5" popper-class="custom-submenu">
-            <template #title>
-              <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><icon-menu /></el-icon>
-                <span class="menu-text">测试</span>
-              </div>
-            </template>
-            <el-menu-item index="/config/vue-test-temp" class="sub-menu-item">
-              <span class="sub-menu-text">Vue测试组件</span>
-            </el-menu-item>
-          </el-sub-menu> -->
+  <div class="config-layout">
+    <!-- 侧边导航 -->
+    <aside class="config-sider">
+      <div class="config-sider__head">
+        <span class="editorial-caption">Index</span>
+        <span class="config-sider__line"></span>
+      </div>
+      <el-menu
+        :default-active="$route.path"
+        class="config-menu"
+        router
+        @open="handleOpen"
+        @close="handleClose"
+      >
+        <el-sub-menu index="1" popper-class="editorial-submenu">
+          <template #title>
+            <span class="config-menu__group">通用配置</span>
+          </template>
+          <el-menu-item index="/config/plan">
+            <span class="config-menu__item">计划配置</span>
+          </el-menu-item>
+          <el-menu-item index="/config/result">
+            <span class="config-menu__item">结果配置</span>
+          </el-menu-item>
+        </el-sub-menu>
 
-        </el-menu>
-      </el-aside>
-      <el-container>
-        <el-main class="main">
-          <router-view />
-        </el-main>
-      </el-container>
-    </el-container>
+        <el-sub-menu index="2" popper-class="editorial-submenu">
+          <template #title>
+            <span class="config-menu__group">计量配置</span>
+          </template>
+          <el-menu-item index="/config/all-station">
+            <span class="config-menu__item">计量站一览</span>
+          </el-menu-item>
+          <el-menu-item index="/config/all-meter">
+            <span class="config-menu__item">配置一览</span>
+          </el-menu-item>
+          <el-menu-item index="/config/meter">
+            <span class="config-menu__item">修改配置</span>
+          </el-menu-item>
+        </el-sub-menu>
+
+        <el-sub-menu index="3" popper-class="editorial-submenu">
+          <template #title>
+            <span class="config-menu__group">Web 配置</span>
+          </template>
+          <el-menu-item index="/config/measure-web-ws">
+            <span class="config-menu__item">WS 配置</span>
+          </el-menu-item>
+          <el-menu-item index="/config/measure-web-temp">
+            <span class="config-menu__item">显示模板配置</span>
+          </el-menu-item>
+          <el-menu-item index="/config/changelog" @click="handleJumpHtml('changelog')">
+            <span class="config-menu__item">变更日志</span>
+          </el-menu-item>
+          <el-menu-item index="/config/template-config-versions" @click="handleJumpHtml('template-config/versions')">
+            <span class="config-menu__item">模板版本管理</span>
+          </el-menu-item>
+          <el-menu-item index="/config/template-config" @click="handleJumpHtml('template-config')">
+            <span class="config-menu__item">模板配置管理</span>
+          </el-menu-item>
+        </el-sub-menu>
+
+        <el-sub-menu index="4" popper-class="editorial-submenu">
+          <template #title>
+            <span class="config-menu__group">导航</span>
+          </template>
+          <el-menu-item index="/custom-submenu/measure-manage" @click="handleJumpHtml('measure-manage')">
+            <span class="config-menu__item">计量站监控</span>
+          </el-menu-item>
+          <el-menu-item index="/custom-submenu/batch-operator" @click="handleJumpHtml('batch-operator')">
+            <span class="config-menu__item">计划管理</span>
+          </el-menu-item>
+          <el-menu-item index="/custom-submenu/measure-control" @click="handleJumpHtml('measure-control')">
+            <span class="config-menu__item">计量监控</span>
+          </el-menu-item>
+          <el-menu-item index="/custom-submenu/history-data-splitpanes" @click="handleJumpHtml('history-data-splitpanes')">
+            <span class="config-menu__item">结果监控</span>
+          </el-menu-item>
+          <el-menu-item index="/custom-submenu/behavior-tree-manage" @click="handleJumpHtml('behavior-tree-manage')">
+            <span class="config-menu__item">行为树管理</span>
+          </el-menu-item>
+          <el-menu-item index="/custom-submenu/server-control" @click="handleJumpHtml('server-control')">
+            <span class="config-menu__item">服务控制</span>
+          </el-menu-item>
+        </el-sub-menu>
+      </el-menu>
+    </aside>
+
+    <!-- 内容区 -->
+    <main class="config-content">
+      <router-view />
+    </main>
   </div>
 </template>
 
 <script>
-import { Setting, Position,Operation,DocumentCopy } from '@element-plus/icons-vue'
 import { getAuthToken, getAuthUser, getAuthAlias, getAuthPermissionKeys } from '@/api/userUtils/auth'
 import { getWebPort } from '@/api/configUtils/config'
 
 export default {
   name: 'MenuIndex',
-  components: {
-    Setting,
-    DocumentCopy,
-    Operation,
-    Position
-  },
   data() {
     return {
       webPort: '',
@@ -145,7 +118,6 @@ export default {
   },
   methods: {
     handleJumpHtml(pageName) {
-      console.log(pageName)
       //获取ip
       let ip = window.location.hostname
       
@@ -162,12 +134,10 @@ export default {
         case 'behavior-tree-manage':
           if(this.behavior_web_port === 'null' || this.behavior_web_port === '') return
           url = `http://${ip}:${this.behavior_web_port}/`
-          console.log(url)
           break;
         case 'server-control':
           if(this.server_control_web_port === 'null' || this.server_control_web_port === '') return
           url = `http://${ip}:${this.server_control_web_port}/`
-          console.log(url)
           break;
         default:
           url = `http://${ip}:${this.webPort}/#/${pageName}`
@@ -199,130 +169,109 @@ export default {
 </script>
 
 <style scoped>
-.page-wrapper {
-  /* height: 100vh; */
-  min-height: 85vh;
-  max-height: 85vh;
-  /* overflow-y: auto; */
+.config-layout {
+  height: calc(100vh - 64px);
   display: flex;
-  flex-direction: column;
+  background: var(--bg-canvas);
 }
 
-.page-title {
-  height: 50px;
-  line-height: 50px;
-  background-color: #cfdcea;
-  color: #000000;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
-  border-radius: 8px;
-  margin: 10px;
+/* ============ 侧边导航 ============ */
+.config-sider {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-hair);
+  padding: var(--space-5) 0;
+  overflow-y: auto;
+}
+
+.config-sider__head {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: var(--space-3);
+  padding: 0 var(--space-5) var(--space-4);
 }
-
-.title-logo {
-  height: 32px;
-  width: auto;
-}
-
-.layout-container {
+.config-sider__line {
   flex: 1;
+  height: 1px;
+  background: var(--border-hair);
 }
 
-.aside {
-  background: linear-gradient(180deg, #f5f7fa 0%, #e4e7ed 100%);
-  border-right: none;
-  border-radius: 12px;
-  margin: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+.config-menu {
+  border-right: none !important;
+  padding: 0 var(--space-2);
 }
 
-.el-menu-vertical {
-  height: 100%;
-  border-right: none;
-  background: #ffffff;
+/* 菜单分组标题 */
+.config-menu :deep(.el-sub-menu__title) {
+  font-family: var(--font-serif);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+  height: 40px;
+  line-height: 40px;
+  padding-left: var(--space-4) !important;
+}
+.config-menu :deep(.el-sub-menu__title:hover) {
+  background: transparent;
+  color: var(--ink-1);
+}
+.config-menu__group {
+  font-family: var(--font-serif);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: inherit;
+  font-weight: 600;
 }
 
-/* 子菜单展开时的ul背景色 */
-:deep(.el-menu--inline) {
-  background-color: #ffffff !important;
+/* 菜单项 */
+.config-menu :deep(.el-menu-item) {
+  font-family: var(--font-serif);
+  color: var(--ink-3);
+  height: 38px;
+  line-height: 38px;
+  padding-left: var(--space-5) !important;
+  border-radius: 0;
+  transition: all var(--duration) var(--ease);
+}
+.config-menu :deep(.el-menu-item:hover) {
+  background: transparent;
+  color: var(--ink-1);
+}
+.config-menu :deep(.el-menu-item.is-active) {
+  background: transparent;
+  color: var(--ink-1);
+  font-weight: 600;
+  position: relative;
+}
+.config-menu :deep(.el-menu-item.is-active)::before {
+  content: '';
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 50%;
+  background: var(--ink-1);
+}
+.config-menu__item {
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  color: inherit;
 }
 
-/* 子菜单项背景色 */
-:deep(.el-menu-item) {
-  background-color: #ffffff;
+/* 展开子菜单容器 */
+.config-menu :deep(.el-menu--inline) {
+  background: transparent !important;
 }
 
-/* 子菜单容器背景色 */
-:deep(.el-sub-menu .el-menu) {
-  background-color: #ffffff;
-}
-
-/* 菜单标题包装器样式 */
-.menu-title-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* 菜单图标样式 */
-.menu-icon {
-  font-size: 18px;
-  color: #409eff;
-  transition: all 0.3s ease;
-}
-
-/* 菜单文字样式 */
-.menu-text {
-  font-size: 15px;
-  font-weight: 500;
-  color: #303133;
-}
-
-/* 子菜单项样式 */
-.sub-menu-item {
-  display: flex;
-  align-items: center;
-  padding-left: 40px !important;
-  transition: all 0.3s ease;
-}
-
-/* 子菜单文字 */
-.sub-menu-text {
-  font-size: 14px;
-  color: #606266;
-}
-
-/* 子菜单项悬停效果 */
-.sub-menu-item:hover {
-  background-color: #ecf5ff !important;
-}
-
-.sub-menu-item:hover .sub-menu-text {
-  color: #409eff;
-}
-
-/* 选中状态的子菜单项 */
-.sub-menu-item.is-active {
-  background-color: #ecf5ff !important;
-}
-
-.sub-menu-item.is-active .sub-menu-text {
-  color: #409eff;
-  font-weight: 500;
-}
-
-.main {
-  background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
-  padding: 24px;
-  border-radius: 12px;
-  margin: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+/* ============ 内容区 ============ */
+.config-content {
+  flex: 1;
   overflow: auto;
+  padding: var(--space-7) var(--space-8);
 }
 </style>

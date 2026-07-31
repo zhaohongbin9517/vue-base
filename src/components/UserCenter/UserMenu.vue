@@ -1,64 +1,56 @@
 <template>
-  <div class="page-wrapper">
-    <el-container class="layout-container">
-      <el-aside width="200px" class="aside">
-        <el-menu
-          :default-active="activeMenu"
-          class="el-menu-vertical"
-          router
-        >
-          <el-sub-menu index="user-manage" popper-class="custom-submenu">
-            <template #title>
-              <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><User /></el-icon>
-                <span class="menu-text">用户管理</span>
-              </div>
-            </template>
-            <el-menu-item v-if="canRead1" index="/user-center/users" class="sub-menu-item">
-              <span class="sub-menu-text">用户管理</span>
-            </el-menu-item>
-            <el-menu-item index="/user-center/change-password" class="sub-menu-item">
-              <span class="sub-menu-text">密码修改</span>
-            </el-menu-item>
-          </el-sub-menu>
+  <div class="user-layout">
+    <aside class="user-sider">
+      <div class="user-sider__head">
+        <span class="editorial-caption">User Center</span>
+        <span class="user-sider__line"></span>
+      </div>
+      <el-menu
+        :default-active="activeMenu"
+        class="user-menu"
+        router
+      >
+        <el-sub-menu v-if="canRead1" index="user-manage" popper-class="editorial-submenu">
+          <template #title>
+            <span class="user-menu__group">账户</span>
+          </template>
+          <el-menu-item index="/user-center/users">
+            <span class="user-menu__item">用户管理</span>
+          </el-menu-item>
+          <el-menu-item index="/user-center/change-password">
+            <span class="user-menu__item">密码修改</span>
+          </el-menu-item>
+        </el-sub-menu>
 
-          <el-sub-menu v-if="canRead2" index="role-manage" popper-class="custom-submenu">
-            <template #title>
-              <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><UserFilled /></el-icon>
-                <span class="sub-menu-text">角色管理</span>
-              </div>
-            </template>
-            <el-menu-item index="/user-center/roles" class="sub-menu-item">
-              <span class="sub-menu-text">角色管理</span>
-            </el-menu-item>
-          </el-sub-menu>
-          <el-sub-menu v-if="canRead3" index="auth-manage" popper-class="custom-submenu">
-            <template #title>
-              <div class="menu-title-wrapper">
-                <el-icon class="menu-icon"><Key /></el-icon>
-                <span class="sub-menu-text">授权管理</span>
-              </div>
-            </template>
-            <el-menu-item index="/user-center/auth" class="sub-menu-item">
-              <span class="sub-menu-text">授权管理</span>
-            </el-menu-item>
-          </el-sub-menu>
-        </el-menu>
-      </el-aside>
-      <el-container>
-        <el-main class="main">
-          <router-view />
-        </el-main>
-      </el-container>
-    </el-container>
+        <el-sub-menu v-if="canRead2" index="role-manage" popper-class="editorial-submenu">
+          <template #title>
+            <span class="user-menu__group">角色</span>
+          </template>
+          <el-menu-item index="/user-center/roles">
+            <span class="user-menu__item">角色管理</span>
+          </el-menu-item>
+        </el-sub-menu>
+
+        <el-sub-menu v-if="canRead3" index="auth-manage" popper-class="editorial-submenu">
+          <template #title>
+            <span class="user-menu__group">授权</span>
+          </template>
+          <el-menu-item index="/user-center/auth">
+            <span class="user-menu__item">授权管理</span>
+          </el-menu-item>
+        </el-sub-menu>
+      </el-menu>
+    </aside>
+
+    <main class="user-content">
+      <router-view />
+    </main>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { User, UserFilled, Key } from '@element-plus/icons-vue'
 import { hasAuthPermission } from '@/api/userUtils/auth'
 
 const canRead1 = computed(() => hasAuthPermission('user_manage:read'))
@@ -71,106 +63,104 @@ const activeMenu = computed(() => route.path)
 </script>
 
 <style scoped>
-.page-wrapper {
-  height: 100vh;
+.user-layout {
+  height: calc(100vh - 64px);
   display: flex;
-  flex-direction: column;
+  background: var(--bg-canvas);
 }
 
-.layout-container {
+.user-sider {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-hair);
+  padding: var(--space-5) 0;
+  overflow-y: auto;
+}
+
+.user-sider__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-5) var(--space-4);
+}
+.user-sider__line {
   flex: 1;
+  height: 1px;
+  background: var(--border-hair);
 }
 
-.aside {
-  background: linear-gradient(180deg, #f5f7fa 0%, #e4e7ed 100%);
-  border-right: none;
-  border-radius: 12px;
-  margin: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+.user-menu {
+  border-right: none !important;
+  padding: 0 var(--space-2);
 }
 
-.el-menu-vertical {
-  height: 100%;
-  border-right: none;
-  background: #ffffff;
+.user-menu :deep(.el-sub-menu__title) {
+  font-family: var(--font-serif);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+  height: 40px;
+  line-height: 40px;
+  padding-left: var(--space-4) !important;
+}
+.user-menu :deep(.el-sub-menu__title:hover) {
+  background: transparent;
+  color: var(--ink-1);
+}
+.user-menu__group {
+  font-family: var(--font-serif);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: inherit;
+  font-weight: 600;
 }
 
-/* 子菜单展开时的ul背景色 */
-:deep(.el-menu--inline) {
-  background-color: #ffffff !important;
+.user-menu :deep(.el-menu-item) {
+  font-family: var(--font-serif);
+  color: var(--ink-3);
+  height: 38px;
+  line-height: 38px;
+  padding-left: var(--space-5) !important;
+  border-radius: 0;
+  transition: all var(--duration) var(--ease);
+}
+.user-menu :deep(.el-menu-item:hover) {
+  background: transparent;
+  color: var(--ink-1);
+}
+.user-menu :deep(.el-menu-item.is-active) {
+  background: transparent;
+  color: var(--ink-1);
+  font-weight: 600;
+  position: relative;
+}
+.user-menu :deep(.el-menu-item.is-active)::before {
+  content: '';
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 50%;
+  background: var(--ink-1);
+}
+.user-menu__item {
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  color: inherit;
 }
 
-/* 子菜单项背景色 */
-:deep(.el-menu-item) {
-  background-color: #ffffff;
+.user-menu :deep(.el-menu--inline) {
+  background: transparent !important;
 }
 
-/* 子菜单容器背景色 */
-:deep(.el-sub-menu .el-menu) {
-  background-color: #ffffff;
-}
-
-/* 菜单标题包装器样式 */
-.menu-title-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* 菜单图标样式 */
-.menu-icon {
-  font-size: 18px;
-  color: #409eff;
-  transition: all 0.3s ease;
-}
-
-/* 菜单文字样式 */
-.menu-text {
-  font-size: 15px;
-  font-weight: 500;
-  color: #303133;
-}
-
-/* 子菜单项样式 */
-.sub-menu-item {
-  display: flex;
-  align-items: center;
-  padding-left: 40px !important;
-  transition: all 0.3s ease;
-}
-
-/* 子菜单文字 */
-.sub-menu-text {
-  font-size: 14px;
-  color: #606266;
-}
-
-/* 子菜单项悬停效果 */
-.sub-menu-item:hover {
-  background-color: #ecf5ff !important;
-}
-
-.sub-menu-item:hover .sub-menu-text {
-  color: #409eff;
-}
-
-/* 选中状态的子菜单项 */
-.sub-menu-item.is-active {
-  background-color: #ecf5ff !important;
-}
-
-.sub-menu-item.is-active .sub-menu-text {
-  color: #409eff;
-  font-weight: 500;
-}
-
-.main {
-  background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
-  padding: 24px;
-  border-radius: 12px;
-  margin: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+.user-content {
+  flex: 1;
   overflow: auto;
+  padding: var(--space-7) var(--space-8);
 }
 </style>

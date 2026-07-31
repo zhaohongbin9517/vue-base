@@ -1,5 +1,33 @@
 <template>
   <div class="meter-config">
+    <!-- 快速导航（固定悬浮底部） -->
+    <div class="quick-nav">
+      <div class="nav-content">
+        <span class="nav-title">快速导航</span>
+        <el-scrollbar wrap-class="nav-scroll-wrap" max-height="80">
+          <div class="nav-links">
+            <div 
+              v-for="item in navItems" 
+              :key="item.id"
+              class="nav-item"
+              :class="{'nav-active': item.id === activeId}"
+              @click="scrollToSection(item.id)"
+            >
+              {{ item.title }}
+            </div>
+          </div>
+        </el-scrollbar>
+        <el-button 
+          type="text" 
+          class="back-top-btn"
+          @click="scrollToTop"
+          title="返回顶部"
+        >
+          <el-icon><top /></el-icon>
+        </el-button>
+      </div>
+    </div>
+
     <div v-if="isShowHeader" class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><setting /></el-icon>
@@ -312,33 +340,6 @@
     </div>
     
   </div>
-   <!-- 快速导航菜单 -->
-    <div class="quick-nav">
-      <div class="nav-content">
-        <span class="nav-title">快速导航：</span>
-        <el-scrollbar wrap-class="nav-scroll-wrap" max-height="80">
-          <div class="nav-links">
-            <div 
-              v-for="item in navItems" 
-              :key="item.id"
-              class="nav-item"
-              :class="{'nav-active': item.id === activeId}"
-              @click="scrollToSection(item.id)"
-            >
-              {{ item.title }}
-            </div>
-          </div>
-        </el-scrollbar>
-        <el-button 
-          type="text" 
-          class="back-top-btn"
-          @click="scrollToTop"
-          title="返回顶部"
-        >
-          <el-icon><top /></el-icon>
-        </el-button>
-      </div>
-    </div>
 
 </template>
 
@@ -1134,29 +1135,34 @@ export default {
 
     // 快速导航 - 滚动到指定部分
     scrollToSection(id) {
-      // 更新当前激活项
       this.activeId = id
       const element = document.getElementById(id)
       if (element) {
-        const offsetTop = element.offsetTop
-        const meterConfigElement = document.querySelector('.meter-config')
-        if (meterConfigElement) {
-          meterConfigElement.scrollTo({
-            top: offsetTop - 20,
+        const container = document.querySelector('.config-content')
+        if (container) {
+          const rect = element.getBoundingClientRect()
+          const containerRect = container.getBoundingClientRect()
+          const scrollTop = container.scrollTop + rect.top - containerRect.top - 20
+          container.scrollTo({
+            top: scrollTop,
             behavior: 'smooth'
           })
+        } else {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
         }
       }
     },
 
     // 快速导航 - 返回顶部
     scrollToTop() {
-      const meterConfigElement = document.querySelector('.meter-config')
-      if (meterConfigElement) {
-        meterConfigElement.scrollTo({
+      const container = document.querySelector('.config-content')
+      if (container) {
+        container.scrollTo({
           top: 0,
           behavior: 'smooth'
         })
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     },
 
@@ -1166,35 +1172,40 @@ export default {
 
 <style scoped>
 .meter-config {
-  padding: 24px;
-  background: #f5f7fa;
-  min-height: 74vh;
-  max-height: 74vh;
-  overflow-y: auto;
+  padding: 0 0 calc(80px + var(--space-7)) 0;
+  background: transparent;
 }
 
-/* 快速导航菜单样式 */
+/* —— 快速导航：固定悬浮底部 —— */
 .quick-nav {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 100;
-  background: #ebf8fd;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  margin-bottom: 0px;
-  padding: 12px 16px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--ink-1);
+  padding: var(--space-3) var(--space-7);
+  box-shadow: 0 -4px 24px rgba(28, 25, 23, 0.08);
 }
 
 .nav-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
 .nav-title {
+  font-family: var(--font-serif);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   font-weight: 600;
-  color: #303133;
+  color: var(--ink-3);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-scroll-wrap {
@@ -1205,109 +1216,106 @@ export default {
 .nav-links {
   height: auto;
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
 }
 
 .nav-item {
-  padding: 6px 12px;
-  background: #f5f7fa;
-  border-radius: 4px;
-  font-size: 14px;
-  color: #606266;
+  padding: var(--space-1) var(--space-3);
+  background: transparent;
+  border: 1px solid var(--border-hair);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-serif);
+  font-size: 0.8125rem;
+  color: var(--ink-3);
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.3s ease;
+  transition: all var(--duration) var(--ease);
 }
 
 .nav-item:hover {
-  background: #ecf5ff;
-  color: #409eff;
+  border-color: var(--ink-1);
+  color: var(--ink-1);
+  background: var(--bg-subtle);
 }
 
 .nav-active {
-  background: #ecf5ff;
-  color: #2793ff;
+  background: var(--ink-1);
+  color: var(--bg-surface);
+  border-color: var(--ink-1);
 }
 
-
-
 .back-top-btn {
-  color: #606266;
-  font-size: 18px;
-  transition: all 0.3s ease;
+  color: var(--ink-3);
+  font-size: 1.125rem;
+  transition: all var(--duration) var(--ease);
+  flex-shrink: 0;
 }
 
 .back-top-btn:hover {
-  color: #409eff;
+  color: var(--ink-1);
 }
 
-/* 导航项自动换行，不再需要滚动条 */
-
-.meter-config::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-.meter-config {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
+/* —— 页面标题 —— */
 .page-header {
-  margin-bottom: 24px;
-  text-align: center;
+  margin-bottom: var(--space-6);
 }
 
 .page-title {
-  font-size: 22px;
-  color: #303133;
-  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--ink-1);
+  margin: 0 0 var(--space-2) 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: var(--space-3);
+  letter-spacing: -0.01em;
 }
 
 .title-icon {
-  font-size: 26px;
-  color: #409eff;
+  font-size: 1.25rem;
+  color: var(--ink-1);
 }
 
 .page-desc {
-  color: #909399;
-  font-size: 14px;
+  font-family: var(--font-serif);
+  color: var(--ink-3);
+  font-size: 0.875rem;
   margin: 0;
+  line-height: 1.6;
 }
 
+/* —— 卡片 —— */
 .config-card {
-  margin-bottom: 20px;
-  border-radius: 8px;
+  margin-bottom: var(--space-5);
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: 1rem;
   font-weight: 600;
-  color: #303133;
+  color: var(--ink-1);
 }
 
 .header-icon {
-  font-size: 20px;
-  color: #409eff;
+  font-size: 1.125rem;
+  color: var(--ink-2);
 }
 
+/* —— 基础配置 —— */
 .base-config {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
   flex-wrap: wrap;
 }
 
-.config-select  {
+.config-select {
   width: 300px;
 }
 

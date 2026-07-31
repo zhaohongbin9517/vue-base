@@ -491,72 +491,65 @@ export default {
 
 <style scoped>
 .plan-config {
-  padding: 24px;
-  background: #f5f7fa;
-  min-height: 85vh;
-  max-height: 85vh;
-  overflow-y: auto;
+  padding: 0;
+  background: transparent;
 }
 
-.plan-config::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-.plan-config {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
+/* —— 页面标题 —— */
 .page-header {
-  margin-bottom: 24px;
-  text-align: center;
+  margin-bottom: var(--space-6);
 }
 
 .page-title {
-  font-size: 22px;
-  color: #303133;
-  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--ink-1);
+  margin: 0 0 var(--space-2) 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: var(--space-3);
+  letter-spacing: -0.01em;
 }
 
 .title-icon {
-  font-size: 26px;
-  color: #409eff;
+  font-size: 1.25rem;
+  color: var(--ink-1);
 }
 
 .page-desc {
-  color: #909399;
-  font-size: 14px;
+  font-family: var(--font-serif);
+  color: var(--ink-3);
+  font-size: 0.875rem;
   margin: 0;
+  line-height: 1.6;
 }
 
+/* —— 卡片 —— */
 .config-card {
-  margin-bottom: 20px;
-  border-radius: 8px;
+  margin-bottom: var(--space-5);
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: 1rem;
   font-weight: 600;
-  color: #303133;
+  color: var(--ink-1);
 }
 
 .header-icon {
-  font-size: 20px;
-  color: #409eff;
+  font-size: 1.125rem;
+  color: var(--ink-2);
 }
 
+/* —— 表单区 —— */
 .select-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .table-select {
@@ -564,12 +557,12 @@ export default {
 }
 
 .table-select.is-error :deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px #f56c6c inset;
+  box-shadow: 0 0 0 1px var(--danger) inset !important;
 }
 
 .table-select.is-error :deep(.el-input__inner),
 .table-select.is-error :deep(.el-select__selected-item) {
-  color: #f56c6c !important;
+  color: var(--danger) !important;
 }
 
 .error-tag {
@@ -583,8 +576,9 @@ export default {
   white-space: nowrap;
 }
 
+/* —— 子分区 —— */
 .sub-section {
-  margin-bottom: 32px;
+  margin-bottom: var(--space-7);
 }
 
 .sub-section:last-child {
@@ -594,20 +588,21 @@ export default {
 .sub-title {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px dashed #dcdfe6;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-hair);
 }
 
 .sub-title-text {
-  font-size: 15px;
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
   font-weight: 600;
-  color: #606266;
+  color: var(--ink-1);
 }
 
 .help-icon {
-  color: #909399;
+  color: var(--ink-4);
   cursor: help;
 }
 
@@ -615,52 +610,47 @@ export default {
   width: 100%;
 }
 
-.config-table :deep(.el-table__header th) {
-  background: #f5f7fa;
-  font-weight: 600;
-  color: #606266;
-}
-
 .db-field-select {
   width: 100%;
 }
 
 .db-field-select.is-error :deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px #f56c6c inset;
+  box-shadow: 0 0 0 1px var(--danger) inset !important;
 }
 
 .db-field-select.is-error :deep(.el-input__inner),
 .db-field-select.is-error :deep(.el-select__selected-item) {
-  color: #f56c6c !important;
+  color: var(--danger) !important;
 }
 
 .check-condition {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .check-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .check-label {
-  font-size: 12px;
-  color: #909399;
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  color: var(--ink-3);
   white-space: nowrap;
 }
 
 .range-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .range-separator {
-  color: #909399;
-  font-size: 14px;
+  color: var(--ink-4);
+  font-size: 0.875rem;
 }
 
 .small-input {
@@ -668,21 +658,20 @@ export default {
 }
 
 .small-input.is-error :deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px #f56c6c inset;
+  box-shadow: 0 0 0 1px var(--danger) inset !important;
 }
 
 .small-input.is-error :deep(.el-input__inner) {
-  color: #f56c6c !important;
+  color: var(--danger) !important;
 }
 
+/* —— 按钮区 —— */
 .button-area {
-  margin-top: 24px;
+  margin-top: var(--space-6);
   display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--border-hair);
 }
 </style>

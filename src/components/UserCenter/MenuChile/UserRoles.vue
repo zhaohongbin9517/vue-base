@@ -287,75 +287,67 @@ onMounted(async () => {
 
 <style scoped>
 .user-roles-config {
-  padding: 24px;
-  background: #f5f7fa;
-  min-height: 85vh;
-  max-height: 85vh;
-  overflow-y: auto;
-}
-
-.user-roles-config::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-.user-roles-config {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  padding: 0;
+  background: transparent;
 }
 
 .page-header {
-  margin-bottom: 24px;
-  text-align: center;
+  margin-bottom: var(--space-5);
+  text-align: left;
 }
 
 .page-title {
-  font-size: 22px;
-  color: #303133;
-  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--ink-1);
+  margin: 0 0 var(--space-2) 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: var(--space-3);
 }
 
 .title-icon {
-  font-size: 26px;
-  color: #409eff;
+  font-size: 1.75rem;
+  color: var(--ink-1);
 }
 
 .page-desc {
-  font-size: 14px;
-  color: #606266;
+  font-size: 0.875rem;
+  color: var(--ink-3);
   margin: 0;
 }
 
 .button-area {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-5);
+  padding-top: var(--space-4);
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border-hair);
 }
 
 .config-card {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-5);
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   font-weight: 600;
+  color: var(--ink-1);
 }
 
 .header-icon {
-  color: #409eff;
+  color: var(--ink-1);
 }
 
 :deep(.el-tree) {
   max-height: 360px;
   overflow: auto;
-  border: 1px solid #ebeef5;
-  border-radius: 8px;
-  padding: 8px;
+  border: 1px solid var(--border-hair);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
 }
 </style>

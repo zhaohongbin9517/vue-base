@@ -248,93 +248,76 @@ export default {
 
 <style scoped>
 .all-meter-config {
-  padding: 24px;
-  background: #f5f7fa;
-  min-height: 85vh;
-  max-height: 85vh;
+  padding: 0;
+  background: transparent;
   overflow-y: auto;
 }
 
-.all-meter-config::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-.all-meter-config {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
 .page-header {
-  margin-bottom: 24px;
-  text-align: center;
+  margin-bottom: var(--space-5);
 }
 
 .page-title {
-  font-size: 22px;
-  color: #303133;
-  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--ink-1);
+  margin: 0 0 var(--space-2) 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .title-icon {
   font-size: 26px;
-  color: #409eff;
+  color: var(--ink-1);
 }
 
 .page-desc {
   font-size: 14px;
-  color: #606266;
+  color: var(--ink-2);
   margin: 0;
 }
 
 .button-area {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-5);
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--border-hair);
 }
 
 .config-card {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-5);
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   font-weight: 600;
+  color: var(--ink-1);
 }
 
 .header-icon {
-  color: #409eff;
+  color: var(--ink-1);
 }
 
 .config-table {
-  margin-top: 16px;
+  margin-top: var(--space-4);
 }
+
 .config-table :deep(.el-table__header-wrapper th) {
   text-align: center;
 }
 
 .red-text {
-  color: #f56c6c;
+  color: var(--danger);
 }
 
-/* 列选择器样式 */
 .column-selector {
-  /* display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 10px 0; */
 }
 
 .column-checkbox {
-  /* display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-right: 20px; */
 }
 </style>

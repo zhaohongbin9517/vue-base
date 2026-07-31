@@ -320,72 +320,60 @@ export default {
 
 <style scoped>
 .result-config {
-  padding: 24px;
-  background: #f5f7fa;
-  min-height: 85vh;
-  max-height: 85vh;
+  padding: 0;
+  background: transparent;
   overflow-y: auto;
 }
 
-.result-config::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-.result-config {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
 .page-header {
-  margin-bottom: 24px;
-  text-align: center;
+  margin-bottom: var(--space-5);
 }
 
 .page-title {
-  font-size: 22px;
-  color: #303133;
-  margin: 0 0 8px 0;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--ink-1);
+  margin: 0 0 var(--space-2) 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .title-icon {
   font-size: 26px;
-  color: #409eff;
+  color: var(--ink-1);
 }
 
 .page-desc {
-  color: #909399;
+  color: var(--ink-3);
   font-size: 14px;
   margin: 0;
 }
 
 .config-card {
-  margin-bottom: 20px;
-  border-radius: 8px;
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius-sm);
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: var(--ink-1);
 }
 
 .header-icon {
   font-size: 20px;
-  color: #409eff;
+  color: var(--ink-1);
 }
 
 .select-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .table-select {
@@ -393,12 +381,12 @@ export default {
 }
 
 .table-select.is-error :deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px #f56c6c inset;
+  box-shadow: 0 0 0 1px var(--danger) inset;
 }
 
 .table-select.is-error :deep(.el-input__inner),
 .table-select.is-error :deep(.el-select__selected-item) {
-  color: #f56c6c !important;
+  color: var(--danger) !important;
 }
 
 .error-tag {
@@ -408,12 +396,12 @@ export default {
 .tag-content {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   white-space: nowrap;
 }
 
 .sub-section {
-  margin-bottom: 32px;
+  margin-bottom: var(--space-6);
 }
 
 .sub-section:last-child {
@@ -423,54 +411,54 @@ export default {
 .sub-title {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px dashed #dcdfe6;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px dashed var(--border-hair);
 }
 
 .sub-title-text {
   font-size: 15px;
   font-weight: 600;
-  color: #606266;
+  color: var(--ink-2);
 }
 
 .help-icon {
-  color: #909399;
+  color: var(--ink-3);
   cursor: help;
 }
 
 .checkbox-wrapper {
-  padding: 20px;
-  background: #f5f7fa;
-  border-radius: 8px;
+  padding: var(--space-5);
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
   min-height: 200px;
 }
 
 .column-checkbox-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .column-checkbox {
   margin-right: 0;
-  padding: 8px 16px;
-  background: #fff;
-  border-radius: 4px;
-  border: 1px solid #dcdfe6;
-  transition: all 0.3s;
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hair);
+  transition: all var(--duration) var(--ease);
 }
 
 .column-checkbox:hover {
-  border-color: #409eff;
-  box-shadow: 0 2px 12px 0 rgba(64, 158, 255, 0.1);
+  border-color: var(--ink-2);
+  box-shadow: none;
 }
 
 .column-checkbox :deep(.el-checkbox__label) {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .db-field-select {
@@ -478,22 +466,22 @@ export default {
 }
 
 .db-field-select.is-error :deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px #f56c6c inset;
+  box-shadow: 0 0 0 1px var(--danger) inset;
 }
 
 .db-field-select.is-error :deep(.el-input__inner),
 .db-field-select.is-error :deep(.el-select__selected-item) {
-  color: #f56c6c !important;
+  color: var(--danger) !important;
 }
 
 .button-area {
-  margin-top: 24px;
+  margin-top: var(--space-5);
   display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--border-hair);
+  background: transparent;
+  box-shadow: none;
 }
 </style>
