@@ -105,7 +105,7 @@ export default {
       }
       if(templateId !== ''){
         const selectedItem = this.configList.find(item => item.config_id === templateId)  
-        data.config = structuredClone(selectedItem.config)
+        data.config = JSON.parse(JSON.stringify(selectedItem.config))
       } else {
         data.config = {}
       }

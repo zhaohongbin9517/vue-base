@@ -70,7 +70,7 @@
 
 <script>
 import { Tools, Plus, Delete } from '@element-plus/icons-vue'
-import SaveConfigButton from '@/components/ConfigVue/MenuChile/MeterConfigChild/Common/SaveConfigButton'
+import SaveConfigButton from '@/components/ConfigVue/MenuChile/MeterConfigChild/Common/SaveConfigButton.vue'
 
 export default {
   name: 'MeterConfigInitDeviceSetting',

@@ -551,6 +551,11 @@ export default {
     this.init()
   },
   methods: {
+    // 深拷贝：解包 Vue reactive proxy（structuredClone 无法克隆 Proxy，会抛 DataCloneError）
+    deepClone(value) {
+      if (value === undefined || value === null) return value
+      return JSON.parse(JSON.stringify(value))
+    },
     //初始化全部计量配置
     async init(){
       try {
@@ -726,7 +731,7 @@ export default {
       }
       this.deviceStatusConfig = {
         allParam:config.device_status ? config.device_status.code_ids || []: [],
-        enums: config.device_status ? structuredClone(config.device_status.status) || [{  tag_value: [],    status: ''  }]: [],
+        enums: config.device_status ? this.deepClone(config.device_status.status) || [{  tag_value: [],    status: ''  }]: [],
         statusEnumClassification: {
           run_status: config.run_status || [],
           stop_status: config.stop_status || [] 
@@ -749,7 +754,7 @@ export default {
       }
       if(templateId !== ''){
         const selectedItem = this.allMeterConfig.find(item => item.config_id === templateId)  
-        data.config = structuredClone(selectedItem.config)
+        data.config = this.deepClone(selectedItem.config)
       } else {
         data.config = {}
       }
@@ -778,7 +783,7 @@ export default {
         return
       }else {
         const selectedItem = this.allMeterConfig.find(item => item.config_id === this.baseData.configId)
-        this.baseData.config = structuredClone(selectedItem.config)
+        this.baseData.config = this.deepClone(selectedItem.config)
         this.initConfig()
         this.$message.info('重置修改')
       }
@@ -991,7 +996,7 @@ export default {
         const data = {
           config_id: this.baseData.configId,
           name: this.baseData.name,
-          config:structuredClone(this.baseData.config),
+          config: this.deepClone(this.baseData.config),
           meter_station_id:this.baseData.stationId
         }
         await updateMeterConfig(data)
@@ -1021,7 +1026,7 @@ export default {
     //配置选择变更事件
     async handleConfigChange(configId) {
       const selectedItem = this.allMeterConfig.find(item => item.config_id === configId)
-      this.baseData.config = structuredClone(selectedItem.config)
+      this.baseData.config = this.deepClone(selectedItem.config)
       this.baseData.stationId = selectedItem.meter_station_id
       this.baseData.name = selectedItem.name
       //变更配置信息

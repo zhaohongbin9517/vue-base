@@ -14,9 +14,9 @@
       <div v-for="column in visibleColumns" :key="column" class="form-row">
         <!-- 跳过id字段 -->
         <el-form-item v-if="column !== 'id'" :label="getColumnLabel(column)">
-          <!-- is_valid 显示为开关 -->
+          <!-- bool 类型字段显示为开关 -->
           <el-switch
-            v-if="column === 'is_valid'"
+            v-if="isBooleanColumn(column)"
             v-model="formData[column]"
             :disabled="isEditable[column]"
           />
@@ -90,6 +90,8 @@ export default {
     return {
       dialogVisible: this.visible,
       formData: {},
+      // 记录原始数据中 boolean 类型的字段，用于决定是否渲染为开关
+      boolColumns: [],
       // 默认列标签映射
       columnLabels: {
         object_id: '站id',
@@ -125,13 +127,19 @@ export default {
     // 初始化表单数据
     initForm() {
       // 深拷贝传入的数据
-      this.formData = JSON.parse(JSON.stringify(this.data))
-      
+      const source = JSON.parse(JSON.stringify(this.data))
+      this.formData = source
+
+      // 识别原始数据中 boolean 类型的字段（is_valid 默认按 boolean 处理）
+      this.boolColumns = this.visibleColumns.filter(column =>
+        typeof source[column] === 'boolean' || column === 'is_valid'
+      )
+
       // 确保所有可见列都有值
       this.visibleColumns.forEach(column => {
         if (this.formData[column] === undefined) {
-          // 根据列类型设置默认值
-          if (column === 'is_valid') {
+          // boolean 类型字段默认值设为 false，其它设为空字符串
+          if (this.boolColumns.includes(column)) {
             this.formData[column] = false
           } else {
             this.formData[column] = ''
@@ -139,7 +147,12 @@ export default {
         }
       })
     },
-    
+
+    // 判断字段是否为 boolean 类型（用于决定是否渲染为开关）
+    isBooleanColumn(column) {
+      return this.boolColumns.includes(column)
+    },
+
     // 获取列标签
     getColumnLabel(column) {
       return this.columnLabels[column] || column
