@@ -47,9 +47,9 @@
           <el-menu-item index="/config/measure-web-ws">
             <span class="config-menu__item">WS 配置</span>
           </el-menu-item>
-          <el-menu-item index="/config/measure-web-temp">
+          <!-- <el-menu-item index="/config/measure-web-temp">
             <span class="config-menu__item">显示模板配置</span>
-          </el-menu-item>
+          </el-menu-item> -->
           <el-menu-item index="/config/changelog" @click="handleJumpHtml('changelog')">
             <span class="config-menu__item">变更日志</span>
           </el-menu-item>

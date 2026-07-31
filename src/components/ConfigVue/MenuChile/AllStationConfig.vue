@@ -34,7 +34,24 @@
         </div>
       </template>
 
-      <el-table :data="configList" border class="config-table" stripe>
+      <!-- 筛选区域 -->
+      <div class="filter-section">
+        <el-input
+          v-for="column in visibleColumns"
+          :key="column"
+          v-model="filters[column]"
+          :placeholder="`筛选${getColumnLabel(column)}`"
+          clearable
+          class="filter-input"
+          @input="handleFilterChange"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
+      </div>
+
+      <el-table :data="filteredConfigList" border class="config-table" stripe>
         <!-- 动态生成表格列 -->
         <template v-for="column in visibleColumns" :key="column">
           <!-- 特殊列处理 -->
@@ -87,7 +104,7 @@
 </template>
 
 <script>
-import { Delete,Document ,Setting,Edit} from '@element-plus/icons-vue'
+import { Delete,Document ,Setting,Edit,Search} from '@element-plus/icons-vue'
 import { getAllStationConfig,updateStationConfig } from '@/api/configUtils/config'
 import {} from '@/api/configUtils/cacheData'
 import AllStationConfigEdit from './AllStationConfigChild/AllStationConfigEdit.vue'
@@ -98,6 +115,7 @@ export default {
   components: {
     Setting,
     Document,
+    Search,
     AllStationConfigEdit
   },
   props: {
@@ -112,13 +130,32 @@ export default {
       Delete
     }
   },
+  computed: {
+    // 根据筛选条件过滤数据
+    filteredConfigList() {
+      let result = this.configList
+      const activeFilters = Object.entries(this.filters).filter(([_, value]) => value && value.trim())
+      if (activeFilters.length === 0) return result
+
+      for (const [column, keyword] of activeFilters) {
+        const searchValue = keyword.toLowerCase().trim()
+        result = result.filter(item => {
+          const cellValue = item[column]
+          if (cellValue === null || cellValue === undefined) return false
+          return String(cellValue).toLowerCase().includes(searchValue)
+        })
+      }
+      return result
+    }
+  },
   data() {
     return {
       configList:[],
       allColumns: [], // 所有可选择的列
-      visibleColumns: ['id','object_id', 'is_valid', 
+      visibleColumns: ['id','object_id', 'is_valid',
       'behavior_tree', 'config_id', 'device_manu', 'mainfold_max_num', 'controller_id'
       ], // 当前可见的列
+      filters: {}, // 筛选条件
       // 默认列配置映射
       columnLabels: {
         object_id: '站id',
@@ -213,7 +250,24 @@ export default {
         const indexB = this.allColumns.findIndex(c => c.key === b)
         return indexA - indexB
       })
+      // 清理不可见列的筛选条件
+      const newFilters = {}
+      this.visibleColumns.forEach(col => {
+        if (this.filters[col]) newFilters[col] = this.filters[col]
+      })
+      this.filters = newFilters
     },
+
+    // 处理筛选变化
+    handleFilterChange() {
+      // 计算属性会自动处理
+    },
+
+    //重置筛选
+    resetFilters() {
+      this.filters = {}
+    },
+
     //删除
     handleDelete(){
       this.$message.info('删除暂时不可用')
@@ -301,6 +355,29 @@ export default {
 
 .header-icon {
   color: var(--ink-1);
+}
+
+/* 筛选区域 */
+.filter-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-hair);
+}
+
+.filter-input {
+  width: 180px;
+}
+
+.filter-input :deep(.el-input__wrapper) {
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.filter-input :deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px var(--border-strong) inset;
 }
 
 .config-table {
