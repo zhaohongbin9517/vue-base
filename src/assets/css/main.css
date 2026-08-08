@@ -1,0 +1,76 @@
+/* 移除重复的 CDN 样式导入，改为使用 main.js 中导入的本地样式 */
+
+/* 设置 HTML、Body 和根应用容器的基础样式 */
+html,
+body,
+#app {
+  margin: 0; /* 重置默认外边距 */
+  height: 100%; /* 确保元素高度占满整个视口 */
+}
+
+/* 应用根容器的样式设置 */
+#app {
+  /* text-transform: uppercase; 将所有文本转换为大写 */
+  /* font-family: 'JetBrains Mono', monospace; /* 设置等宽字体 */
+  -webkit-font-smoothing: antialiased; /* 改善 WebKit 浏览器的字体渲染 */
+  -moz-osx-font-smoothing: grayscale; /* 改善 macOS 上 Firefox 的字体渲染 */
+  /* text-align: center; 文本居中对齐 */
+  color: #2c3e50; /* 设置文本颜色为深灰色 */
+}
+
+/* Vue-Flow 小地图组件的样式 */
+.vue-flow__minimap {
+  transform: scale(75%); /* 将小地图缩小到原始大小的 75% */
+  transform-origin: bottom right; /* 设置缩放的原点为右下角 */
+}
+
+/* 行为树边按钮的基础样式 */
+.edgebutton {
+  border-radius: 999px; /* 设置圆形按钮 */
+  cursor: pointer; /* 鼠标悬停时显示指针光标 */
+}
+
+/* 行为树边按钮的悬停效果 */
+.edgebutton:hover {
+  transform: scale(1.1); /* 悬停时放大 1.1 倍 */
+  transition: all ease .5s; /* 所有属性变化使用 0.5 秒的平滑过渡 */
+  box-shadow: 0 0 0 2px #10b98180, 0 0 0 4px #10b981; /* 添加双层绿色阴影效果 */
+}
+
+/* Vue-Flow 节点基础样式 */
+.vue-flow__node {
+  /* border: 1px solid #ccc; */
+  background: white;
+  /* border-radius: 4px; */
+  /* font-size: 12px; */
+  /* color: #222; */
+  /* text-align: center; */
+  /* min-width: 80px; */
+}
+
+.vue-flow__node-value.selected {
+    box-shadow:0 0 0 2px #ec4899
+}
+
+.vue-flow__edges path {
+    stroke-width:3
+}
+
+.vue-flow__handle {
+    height:10px;
+    width:15px;
+    background:#aaa;
+    border-radius:4px
+}
+
+.node_selected {
+    box-shadow:0 0 0 2px #aedaff;
+    background:#aedaff
+}
+
+.node_run_success {
+    background:#10b981
+}
+.node_run_fail {
+    background:#f94144
+}
