@@ -194,3 +194,12 @@ export function changeWebTempConfig(Data) {
 export function changeWebTempFilename(Data) {
   return post('/tmms_config/change_web_temp_filename',Data)
 }
+
+/**
+ * 获取计量站日志
+ * @param {string} stationId - 站id
+ * @returns {Promise<Array>} 日志列表 [{time, msg}]
+ */
+export function getMeterLogs(stationId) {
+  return get('/tmms_config/get_meter_logs', { station_id: stationId })
+}

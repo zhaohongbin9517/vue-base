@@ -16,6 +16,7 @@ import AllStationConfig from '../components/ConfigVue/MenuChile/AllStationConfig
 import VueTestTemp from '../components/ConfigVue/MenuChile/VueTestTemp.vue'
 import WebWsConfig from '../components/ConfigVue/MenuChile/WebWsConfig.vue'
 import WebTempConfig from '../components/ConfigVue/MenuChile/WebTempConfig.vue'
+import LogConfig from '../components/ConfigVue/MenuChile/LogConfig.vue'
 
 // 用户中心路由
 import UserCenterMenu from '../components/UserCenter/UserMenu.vue'
@@ -118,6 +119,11 @@ const routes = [
             path: 'measure-web-temp',
             name: 'MeasureWebTemp',
             component: WebTempConfig
+          },
+          {
+            path: 'logs',
+            name: 'Logs',
+            component: LogConfig
           }
         ]
       },

@@ -84,6 +84,15 @@
             <span class="config-menu__item">服务控制</span>
           </el-menu-item>
         </el-sub-menu>
+
+        <el-sub-menu index="5" popper-class="editorial-submenu">
+          <template #title>
+            <span class="config-menu__group">日志</span>
+          </template>
+          <el-menu-item index="/config/logs">
+            <span class="config-menu__item">日志查看</span>
+          </el-menu-item>
+        </el-sub-menu>
       </el-menu>
     </aside>
 
