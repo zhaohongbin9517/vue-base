@@ -41,7 +41,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: 'dist',
+    outDir: '../tmms/priv/config_priv',
     assetsDir: 'static',
     // element-plus 全量引入打包后较大，放宽告警阈值
     chunkSizeWarningLimit: 1500,

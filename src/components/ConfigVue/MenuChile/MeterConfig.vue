@@ -338,7 +338,20 @@
         @save-config="saveConfig"
       />
     </div>
-    
+
+    <!-- 设备检查 -->
+    <div id="device-check">
+      <MeterConfigDeviceCheckSetting
+        v-model:deviceCheck="deviceCheck"
+        :title="'设备检查'"
+        :tips="''"
+        :name="'deviceCheckSetting'"
+        :stationOptions="allStations"
+        :paramOptions="paramOptions"
+        @save-config="saveConfig"
+      />
+    </div>
+
   </div>
 
 </template>
@@ -362,6 +375,7 @@ import { getAllMeterConfig,getAllStationTagKey,getStationCode,getAllTableName,up
 import { getAllObjectInfoMap } from '@/api/configUtils/cacheData'
 import { getAuthPermission } from '@/api/login/auth'
 import MeterConfigLongRangeSetting from './MeterConfigChild/MeterConfigLongRangeSetting.vue'
+import MeterConfigDeviceCheckSetting from './MeterConfigChild/MeterConfigDeviceCheckSetting.vue'
 
 export default {
   name: 'MeterConfig',
@@ -385,7 +399,8 @@ export default {
     MeterConfigLoopMeterSetting,
     MeterConfigAddConfig,
     MeterConfigCheckMmanualStatusSetting,
-    MeterConfigLongRangeSetting
+    MeterConfigLongRangeSetting,
+    MeterConfigDeviceCheckSetting
   },
   props: {
     isShowHeader: {
@@ -422,6 +437,7 @@ export default {
         { id: 'loop-meter-info', title: '循环计量信息' },
         { id: 'check-manual-status', title: '计量井人工状态检查' },
         { id: 'long-range', title: '就地远程组件' },
+        { id: 'device-check', title: '设备检查' },
       ],
       PromiseWrite: getAuthPermission('config:write'),
       PromiseRead: getAuthPermission('config:read'),
@@ -519,6 +535,8 @@ export default {
         station:{},  //站检查信息
         well:{}     //井检查信息
       },
+      //设备检查
+      deviceCheck: [],
 
 
       //模块选择
@@ -723,7 +741,7 @@ export default {
 
       //设备状态枚举
       const localDeviceStatus = config.device_status || {}
-      if( localDeviceStatus.code_id){ //适配旧结构
+      if(localDeviceStatus.code_id && !config.device_status.code_ids){ //适配旧结构
         config.device_status.code_ids = [config.device_status.code_id]
         config.device_status.status = localDeviceStatus.status.map(item =>({
             tag_value:[{code_id:localDeviceStatus.code_id,value:item.value || 0}],
@@ -738,8 +756,9 @@ export default {
           stop_status: config.stop_status || [] 
         }
       };
-      // console.log('设备状态枚举配置:', this.deviceStatusConfig)
 
+      //设备检查
+      this.deviceCheck = config.device_check || []
     },
     //新增配置
     addConfig() {
@@ -797,7 +816,7 @@ export default {
         'deviceStatusCode', 'wnChannelNumber', 'wmChannelNumber', 'planSetinfo',
         'initDeviceSetting', 'resultSetting', 'checkResultSetting', 'paramUncompress',
         'changeParamSetting', 'emphasisPlanSetting', 'extendConfigSetting', 'loopMeterSetting', 
-        'checkMeasureStatusSetting','longRangeSetting'
+        'checkMeasureStatusSetting','longRangeSetting','deviceCheckSetting'
       ];
       
       // 遍历并检查每个配置项的更新结果
@@ -985,6 +1004,11 @@ export default {
           break
         case "longRangeSetting":
           this.baseData.config.long_range = this.longRangeConfig
+          break
+        case "deviceCheckSetting":
+          this.baseData.config.device_check = this.deviceCheck
+            .filter(item => item.station_id !== '' && item.check !== '')
+            .map(item => ({ station_id: item.station_id, check: item.check }))
           break
       }
       if(this.baseData.configId === ''){
