@@ -38,6 +38,9 @@
           <el-menu-item index="/config/meter">
             <span class="config-menu__item">修改配置</span>
           </el-menu-item>
+          <el-menu-item index="/config/meter-tag">
+            <span class="config-menu__item">参数点配置</span>
+          </el-menu-item>
         </el-sub-menu>
 
         <el-sub-menu index="3" popper-class="editorial-submenu">

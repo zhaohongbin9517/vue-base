@@ -339,11 +339,11 @@
       />
     </div>
 
-    <!-- 设备检查 -->
+    <!-- 设备启动预检查 -->
     <div id="device-check">
       <MeterConfigDeviceCheckSetting
         v-model:deviceCheck="deviceCheck"
-        :title="'设备检查'"
+        :title="'设备启动预检查'"
         :tips="''"
         :name="'deviceCheckSetting'"
         :stationOptions="allStations"
@@ -437,7 +437,7 @@ export default {
         { id: 'loop-meter-info', title: '循环计量信息' },
         { id: 'check-manual-status', title: '计量井人工状态检查' },
         { id: 'long-range', title: '就地远程组件' },
-        { id: 'device-check', title: '设备检查' },
+        { id: 'device-check', title: '设备启动预检查' },
       ],
       PromiseWrite: getAuthPermission('config:write'),
       PromiseRead: getAuthPermission('config:read'),
@@ -536,7 +536,7 @@ export default {
         well:{}     //井检查信息
       },
       //设备检查
-      deviceCheck: [],
+      deviceCheck: { rule_enum: [], station_choose: [] },
 
 
       //模块选择
@@ -758,7 +758,11 @@ export default {
       };
 
       //设备检查
-      this.deviceCheck = config.device_check || []
+      const dc = config.device_check || {}
+      this.deviceCheck = {
+        rule_enum: dc.rule_enum || [],
+        station_choose: dc.station_choose || []
+      }
     },
     //新增配置
     addConfig() {
@@ -1005,11 +1009,17 @@ export default {
         case "longRangeSetting":
           this.baseData.config.long_range = this.longRangeConfig
           break
-        case "deviceCheckSetting":
-          this.baseData.config.device_check = this.deviceCheck
-            .filter(item => item.station_id !== '' && item.check !== '')
-            .map(item => ({ station_id: item.station_id, check: item.check }))
+        case "deviceCheckSetting": {
+          const validRules = (this.deviceCheck.rule_enum || []).filter(r => r.check !== '')
+          const validRuleIds = new Set(validRules.map(r => r.id))
+          this.baseData.config.device_check = {
+            rule_enum: validRules.map(r => ({ id: r.id, check: r.check })),
+            station_choose: (this.deviceCheck.station_choose || [])
+              .filter(s => s.station_id !== '' && s.rule_id !== '' && validRuleIds.has(s.rule_id))
+              .map(s => ({ station_id: s.station_id, rule_id: s.rule_id }))
+          }
           break
+        }
       }
       if(this.baseData.configId === ''){
         return {result:false,error:'请先选择配置'}

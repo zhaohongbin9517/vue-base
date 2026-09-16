@@ -203,3 +203,55 @@ export function changeWebTempFilename(Data) {
 export function getMeterLogs(stationId) {
   return get('/tmms_config/get_meter_logs', { station_id: stationId })
 }
+
+/**
+ * 获取计量点配置基础信息（tag_type下拉选项等）
+ * @returns {Promise<Array>}
+ */
+export function getMeterCodeInfo() {
+  return get('/tmms_config/get_meter_code_info')
+}
+
+/**
+ * 获取指定站的参数点配置
+ * @param {string} stationId - 站id
+ * @returns {Promise<Array>} 参数点配置列表
+ */
+export function getMeterTagInfo(stationId) {
+  return get('/tmms_config/get_meter_tag_info', { station_id: stationId })
+}
+
+/**
+ * 获取参数点配置表的列定义（列名+数据类型）
+ * @returns {Promise<Array>} 列定义列表 [{column_name, data_type}]
+ */
+export function getMeterTagColumns() {
+  return get('/tmms_config/get_meter_tag_columns')
+}
+
+/**
+ * 保存单行参数点配置
+ * @param {Object} data - 单行配置数据
+ * @returns {Promise}
+ */
+export function updateMeterTagInfo(data) {
+  return post('/tmms_config/update_meter_tag_info', data)
+}
+
+/**
+ * 批量复制站参数点配置
+ * @param {Object} data - { source_station_id, target_station_id }
+ * @returns {Promise}
+ */
+export function copyMeterTagInfo(data) {
+  return post('/tmms_config/copy_meter_tag_info', data)
+}
+
+/**
+ * 删除参数点配置（单行/批量）
+ * @param {Object} data - { meter_station_id, code_ids: [code_id1, code_id2, ...] }
+ * @returns {Promise}
+ */
+export function deleteMeterTagInfo(data) {
+  return post('/tmms_config/delete_meter_tag_info', data)
+}

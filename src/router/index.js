@@ -17,6 +17,7 @@ import VueTestTemp from '../components/ConfigVue/MenuChile/VueTestTemp.vue'
 import WebWsConfig from '../components/ConfigVue/MenuChile/WebWsConfig.vue'
 import WebTempConfig from '../components/ConfigVue/MenuChile/WebTempConfig.vue'
 import LogConfig from '../components/ConfigVue/MenuChile/LogConfig.vue'
+import MeterTagConfig from '../components/ConfigVue/MenuChile/MeterTagConfig.vue'
 
 // 用户中心路由
 import UserCenterMenu from '../components/UserCenter/UserMenu.vue'
@@ -124,6 +125,11 @@ const routes = [
             path: 'logs',
             name: 'Logs',
             component: LogConfig
+          },
+          {
+            path: 'meter-tag',
+            name: 'MeterTagConfig',
+            component: MeterTagConfig
           }
         ]
       },
