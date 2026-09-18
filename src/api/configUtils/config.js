@@ -222,6 +222,14 @@ export function getMeterTagInfo(stationId) {
 }
 
 /**
+ * 获取已配置参数点的站列表
+ * @returns {Promise<Array>} [{station_id: "..."}]
+ */
+export function getAllMeterTagInfoStation() {
+  return get('/tmms_config/get_all_meter_tag_info_station')
+}
+
+/**
  * 获取参数点配置表的列定义（列名+数据类型）
  * @returns {Promise<Array>} 列定义列表 [{column_name, data_type}]
  */

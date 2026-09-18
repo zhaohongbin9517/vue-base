@@ -26,6 +26,10 @@ export default defineConfig({
         target: 'http://127.0.0.1:8267',
         changeOrigin: true
       },
+      '/measure_controller': {
+        target: 'http://127.0.0.1:8267',
+        changeOrigin: true
+      },
       '/meter_general': {
         target: 'http://127.0.0.1:8267',
         changeOrigin: true

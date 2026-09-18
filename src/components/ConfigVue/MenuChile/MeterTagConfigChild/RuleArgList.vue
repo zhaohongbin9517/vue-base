@@ -78,9 +78,10 @@
           type="danger"
           size="small"
           circle
-          :icon="Delete"
           @click="args.splice(idx, 1)"
-        />
+        >
+          <el-icon><Delete /></el-icon>
+        </el-button>
       </div>
 
       <!-- ifelse: 递归展开条件/真值/假值 -->

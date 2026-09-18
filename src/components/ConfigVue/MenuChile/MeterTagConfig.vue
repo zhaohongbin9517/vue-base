@@ -30,7 +30,7 @@
         </div>
         <div class="toolbar-actions" v-if="currentStation">
           <el-button type="primary" :icon="Plus" @click="handleAddRow">新增行</el-button>
-          <el-button type="success" :icon="CopyDocument" @click="showCopyDialog = true">按模板添加多行</el-button>
+          <el-button type="success" :icon="CopyDocument" @click="openCopyDialog">按模板添加多行</el-button>
           <el-button type="danger" :icon="Delete" :disabled="!selectedRows.length" @click="handleBatchDelete">
             批量删除<span v-if="selectedRows.length">（{{ selectedRows.length }}）</span>
           </el-button>
@@ -197,7 +197,7 @@
 </template>
 
 <script>
-import { getAllStationConfig, getMeterTagInfo, getMeterTagColumns, getMeterCodeInfo, updateMeterTagInfo, copyMeterTagInfo, deleteMeterTagInfo } from '@/api/configUtils/config'
+import { getAllStationConfig, getMeterTagInfo, getMeterTagColumns, getMeterCodeInfo, updateMeterTagInfo, copyMeterTagInfo, deleteMeterTagInfo, getAllMeterTagInfoStation } from '@/api/configUtils/config'
 import MeterTagConfigRuleEdit from './MeterTagConfigChild/MeterTagConfigRuleEdit.vue'
 import { Setting, Document, Plus, CopyDocument, Edit, Delete, RefreshLeft } from '@element-plus/icons-vue'
 
@@ -234,6 +234,7 @@ export default {
       showCopyDialog: false,
       copySourceStation: '',
       copyLoading: false,
+      configuredStations: [],
       showRuleEdit: false,
       currentEditRule: '',
       currentEditRow: null,
@@ -250,7 +251,7 @@ export default {
         .filter(Boolean)
     },
     copySourceOptions() {
-      return this.stationOptions.filter(s => s !== this.currentStation)
+      return this.configuredStations.filter(s => s !== this.currentStation)
     },
     filteredTagConfigList() {
       return this.tagConfigList.filter(row => {
@@ -336,6 +337,20 @@ export default {
       } catch (e) {
         this.$message.error('获取站列表失败')
       }
+    },
+    async loadConfiguredStations() {
+      try {
+        const res = await getAllMeterTagInfoStation()
+        const list = Array.isArray(res) ? res : []
+        this.configuredStations = list.map(item => item.station_id).filter(Boolean)
+      } catch (e) {
+        this.$message.error('获取已配置站列表失败')
+      }
+    },
+    async openCopyDialog() {
+      await this.loadConfiguredStations()
+      this.copySourceStation = ''
+      this.showCopyDialog = true
     },
     clearFilters() {
       this.filterCodeId = ''
