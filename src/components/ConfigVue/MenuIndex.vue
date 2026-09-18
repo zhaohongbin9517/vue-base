@@ -83,9 +83,6 @@
           <el-menu-item index="/custom-submenu/behavior-tree-manage" @click="handleJumpHtml('behavior-tree-manage')">
             <span class="config-menu__item">行为树管理</span>
           </el-menu-item>
-          <el-menu-item index="/custom-submenu/server-control" @click="handleJumpHtml('server-control')">
-            <span class="config-menu__item">服务控制</span>
-          </el-menu-item>
         </el-sub-menu>
 
         <el-sub-menu index="6" popper-class="editorial-submenu">
