@@ -59,3 +59,19 @@ export function clearScadaCache() {
 export function getStationProcessInfo(stationId) {
   return post('/measure_controller/get_station_process_info', { station_id: stationId })
 }
+
+/**
+ * 获取全部计量站错误日志
+ * @returns {Promise<Array>} 站错误日志列表 [{ station_id, log: [] }]
+ */
+export function getErrorLog() {
+  return get('/tmms_config/get_error_log')
+}
+
+/**
+ * 清空全部计量站错误日志
+ * @returns {Promise}
+ */
+export function clearErrorLog() {
+  return post('/tmms_config/clear_error_log', {})
+}

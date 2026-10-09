@@ -221,6 +221,35 @@
                 </el-button>
               </div>
             </template>
+
+            <!-- 查看错误日志 -->
+            <template v-if="currentOp === 'view_error_logs'">
+              <div class="mc-field mc-field--notice">
+                <el-icon class="mc-field__icon" style="color: #dc2626;"><Warning /></el-icon>
+                <span>将获取全部计量站的错误日志，按站分组展示。</span>
+              </div>
+              <div class="mc-config__action">
+                <el-button
+                  type="danger"
+                  :icon="View"
+                  :loading="errorLogLoading"
+                  @click="handleGetErrorLog"
+                  class="mc-btn mc-btn--danger"
+                >
+                  获取错误日志
+                </el-button>
+                <el-button
+                  type="warning"
+                  :icon="RefreshLeft"
+                  :loading="errorLogClearLoading"
+                  :disabled="!errorLogData.length"
+                  @click="handleClearErrorLog"
+                  style="margin-left: 8px"
+                >
+                  清空错误日志
+                </el-button>
+              </div>
+            </template>
           </div>
         </div>
 
@@ -475,6 +504,74 @@
                 </el-scrollbar>
               </div>
             </template>
+
+            <!-- 错误日志结果 -->
+            <template v-else-if="currentOp === 'view_error_logs'">
+              <div class="mc-log-result">
+                <div v-if="errorLogLoading" class="mc-log-state">
+                  <el-icon class="is-loading"><Loading /></el-icon>
+                  <span>正在获取错误日志...</span>
+                </div>
+                <div v-else-if="!errorLogHasSearched" class="mc-log-state">
+                  <span>点击「获取错误日志」查看各站错误信息</span>
+                </div>
+                <div v-else-if="errorLogData.length === 0" class="mc-log-state">
+                  <el-icon><CircleClose /></el-icon>
+                  <span>暂无错误日志</span>
+                </div>
+                <el-scrollbar v-else height="100%" class="mc-log-scrollbar">
+                  <div class="mc-log-list">
+                    <div class="mc-err-toolbar">
+                      <span class="mc-err-toolbar__count">
+                        共 {{ errorLogFilteredData.length }} 个站 · {{ errorLogFilteredCount }} 条错误
+                        <span v-if="errorLogFilter" class="mc-err-toolbar__filtered">（已筛选，共 {{ errorLogData.length }} 个站 · {{ errorLogTotalCount }} 条）</span>
+                      </span>
+                      <el-select
+                        v-model="errorLogFilter"
+                        filterable
+                        clearable
+                        placeholder="筛选站"
+                        class="mc-err-toolbar__select"
+                        size="small"
+                      >
+                        <el-option v-for="g in errorLogData" :key="g.station_id" :label="g.station_id" :value="g.station_id" />
+                      </el-select>
+                    </div>
+                    <div
+                      v-for="(group, gi) in errorLogFilteredData"
+                      :key="gi"
+                      class="mc-err-group"
+                    >
+                      <div
+                        class="mc-err-group__head"
+                        :class="{ 'is-empty': !group.log || group.log.length === 0 }"
+                        @click="toggleErrorLogCollapse(group.station_id)"
+                      >
+                        <span class="mc-err-group__arrow" :class="{ 'is-collapsed': errorLogCollapse[group.station_id] }">▾</span>
+                        <span class="mc-err-group__id">{{ group.station_id }}</span>
+                        <span class="mc-err-group__count">{{ (group.log || []).length }} 条</span>
+                      </div>
+                      <div v-show="!errorLogCollapse[group.station_id]" class="mc-err-group__body">
+                        <div v-if="!group.log || group.log.length === 0" class="mc-log-state mc-log-state--more">
+                          <span>无错误</span>
+                        </div>
+                        <div
+                          v-for="(line, li) in (group.log || [])"
+                          :key="li"
+                          class="mc-err-line"
+                        >
+                          <span class="mc-err-line__idx">{{ String(li + 1).padStart(3, '0') }}</span>
+                          <span class="mc-err-line__msg">{{ line }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-if="errorLogFilteredData.length === 0" class="mc-log-state mc-log-state--more">
+                      <span>筛选无结果</span>
+                    </div>
+                  </div>
+                </el-scrollbar>
+              </div>
+            </template>
           </div>
         </div>
       </section>
@@ -483,7 +580,7 @@
 </template>
 
 <script>
-import { getAllStations, restartMeasureProcessOne, restartMeasureProcessAll, checkStationMeterConfig, clearScadaCache, getStationProcessInfo } from '@/api/configUtils/measureController'
+import { getAllStations, restartMeasureProcessOne, restartMeasureProcessAll, checkStationMeterConfig, clearScadaCache, getStationProcessInfo, getErrorLog, clearErrorLog } from '@/api/configUtils/measureController'
 import { getMeterLogs } from '@/api/configUtils/config'
 import { RefreshRight, View, Warning, Search, RefreshLeft, Download, Loading, CircleClose } from '@element-plus/icons-vue'
 
@@ -517,6 +614,12 @@ export default {
       logDisplayLogs: [],
       logBatchSize: 200,
       logCurrentEnd: 0,
+      errorLogLoading: false,
+      errorLogClearLoading: false,
+      errorLogHasSearched: false,
+      errorLogData: [],
+      errorLogCollapse: {},
+      errorLogFilter: '',
       checkItemOptions: [
         { key: 'config_check', name: '配置json格式检测' },
         { key: 'meter_config', name: '计量配置静态检测' },
@@ -538,14 +641,15 @@ export default {
         { key: 'check_config', name: '计量配置检查', desc: '解析格式校验', icon: '◎', color: '#0891b2', soft: 'rgba(8,145,178,.12)', tag: 'CHECK', endpoint: 'check_station_meter_config' },
         { key: 'clear_cache', name: '清空scada缓存', desc: '清理etag与对象缓存', icon: '⟳', color: '#7c3aed', soft: 'rgba(124,58,237,.12)', tag: 'CACHE', endpoint: 'clear_scada_cache' },
         { key: 'process_info', name: '获取进程信息', desc: '查看站进程状态', icon: '⌬', color: '#059669', soft: 'rgba(5,150,105,.12)', tag: 'PROCESS', endpoint: 'get_station_process_info' },
-        { key: 'view_logs', name: '日志查看', desc: '查看站运行日志', icon: '≡', color: '#0891b2', soft: 'rgba(8,145,178,.12)', tag: 'LOGS', endpoint: 'get_meter_logs' }
+        { key: 'view_logs', name: '日志查看', desc: '查看站运行日志', icon: '≡', color: '#0891b2', soft: 'rgba(8,145,178,.12)', tag: 'LOGS', endpoint: 'get_meter_logs' },
+        { key: 'view_error_logs', name: '查看错误日志', desc: '查看各站错误日志', icon: '!', color: '#dc2626', soft: 'rgba(220,38,38,.12)', tag: 'ERROR LOG', endpoint: 'get_error_log' }
       ]
     },
     activeOp() {
       return this.operations.find(o => o.key === this.currentOp)
     },
     activeColor() {
-      const map = { restart_one: 'amber', restart_all: 'red', check_config: 'cyan', clear_cache: 'purple', process_info: 'green', view_logs: 'cyan' }
+      const map = { restart_one: 'amber', restart_all: 'red', check_config: 'cyan', clear_cache: 'purple', process_info: 'green', view_logs: 'cyan', view_error_logs: 'red' }
       return map[this.currentOp] || 'cyan'
     },
     currentResultData() {
@@ -558,6 +662,7 @@ export default {
       if (this.currentOp === 'clear_cache') return !!this.clearCacheResult
       if (this.currentOp === 'process_info') return !!this.processInfoData
       if (this.currentOp === 'view_logs') return this.logHasSearched
+      if (this.currentOp === 'view_error_logs') return this.errorLogHasSearched
       return false
     },
     resultStatusText() {
@@ -574,10 +679,15 @@ export default {
         return this.processInfoData.alive === false ? 'OFFLINE' : 'ONLINE'
       }
       if (this.currentOp === 'view_logs' && this.logHasSearched) return `LOGS · ${this.logAllLogs.length} ENTRIES`
+      if (this.currentOp === 'view_error_logs' && this.errorLogHasSearched) {
+        const total = this.errorLogData.reduce((s, g) => s + (g.log?.length || 0), 0)
+        const st = this.errorLogData.length
+        return total === 0 ? `OK · 0 ERROR` : `ERROR · ${st} STATIONS · ${total} ENTRIES`
+      }
       return 'IDLE'
     },
     resultDotClass() {
-      if (this.restartOneLoading || this.restartAllLoading || this.checkLoading || this.clearCacheLoading || this.processInfoLoading || this.logLoading) return 'blink'
+      if (this.restartOneLoading || this.restartAllLoading || this.checkLoading || this.clearCacheLoading || this.processInfoLoading || this.logLoading || this.errorLogLoading) return 'blink'
       if (this.hasResult) {
         if (this.currentOp === 'check_config' && this.checkResultData) {
           return this.checkResultList.some(i => i.result === false) ? 'err' : 'on'
@@ -589,6 +699,16 @@ export default {
     },
     logHasMore() {
       return this.logCurrentEnd < this.logAllLogs.length
+    },
+    errorLogTotalCount() {
+      return this.errorLogData.reduce((s, g) => s + (g.log?.length || 0), 0)
+    },
+    errorLogFilteredData() {
+      if (!this.errorLogFilter) return this.errorLogData
+      return this.errorLogData.filter(g => g.station_id === this.errorLogFilter)
+    },
+    errorLogFilteredCount() {
+      return this.errorLogFilteredData.reduce((s, g) => s + (g.log?.length || 0), 0)
     },
     checkResultList() {
       if (!this.checkResultData) return []
@@ -628,6 +748,10 @@ export default {
       this.logAllLogs = []
       this.logDisplayLogs = []
       this.logCurrentEnd = 0
+      this.errorLogHasSearched = false
+      this.errorLogData = []
+      this.errorLogCollapse = {}
+      this.errorLogFilter = ''
     },
     async handleLogSearch() {
       if (!this.logStationId) return
@@ -693,6 +817,51 @@ export default {
       if (isNaN(d.getTime())) return String(ms)
       const pad = (n, w = 2) => String(n).padStart(w, '0')
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(d.getMilliseconds(), 3)}`
+    },
+    async handleGetErrorLog() {
+      this.errorLogLoading = true
+      this.errorLogHasSearched = true
+      this.errorLogData = []
+      this.errorLogCollapse = {}
+      this.errorLogFilter = ''
+      try {
+        const res = await getErrorLog()
+        this.errorLogData = Array.isArray(res) ? res : []
+        this.errorLogCollapse = this.errorLogData.reduce((m, g) => {
+          m[g.station_id] = true
+          return m
+        }, {})
+      } catch (e) {
+        this.$message.error(`获取错误日志失败：${e.message || e}`)
+      } finally {
+        this.errorLogLoading = false
+      }
+    },
+    async handleClearErrorLog() {
+      try {
+        await this.$confirm('确认清空全部计量站的错误日志？', '提示', { type: 'warning' })
+      } catch { return }
+      this.errorLogClearLoading = true
+      try {
+        await clearErrorLog()
+        this.errorLogData = []
+        this.errorLogCollapse = {}
+        this.errorLogFilter = ''
+        this.$message.success('错误日志已清空')
+      } catch (e) {
+        this.$message.error(`清空失败：${e.message || e}`)
+      } finally {
+        this.errorLogClearLoading = false
+      }
+    },
+    toggleErrorLogCollapse(stationId) {
+      const m = { ...this.errorLogCollapse }
+      if (m[stationId]) {
+        delete m[stationId]
+      } else {
+        m[stationId] = true
+      }
+      this.errorLogCollapse = m
     },
     async handleClearCache() {
       this.clearCacheLoading = true
@@ -1171,4 +1340,70 @@ export default {
 .mc-log-item:nth-child(even) { background: var(--term-stripe); padding-left: 6px; padding-right: 6px; border-radius: 3px; }
 .mc-log-time { color: var(--term-blue); flex-shrink: 0; font-size: 14px; min-width: 180px; font-weight: 600; }
 .mc-log-msg { color: var(--term-fg); flex: 1; white-space: pre-wrap; }
+
+/* 错误日志分组 */
+.mc-err-toolbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 0 10px;
+  border-bottom: 2px solid var(--term-head-bg); margin-bottom: 8px;
+}
+.mc-err-toolbar__count {
+  font-size: 14px; color: var(--term-accent); letter-spacing: 1px;
+  font-weight: 700; text-transform: uppercase; flex: 1;
+}
+.mc-err-toolbar__filtered {
+  font-size: 12px; color: var(--term-dim); font-weight: 400;
+  text-transform: none; letter-spacing: 0;
+}
+.mc-err-toolbar__select { width: 220px; flex-shrink: 0; }
+.mc-err-toolbar__select :deep(.el-input__wrapper) {
+  background: var(--term-stripe);
+  box-shadow: 0 0 0 1px var(--term-line) inset;
+}
+.mc-err-toolbar__select :deep(.el-input__inner) { color: var(--term-fg); font-size: 14px; }
+.mc-err-toolbar__select :deep(.el-input__inner::placeholder) { color: var(--term-dim); }
+
+.mc-err-group {
+  margin-bottom: 10px;
+  border: 1px solid var(--term-line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--term-stripe);
+}
+.mc-err-group__head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; cursor: pointer;
+  background: var(--term-head-bg);
+  border-bottom: 1px solid var(--term-line);
+  transition: background .15s ease;
+}
+.mc-err-group__head:hover { background: var(--term-line); }
+.mc-err-group__head.is-empty { opacity: .6; }
+.mc-err-group__arrow {
+  color: var(--term-dim); font-size: 14px; transition: transform .15s ease;
+  display: inline-block; width: 14px; text-align: center;
+}
+.mc-err-group__arrow.is-collapsed { transform: rotate(-90deg); }
+.mc-err-group__id {
+  color: var(--term-fg); font-weight: 700; font-size: 15px;
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+}
+.mc-err-group__count {
+  color: var(--term-red); font-size: 13px; margin-left: auto;
+  background: rgba(220, 38, 38, .12); padding: 2px 8px; border-radius: 10px;
+  font-weight: 600;
+}
+.mc-err-group__body { padding: 4px 8px; }
+.mc-err-line {
+  display: flex; gap: 12px; padding: 5px 8px;
+  border-bottom: 1px dashed var(--term-line);
+  font-size: 15px; line-height: 1.6; word-break: break-all;
+}
+.mc-err-line:last-child { border-bottom: none; }
+.mc-err-line__idx {
+  color: var(--term-dim); flex-shrink: 0; font-size: 13px;
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+  min-width: 36px;
+}
+.mc-err-line__msg { color: var(--term-fg); flex: 1; white-space: pre-wrap; }
 </style>
