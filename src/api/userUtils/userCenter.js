@@ -1,0 +1,16 @@
+import request from '@/api/userUtils/userRequest'
+
+export const acGetAllUserRole = () => request({ url: '/ac/get_all_user_role', method: 'get' })
+export const acGetFeatures = () => request({ url: '/ac/get_features', method: 'get' })
+export const acGetAllRoles = () => request({ url: '/ac/get_all_roles', method: 'get' })
+export const acSetUserRole = (data) => request({ url: '/ac/set_user_role', method: 'post', data })
+export const acGetUserAccess = (params) => request({ url: '/ac/get_user_access', method: 'get', params })
+export const acGetRoleAccess = (params) => request({ url: '/ac/get_role_access', method: 'get', params })
+export const acDeleteRole = (data) => request({ url: '/ac/del_role', method: 'post', data })
+export const acUpdatePasswd = (data) => request({ url: '/ac/update_passwd', method: 'post', data })
+export const acBatchGrantRole = (data) => request({ url: '/ac/batch_grant_role', method: 'post', data })
+export const acGetAllUsers = () => request({ url: '/ac/get_all_users', method: 'get' })
+export const acDelUser = (data) => request({ url: '/ac/del_user', method: 'post', data })
+export const acAddUser = (data) => request({ url: '/ac/add_user', method: 'post', data })
+export const acResetPasswd = (data) => request({ url: '/ac/reset_passwd', method: 'post', data })
+export const acUpdateUser = (data) => request({ url: '/ac/update_user', method: 'post', data })
