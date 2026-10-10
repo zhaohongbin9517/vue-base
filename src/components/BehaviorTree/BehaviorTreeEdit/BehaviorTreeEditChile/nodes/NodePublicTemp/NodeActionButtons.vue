@@ -40,7 +40,6 @@
 
 <script>
 import { Delete, Plus,Minus ,InfoFilled} from '@element-plus/icons-vue'
-import { Object } from 'core-js/web';
 
 export default {
   name: 'NodeActionButtons',

@@ -23,12 +23,8 @@
         <span class="content">{{ getNodeModule(selectedNode.node.node_type) }}</span>
       </div>
       <div v-if="selectedNode.node.node_type === 'leaf'"  class="info-item-desc">
-        <span class="label">模块：</span>
+        <span class="label">函数：</span>
         <span class="content">{{ getNodeFunc(selectedNode.node.node_type) }}</span>
-      </div>
-      <div  class="info-item-desc">
-        <span class="label">节点描述：</span>
-        <span class="content">{{ getNodeDesc(selectedNode.node.node_type) }}</span>
       </div>
       <div v-if="isShowArgs()" class="info-item-desc">
         <span class="label">参数：</span>
@@ -107,12 +103,12 @@ export default {
       type: String,
       default: '未知'
     },
-    expandedGroups: {
+    behaviorMap: {
       type: Object,
       default: () => ({})
     }
   },
-  emits: ['delete-node', 'toggle-fold', 'arg-change'],
+  emits: ['delete-node', 'collapse-expand', 'arg-change', 'left-move', 'right-move'],
   setup() {
     return {
       stomOptions: [
@@ -142,7 +138,7 @@ export default {
       }else if(this.selectedNode.node.node_type === 'loop_num_node'){
         this.argsList = [{ name: '循环次数', type: 'int',  value: this.selectedNode.node.num } ]
       }else {
-        const nodeData = this.expandedGroups[this.selectedNode.node.behavior_id] || {}
+        const nodeData = this.behaviorMap[this.selectedNode.node.behavior_id] || {}
         const argsDefinition = nodeData.args || []
         let argsValue = this.selectedNode.node.args || []
         this.argsList = argsDefinition.map((item, index) => ({
@@ -162,14 +158,14 @@ export default {
     isShowArgs(){
       if(this.selectedNode.node.node_type === 'loop_bool_node') return true
       if(this.selectedNode.node.node_type === 'loop_num_node') return true
-      const nodeData = this.expandedGroups[this.selectedNode.node.behavior_id] || {}
+      const nodeData = this.behaviorMap[this.selectedNode.node.behavior_id] || {}
       const args =  nodeData.args || []
       this.ShowArgs()
       return args.length > 0
     },
     //显示参数内容
     ShowArgs(){
-      const nodeData = this.expandedGroups[this.selectedNode.node.behavior_id] || {}
+      const nodeData = this.behaviorMap[this.selectedNode.node.behavior_id] || {}
       const argsDefinition =  nodeData.args || []  //参数定义
       let argsValue = this.selectedNode.node.args
       return argsDefinition.map((item,index) => ({
@@ -192,21 +188,21 @@ export default {
     //获取节点描述
     getNodeDesc(nodeType) {
       if (nodeType === 'leaf') {
-        return this.expandedGroups[this.selectedNode.node.behavior_id]?.desc || '无描述'
+        return this.behaviorMap[this.selectedNode.node.behavior_id]?.desc || '无描述'
       }
       return this.nodeTypeMap[nodeType]?.description || '无描述'
     },
     //获取节点函数
     getNodeFunc(nodeType) {
       if (nodeType === 'leaf') {
-        return this.expandedGroups[this.selectedNode.node.behavior_id]?.func || '无函数'
+        return this.behaviorMap[this.selectedNode.node.behavior_id]?.func || '无函数'
       }
       return  '无函数'
     },
     //获取节点模块
     getNodeModule(nodeType) {
       if (nodeType === 'leaf') {
-        return this.expandedGroups[this.selectedNode.node.behavior_id]?.module || '无模块'
+        return this.behaviorMap[this.selectedNode.node.behavior_id]?.module || '无模块'
       }
       return '无模块'
     },

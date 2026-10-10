@@ -1,6 +1,6 @@
 <template>
-  <div class="behavior-tree-edit-container">
-    <el-button type="primary" style="margin-left: 20px;" @click="backpage()">
+  <div class="behavior-tree-edit-container" v-loading="loading" element-loading-text="加载行为树数据...">
+    <el-button type="primary" style="margin-left: 20px;" @click="backPage()">
       <el-icon ><arrow-left /> </el-icon>
        返回
     </el-button>
@@ -28,14 +28,17 @@
     <el-button-group style="margin-left: 20px;">
       <el-button type="primary" @click="unfold()">展开</el-button>
       <el-button type="primary" @click="fold()">收起</el-button>
-      <el-button type="success" @click="saveTreee()">保存</el-button>
+      <el-button type="info" @click="fitView()">适应画布</el-button>
+      <el-button :type="hasUnsavedChanges ? 'warning' : 'success'" @click="saveTree()">
+        保存<span v-if="hasUnsavedChanges">*</span>
+      </el-button>
     </el-button-group>
   </div>
   <VueFlow 
     ref="vueFlowRef"
     v-model:edges="edges"
     v-model:nodes="nodes"
-    :min-zoom="1"
+    :min-zoom="0.2"
     :max-zoom="1"
     @viewport-change="syncFlowToViewport"
     @node-click="nodeClick"
@@ -133,13 +136,13 @@
     </template>
 
     <Background />
-    <!-- <InteractionControls /> -->
-     <MiniMap />
-     <NodeSelectInfo 
-       :selectedNode="selectedNode" 
+    <MiniMap />
+    <Controls />
+     <NodeSelectInfo
+       :selectedNode="selectedNode"
        :nodeMap="nodeMap"
        :nodeTypeMap="nodeTypeMap"
-       :expandedGroups="expandedGroups"
+       :behaviorMap="behaviorMap"
        @arg-change="handleArgChange"
        @delete-node="deleteNode"
        @collapse-expand="collapseExpand"
@@ -148,8 +151,6 @@
      />
     <BehaviorNodePanel
       :behaviorGroupList="behaviorGroupList"
-      :expandedGroups="expandedGroups"
-      :searchText="searchText"
     />
   </VueFlow>
 </template>
@@ -172,6 +173,7 @@ import parallelNode from './BehaviorTreeEditChile/nodes/ParallelNode.vue'
 import leafNode from './BehaviorTreeEditChile/nodes/LeafNode.vue'
 import nullNode from './BehaviorTreeEditChile/nodes/NullNode.vue'
 import { MiniMap } from '@vue-flow/minimap'
+import { Controls } from '@vue-flow/controls'
 import NodeSelectInfo from './BehaviorTreeEditChile/NodeSelectInfo.vue'
 import BehaviorNodePanel from './BehaviorNodePanel.vue'
 
@@ -202,6 +204,7 @@ export default {
     parallelNode,
     leafNode,
     MiniMap,
+    Controls,
     nullNode,
     NodeSelectInfo,
     BehaviorNodePanel,
@@ -227,18 +230,15 @@ export default {
   data() {
     return {
       nodeTypeToVueFlowNodeType: getTreeNodeTypeToVueFlowNodeType(),
-      // 新增：行为节点分组列表
+      // 行为节点分组列表
       behaviorGroupList: [],
-      // 新增：记录每个分组的展开状态
-      expandedGroups: {},
-      // 新增：搜索关键词
-      searchText: '',
+      // 行为节点查找表 (behavior_id → behavior)
+      behaviorMap: {},
 
       edgesType: 'smoothstep',
       MarkerType,
       treeInfo :{},
       tree: {},
-      xPointIndex: 0,
       nodes: [],
       edges: [],
       //nodeName-NodeType 映射
@@ -248,7 +248,7 @@ export default {
       // 新增：临时存储边数据，避免直接操作v-model绑定的edges
       tempEdges: [],
       // 当前画布位置
-      viewport: { x: 0,    y: 0,  zoom: 0.75 },
+      viewport: { x: 0, y: 0, zoom: 1 },
       //节点名-trreeNode map
       nodeMap: {},
       //选中节点id
@@ -260,9 +260,10 @@ export default {
 
       //全部空节点
       allNullNode:[],
-
-      //提示消息
-      hintMMessage : '提示消息',
+      // 加载状态
+      loading: false,
+      // 是否有未保存的更改
+      hasUnsavedChanges: false,
     }
   },
   created() {
@@ -270,34 +271,44 @@ export default {
     this.flowMethods = useVueFlow()
   },
   async mounted() {
+    window.addEventListener('keydown', this.handleKeydown)
     //获取节点
     await this.getTreeInfo()
     this.nodeMap = {}
     this.addIsUnfoldToTree(this.tree, false)
-    this.init()
+    await this.init()
+    await nextTick()
     this.edges = [...this.tempEdges]
-    setTimeout(() => {
-      this.initViewport()
-    }, 100);
+    await nextTick()
+    this.initViewport()
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.handleKeydown)
   },
   methods: {
     async getTreeInfo(){
-      // 获取树信息
-      const treeId = this.$route.query.id
-      const treeInfo = await getBehaviorTree(treeId)
-      this.treeInfo = treeInfo
-      this.tree = treeInfo.tree
-      //获取全部行为节点信息
-      const Allbehavior = await getAllBehavior()
-      this.behaviorGroupList = structuredClone(getBaseGroupBehavior().concat(Allbehavior)),
-      this.behaviorGroupList.forEach(group => {
-        group.behaviors.forEach(item => {
-          this.expandedGroups[item.id] = item
+      this.loading = true
+      try {
+        // 获取树信息
+        const treeId = this.$route.query.id
+        const treeInfo = await getBehaviorTree(treeId)
+        this.treeInfo = treeInfo
+        this.tree = treeInfo.tree
+        //获取全部行为节点信息
+        const Allbehavior = await getAllBehavior()
+        this.behaviorGroupList = structuredClone(getBaseGroupBehavior().concat(Allbehavior))
+        this.behaviorGroupList.forEach(group => {
+          group.behaviors.forEach(item => {
+            this.behaviorMap[item.id] = item
+          })
         })
-      })
+      } finally {
+        this.loading = false
+      }
     },
     //参数改变事件
     handleArgChange({nodeId,index,value}){
+      this.hasUnsavedChanges = true
       let treeNode = this.nodeMap[nodeId].node
       if(treeNode.node_type === 'loop_bool_node'){
         treeNode.bool = value
@@ -326,6 +337,7 @@ export default {
     },
     //节点缩放事件
     async collapseExpand(NodeId){
+      this.hasUnsavedChanges = true
       let treeNode = this.nodeMap[NodeId].node
       if(treeNode.isUnfold){
         // 如果当前是展开状态，收起全部子节点，并且子节点也收起
@@ -334,13 +346,13 @@ export default {
         // 如果当前是收起状态，展开当前节点，但是子节点不展开
         treeNode.isUnfold = true
       }
-      this.resetInit()
-      setTimeout(() => {
-        this.useViewportPosition()
-      }, 100);
+      await this.resetInit()
+      await nextTick()
+      this.useViewportPosition()
     },
     // 删除节点事件
     async deleteNode(NodeId){
+      this.hasUnsavedChanges = true
       const nodeParentId = this.nodeMap[NodeId].parentId
       const idx = this.nodeMap[NodeId].index
       let parentNode = this.nodeMap[nodeParentId].node
@@ -357,37 +369,36 @@ export default {
         }
       }
       //重新初始化节点映射
-      this.resetInit()
-      setTimeout(() => {
-        this.useViewportPosition()
-      }, 100);
+      await this.resetInit()
+      await nextTick()
+      this.useViewportPosition()
     },
     //左移
-    leftMove(NodeId){
+    async leftMove(NodeId){
+      this.hasUnsavedChanges = true
       const nodeParentId = this.nodeMap[NodeId].parentId
       const idx = this.nodeMap[NodeId].index
       let parentNode = this.nodeMap[nodeParentId].node
       if (parentNode.nodes) {
         let arr = parentNode.nodes
         ;[arr[idx], arr[idx - 1]] = [arr[idx - 1], arr[idx]]
-        this.resetInit()
-        setTimeout(() => {
-          this.useViewportPosition()
-        }, 100);
+        await this.resetInit()
+        await nextTick()
+        this.useViewportPosition()
       }
     },
     //右移
-    rightMove(NodeId){
+    async rightMove(NodeId){
+      this.hasUnsavedChanges = true
       const nodeParentId = this.nodeMap[NodeId].parentId
       const idx = this.nodeMap[NodeId].index
       let parentNode = this.nodeMap[nodeParentId].node
       if (parentNode.nodes) {
         let arr = parentNode.nodes
         ;[arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]]
-        this.resetInit()
-        setTimeout(() => {
-          this.useViewportPosition()
-        }, 100);
+        await this.resetInit()
+        await nextTick()
+        this.useViewportPosition()
       }
     },
     //重置
@@ -419,13 +430,11 @@ export default {
       const position = localNode.position || this.rootNodePosition
       const containerEl = document.querySelector('.vue-flow')
       let newPosition = {
-        x: -position.x/1+ containerEl.clientWidth/2 - 56, 
-        y: -position.y + containerEl.clientHeight/2 -56, 
-        zoom: this.position.zoom
+        x: -position.x + containerEl.clientWidth/2 - 56,
+        y: -position.y + containerEl.clientHeight/2 -56,
+        zoom: this.viewport.zoom
       }
-      setTimeout(() => {
-        this.flowMethods.setViewport(newPosition)
-      }, 50);
+      this.flowMethods.setViewport(newPosition)
     },
     // 同步画布位置到数据
     syncFlowToViewport(newViewport) {
@@ -445,24 +454,33 @@ export default {
       }
     },
     // 返回上一页
-    backpage(){
+    backPage(){
       this.$router.back()
+    },
+    // 适应画布（自动缩放使所有节点可见）
+    fitView(){
+      this.flowMethods.fitView({ padding: 0.2 })
+    },
+    // 键盘快捷键
+    handleKeydown(e){
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault()
+        this.saveTree()
+      }
     },
     // 全部展开
     async unfold() {
       this.addIsUnfoldToTree(this.tree, true)
-      this.resetInit()
-      setTimeout(() => {
-        this.initViewport()
-      }, 100);
+      await this.resetInit()
+      await nextTick()
+      this.initViewport()
     },
     // 全部收起
     async fold() {
       this.addIsUnfoldToTree(this.tree, false)
-      this.resetInit()
-      setTimeout(() => {
-        this.initViewport()
-      }, 100);
+      await this.resetInit()
+      await nextTick()
+      this.initViewport()
     },
     // 初始化节点展开状态
     addIsUnfoldToTree(node, bool = false) {
@@ -607,7 +625,7 @@ export default {
     getNodeLabel(treeNode) {
       const nodeType = treeNode.node_type
       if (nodeType === 'leaf') {
-        const leafNode =  this.expandedGroups[treeNode.behavior_id] || {}
+        const leafNode =  this.behaviorMap[treeNode.behavior_id] || {}
         return leafNode.name || '叶子节点'
       } else if (nodeType === 'null_node') {
         return '添加节点'
@@ -629,26 +647,6 @@ export default {
       if (nodeType === 'parallel_node') return X - 56
       if (nodeType === 'ifelse_node') return X - 80
       return X
-    },
-    // 打印树信息
-    printTree() {
-      // console.log('当前连线类型:', this.edgesType)
-      // console.log('生成的节点数:', this.nodes.length)
-      // console.log('生成的边数:', this.edges.length)
-      // console.log('当前视图位置:', this.position.value)
-      console.log('当前树结构:', this.nodeTypeMap)
-    },
-    // 拖动开始
-    handleDragStart(event, behavior) {
-      console.log('start',event,behavior)
-      // event.dataTransfer.setData('application/json', JSON.stringify(behavior))
-      // event.dataTransfer.effectAllowed = 'copy'
-    },
-    // 拖动过节点
-    handleDragEnd(event, behavior) {
-      console.log('end',event,behavior)
-      // event.preventDefault()
-      // event.dataTransfer.dropEffect = 'copy'
     },
     onDragOver (e)  {
       e.preventDefault()
@@ -686,8 +684,9 @@ export default {
      * @param parentId  父节点id
      * @param idx  所处位置
      */
-    addBehaviorNode(BehaviorId,parentId,idx){
-      const behavior = this.expandedGroups[BehaviorId] || {}
+    async addBehaviorNode(BehaviorId,parentId,idx){
+      this.hasUnsavedChanges = true
+      const behavior = this.behaviorMap[BehaviorId] || {}
       let treeNode = this.nodeMap[parentId].node
       // 父节点只能有一个节点，且这个节点目前是空节点，使用新节点替换
       const addNode= getNodeInfo(behavior.node_type,behavior)
@@ -706,9 +705,9 @@ export default {
         else if(idx === 2)  treeNode.fail = addNode.nodeTreeStruct
         else if(idx === 3)  treeNode.unknown = addNode.nodeTreeStruct
       }else {
-        return 
+        return
       }
-      this.resetInit()
+      await this.resetInit()
     },
     //查找最近的空节点
     findNearestInRange(list, target, range = 50) {
@@ -733,28 +732,35 @@ export default {
       return nearestItem
     },
     //保存行为树
-    async saveTreee(){
-      const saveTreeInfo = structuredClone(this.treeInfo)
-      const fittleTreeRemoveIsUnfold = (treeNode)=>{
+    async saveTree(){
+      const saveTreeInfo = JSON.parse(JSON.stringify(this.treeInfo))
+      const filterTreeForSave = (treeNode) => {
+        if (!treeNode || !treeNode.node_type) return
         delete treeNode.isUnfold
-        if(treeNode.node){
-          fittleTreeRemoveIsUnfold(treeNode.node)
-        }else if(treeNode.nodes){
-          treeNode.nodes.forEach(child => {
-          fittleTreeRemoveIsUnfold(child)}
-        )
-        }else if(treeNode.node_type === 'ifelse_node'){
-          fittleTreeRemoveIsUnfold(treeNode.check)
-          fittleTreeRemoveIsUnfold(treeNode.success)
-          fittleTreeRemoveIsUnfold(treeNode.fail)
-          fittleTreeRemoveIsUnfold(treeNode.unknown)
+        if (treeNode.node) {
+          if (treeNode.node.node_type === 'null_node') {
+            treeNode.node = null
+          } else {
+            filterTreeForSave(treeNode.node)
+          }
+        } else if (treeNode.nodes) {
+          treeNode.nodes = treeNode.nodes.filter(child => child.node_type !== 'null_node')
+          treeNode.nodes.forEach(child => filterTreeForSave(child))
+        } else if (treeNode.node_type === 'ifelse_node') {
+          ;['check', 'success', 'fail', 'unknown'].forEach(key => {
+            if (treeNode[key] && treeNode[key].node_type !== 'null_node') {
+              filterTreeForSave(treeNode[key])
+            } else {
+              treeNode[key] = null
+            }
+          })
         }
       }
-      fittleTreeRemoveIsUnfold(saveTreeInfo.tree)
+      filterTreeForSave(saveTreeInfo.tree)
       const res  = await updateBehaviorTree(saveTreeInfo)
       if(res.id === saveTreeInfo.id){
+        this.hasUnsavedChanges = false
         this.$message.success('保存成功')
-        console.log('保存行为树',res)
       }else{
         this.$message.error('保存失败')
       }

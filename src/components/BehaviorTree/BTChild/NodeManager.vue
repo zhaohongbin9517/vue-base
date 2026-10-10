@@ -359,7 +359,7 @@ export default {
         // 注释掉实际API调用，使用本地模拟数据
         getAllBehavior().then(res => {
             // 为API返回的数据添加展开状态
-            this.behaviorGroupList = structuredClone(this.BasebehaviorGroupList.concat(res)),
+            this.behaviorGroupList = JSON.parse(JSON.stringify(this.BasebehaviorGroupList.concat(res))),
             // 初始化展开状态
             this.behaviorGroupList.forEach(group => {
                 this.expandedGroups[group.id] = this.expandedGroups[group.id] ? this.expandedGroups[group.id] : false
