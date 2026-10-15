@@ -1,33 +1,5 @@
 <template>
   <div class="meter-config">
-    <!-- 快速导航（固定悬浮底部） -->
-    <div class="quick-nav">
-      <div class="nav-content">
-        <span class="nav-title">快速导航</span>
-        <el-scrollbar wrap-class="nav-scroll-wrap" max-height="80">
-          <div class="nav-links">
-            <div 
-              v-for="item in navItems" 
-              :key="item.id"
-              class="nav-item"
-              :class="{'nav-active': item.id === activeId}"
-              @click="scrollToSection(item.id)"
-            >
-              {{ item.title }}
-            </div>
-          </div>
-        </el-scrollbar>
-        <el-button 
-          type="text" 
-          class="back-top-btn"
-          @click="scrollToTop"
-          title="返回顶部"
-        >
-          <el-icon><top /></el-icon>
-        </el-button>
-      </div>
-    </div>
-
     <div v-if="isShowHeader" class="page-header">
       <h2 class="page-title">
         <el-icon class="title-icon"><setting /></el-icon>
@@ -45,37 +17,37 @@
         </div>
       </template>
       <div class="base-config">
-        <el-select 
-        v-model="baseData.configId" 
-        @change="handleConfigChange" 
-        placeholder="请选择配置" 
+        <el-select
+        v-model="baseData.configId"
+        @change="handleConfigChange"
+        placeholder="请选择配置"
         filterable
         class="config-select">
-          <el-option 
-          v-for="item in allMeterConfig" 
-          :key="item.config_id" 
-          :label="item.name" 
+          <el-option
+          v-for="item in allMeterConfig"
+          :key="item.config_id"
+          :label="item.name"
           :value="item.config_id"
           >
             <span style="float: left">{{ item.name }}</span>
-            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.config_id }}</span> 
+            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.config_id }}</span>
           </el-option>
         </el-select>
-        <el-select 
-        v-model="baseData.stationId" 
-        @change="handleStationChange" 
-        placeholder="请选择站" 
+        <el-select
+        v-model="baseData.stationId"
+        @change="handleStationChange"
+        placeholder="请选择站"
         filterable
         copyable
         class="station-select">
-          <el-option 
-          v-for="item in allStations" 
-          :key="item.value" 
-          :label="item.label" 
+          <el-option
+          v-for="item in allStations"
+          :key="item.value"
+          :label="item.label"
           :value="item.value"
           >
           <span style="float: left">{{ item.label }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span> 
+          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
         </el-option>
         </el-select>
         <el-button v-if="PromiseWrite" type="primary" @click="addConfig">
@@ -86,12 +58,12 @@
           <el-icon><refresh-right /></el-icon>
           取消修改
         </el-button>
-    
+
         <el-button v-if="PromiseWrite" type="success" @click="saveAllConfig">
           <el-icon><check /></el-icon>
           保存配置
         </el-button>
-    
+
     <!-- 新增配置对话框组件 -->
     <MeterConfigAddConfig
       v-model:visible="addConfigVisible"
@@ -102,254 +74,296 @@
       </div>
     </el-card>
 
-    <!-- 启动设备参数设置 -->
-    <div id="start-parameters">
-      <MeterConfigStartStopSetting 
-        :parameters="startParameters"
-        :title="'启动设备参数设置'"
-        :tips="'(同名参数只保留一个值)'"
-        :name="'startCode'"
-        :param-options="paramOptions"
-        @add-parameter="addParameter"
-        @remove-parameter="removeParameter"
-        @save-config="saveConfig"
-      />
-    </div>
-    <!-- 启动检查参数设置 -->
-    <div id="check-start-parameters">
-      <MeterConfigStartStopSetting 
-        :parameters="checkStartParameters"
-        :title="'启动检查参数设置'"
-        :tips="'(同名参数保留多个值)'"
-        :name="'checkStartCode'"
-        :param-options="paramOptions"
-        @add-parameter="addParameter"
-        @remove-parameter="removeParameter"
-        @save-config="saveConfig"
-      />
-    </div>
+    <!-- 工作区：左菜单 / 中间配置项 / 右侧 JSON 预览 -->
+    <div class="config-workspace">
+      <!-- 左侧菜单 -->
+      <aside class="side-menu">
+        <div class="side-menu__head">
+          <span class="side-menu__title">配置导航</span>
+          <span class="side-menu__count">{{ navItems.length }}</span>
+        </div>
+        <el-scrollbar class="side-menu__scroll" height="100%">
+          <div class="side-menu__list">
+            <div
+              v-for="item in navItems"
+              :key="item.id"
+              class="side-menu__item"
+              :class="{ 'is-active': item.id === activeSection }"
+              @click="selectSection(item.id)"
+            >
+              <span
+                class="side-menu__icon"
+                :style="{ '--item-color': item.color, color: item.color, background: item.bg }"
+              >
+                <el-icon><component :is="item.icon" /></el-icon>
+              </span>
+              <span class="side-menu__text">
+                <span class="side-menu__label">{{ item.title }}</span>
+                <span class="side-menu__sub">{{ item.id }}</span>
+              </span>
+              <el-icon v-if="item.id === activeSection" class="side-menu__chev"><ArrowRight /></el-icon>
+            </div>
+          </div>
+        </el-scrollbar>
+      </aside>
 
-    <!-- 停止设备参数设置 -->
-    <div id="stop-parameters">
-      <MeterConfigStartStopSetting 
-        :parameters="stopParameters"
-        :title="'停止设备参数设置'"
-        :tips="'(同名参数只保留一个值)'"
-        :name="'stopCode'"
-        :param-options="paramOptions"
-        @add-parameter="addParameter"
-        @remove-parameter="removeParameter"
-        @save-config="saveConfig"
-      />
-    </div>
-    <!-- 停止检查参数设置 -->
-    <div id="check-stop-parameters">
-      <MeterConfigStartStopSetting 
-        :parameters="checkStopParameters"
-        :title="'停止检查参数设置'"
-        :tips="'(同名参数保留多个值)'"
-        :name="'checkStopCode'"
-        :param-options="paramOptions"
-        @add-parameter="addParameter"
-        @remove-parameter="removeParameter"
-        @save-config="saveConfig"
-      />
-    </div>
+      <!-- 中间：当前配置项（固定高度，内部滚动） -->
+      <section class="section-panel">
+          <div class="section-panel__head">
+            <span class="section-panel__title">{{ activeSectionTitle }}</span>
+            <span class="section-panel__tag">SECTION</span>
+          </div>
+          <div class="section-panel__scroll">
+            <div class="section-panel__body">
+              <!-- 启动设备参数设置 -->
+              <div v-show="activeSection === 'start-parameters'" id="start-parameters">
+                <MeterConfigStartStopSetting
+                  :parameters="startParameters"
+                  :title="'启动设备参数设置'"
+                  :tips="'(同名参数只保留一个值)'"
+                  :name="'startCode'"
+                  :param-options="paramOptions"
+                  @add-parameter="addParameter"
+                  @remove-parameter="removeParameter"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 启动检查参数设置 -->
+              <div v-show="activeSection === 'check-start-parameters'" id="check-start-parameters">
+                <MeterConfigStartStopSetting
+                  :parameters="checkStartParameters"
+                  :title="'启动检查参数设置'"
+                  :tips="'(同名参数保留多个值)'"
+                  :name="'checkStartCode'"
+                  :param-options="paramOptions"
+                  @add-parameter="addParameter"
+                  @remove-parameter="removeParameter"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 停止设备参数设置 -->
+              <div v-show="activeSection === 'stop-parameters'" id="stop-parameters">
+                <MeterConfigStartStopSetting
+                  :parameters="stopParameters"
+                  :title="'停止设备参数设置'"
+                  :tips="'(同名参数只保留一个值)'"
+                  :name="'stopCode'"
+                  :param-options="paramOptions"
+                  @add-parameter="addParameter"
+                  @remove-parameter="removeParameter"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 停止检查参数设置 -->
+              <div v-show="activeSection === 'check-stop-parameters'" id="check-stop-parameters">
+                <MeterConfigStartStopSetting
+                  :parameters="checkStopParameters"
+                  :title="'停止检查参数设置'"
+                  :tips="'(同名参数保留多个值)'"
+                  :name="'checkStopCode'"
+                  :param-options="paramOptions"
+                  @add-parameter="addParameter"
+                  @remove-parameter="removeParameter"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 设备状态枚举配置 -->
+              <div v-show="activeSection === 'device-status-config'" id="device-status-config">
+                <MeterConfigDeviceStatusSetting
+                  :config="deviceStatusConfig"
+                  :title="'设备状态枚举配置'"
+                  :name="'deviceStatusCode'"
+                  :param-options="paramOptions"
+                  @update:DeviceStatusEnums="updateDeviceStatusEnums"
+                  @update:DeviceStatusAllParam="updateDeviceStatusAllParam"
+                  @update:statusClassification="updateStatusClassification"
+                  @add-enum="addParameter"
+                  @remove-enum="removeParameter"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 通道号设置 -->
+              <div v-show="activeSection === 'wn-channel-number'" id="wn-channel-number">
+                <MeterConfigMeterTongDaoSetting
+                  :channelNumber="wnChannelNumber"
+                  :title="'当前计量通道号'"
+                  :name="'wnChannelNumber'"
+                  :param-options="paramOptions"
+                  @update:channelNumber="updateChannelNumber"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <div v-show="activeSection === 'wm-channel-number'" id="wm-channel-number">
+                <MeterConfigMeterTongDaoSetting
+                  :channelNumber="wmChannelNumber"
+                  :title="'上次计量通道号'"
+                  :tips="'(主要用作统计结果时的通道确认)'"
+                  :name="'wmChannelNumber'"
+                  :param-options="paramOptions"
+                  @update:channelNumber="updateChannelNumber"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 计划数据配置 -->
+              <div v-show="activeSection === 'plan-data-config'" id="plan-data-config">
+                <MeterConfigPlanSetting
+                  :title="'计划数据配置'"
+                  :tips="'(下发计划配置信息)'"
+                  :name="'planSetinfo'"
+                  v-model:planTableInfo="planTableInfo"
+                  :tableOptions="tableOptions"
+                  :planTableColumnOptions="planTableColumnOptions"
+                  :paramOptions="paramOptions"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 初始化设备数据设置 -->
+              <div v-show="activeSection === 'init-device-setting'" id="init-device-setting">
+                <MeterConfigInitDeviceSetting
+                  :mappings="initDeviceMappings"
+                  :title="'初始化设备数据设置'"
+                  :tips="''"
+                  :name="'initDeviceSetting'"
+                  :paramOptions="paramOptions"
+                  @add-parameter="addParameter"
+                  @remove-parameter="removeParameter"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 计量结果配置 -->
+              <div v-show="activeSection === 'result-config'" id="result-config">
+                <MeterConfigResultSetting
+                  v-model:resultTableInfo="resultTableInfo"
+                  :title="'计量结果配置'"
+                  :tips="''"
+                  :name="'resultSetting'"
+                  :tableOptions="tableOptions"
+                  :paramOptions="paramOptions"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 出结果判断 -->
+              <div v-show="activeSection === 'check-result'" id="check-result">
+                <MeterConfigCheckResultSetting
+                  v-model:resultCheck="resultCheck"
+                  :title="'出结果判断'"
+                  :tips="''"
+                  :name="'checkResultSetting'"
+                  :paramOptions="paramOptions"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 参数解压 -->
+              <div v-show="activeSection === 'param-uncompress'" id="param-uncompress">
+                <MeterConfigStartStopSetting
+                  :parameters="paramUncompress"
+                  :title="'参数解压设置'"
+                  :tips="'(同名参数只保留一个值)'"
+                  :name="'paramUncompress'"
+                  :param-options="paramOptions"
+                  @add-parameter="addParameter"
+                  @remove-parameter="removeParameter"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 可变参数选择 -->
+              <div v-show="activeSection === 'change-param'" id="change-param">
+                <MeterConfigChangeParamSetting
+                  v-model:changeParam="changeParam"
+                  :title="'可修改参数选择'"
+                  :tips="''"
+                  :name="'changeParamSetting'"
+                  :paramOptions="paramOptions"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 二次计量 -->
+              <div v-show="activeSection === 'secondary-measurement'" id="secondary-measurement">
+                <MeterConfigEmphasisPlanSetting
+                  v-model:emphasisPlan="emphasisPlan"
+                  :title="'二次计量'"
+                  :tips="''"
+                  :name="'emphasisPlanSetting'"
+                  :paramOptions="paramOptions"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 扩展信息 -->
+              <div v-show="activeSection === 'extend-info'" id="extend-info">
+                <MeterConfigExtendConfigSetting
+                  v-model:extendConfig="extendConfig"
+                  :title="'扩展信息'"
+                  :tips="''"
+                  :name="'extendConfigSetting'"
+                  :modulesChoose="modulesChoose"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 循环计量信息 -->
+              <div v-show="activeSection === 'loop-meter-info'" id="loop-meter-info">
+                <MeterConfigLoopMeterSetting
+                  v-model:loopMeterInfo="loopMeterInfo"
+                  :title="'循环计量信息'"
+                  :tips="''"
+                  :name="'loopMeterSetting'"
+                  :paramOptions="paramOptions"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 计量井人工状态检查 -->
+              <div v-show="activeSection === 'check-manual-status'" id="check-manual-status">
+                <MeterConfigCheckMmanualStatusSetting
+                  v-model:checkMeasureStatusBase="checkMeasureStatusBase"
+                  :title="'计量井人工状态检查'"
+                  :tips="''"
+                  :name="'checkMeasureStatusSetting'"
+                  :paramOptions="paramOptions"
+                  @update-measure-status="updateMeasureStatus"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 就地远程组件 -->
+              <div v-show="activeSection === 'long-range'" id="long-range">
+                <MeterConfigLongRangeSetting
+                  v-model:config="longRangeConfig"
+                  :title="'就地远程组件'"
+                  :tips="''"
+                  :name="'longRangeSetting'"
+                  :paramOptions="paramOptions"
+                  @update-long-range="updateLongRange"
+                  @save-config="saveConfig"
+                />
+              </div>
+              <!-- 设备启动预检查 -->
+              <div v-show="activeSection === 'device-check'" id="device-check">
+                <MeterConfigDeviceCheckSetting
+                  v-model:deviceCheck="deviceCheck"
+                  :title="'设备启动预检查'"
+                  :tips="''"
+                  :name="'deviceCheckSetting'"
+                  :stationOptions="allStations"
+                  :paramOptions="paramOptions"
+                  @save-config="saveConfig"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
 
-    <!-- 
-    设备状态枚举配置 
-    启停状态枚举
-    -->
-    <div id="device-status-config">
-      <MeterConfigDeviceStatusSetting 
-        :config="deviceStatusConfig"
-        :title="'设备状态枚举配置'"
-        :name="'deviceStatusCode'"
-        :param-options="paramOptions"
-        @update:DeviceStatusEnums="updateDeviceStatusEnums"
-        @update:DeviceStatusAllParam="updateDeviceStatusAllParam"
-        @update:statusClassification="updateStatusClassification"
-        @add-enum="addParameter"
-        @remove-enum="removeParameter"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!--通道号设置 -->
-    <div id="wn-channel-number">
-      <MeterConfigMeterTongDaoSetting 
-        :channelNumber="wnChannelNumber"
-        :title="'当前计量通道号'"
-        :name="'wnChannelNumber'"
-        :param-options="paramOptions"
-        @update:channelNumber="updateChannelNumber"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <div id="wm-channel-number">
-      <MeterConfigMeterTongDaoSetting 
-        :channelNumber="wmChannelNumber"
-        :title="'上次计量通道号'"
-        :tips="'(主要用作统计结果时的通道确认)'"
-        :name="'wmChannelNumber'"
-        :param-options="paramOptions"
-        @update:channelNumber="updateChannelNumber"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!-- 计划数据配置 -->
-    <div id="plan-data-config">
-      <MeterConfigPlanSetting 
-        :title="'计划数据配置'"
-        :tips="'(下发计划配置信息)'"
-        :name="'planSetinfo'"
-        v-model:planTableInfo="planTableInfo"
-        :tableOptions="tableOptions"
-        :planTableColumnOptions="planTableColumnOptions"
-        :paramOptions="paramOptions"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!-- 初始化设备数据设置 -->
-    <div id="init-device-setting">
-      <MeterConfigInitDeviceSetting 
-        :mappings="initDeviceMappings"
-        :title="'初始化设备数据设置'"
-        :tips="''"
-        :name="'initDeviceSetting'"
-        :paramOptions="paramOptions"
-        @add-parameter="addParameter"
-        @remove-parameter="removeParameter"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!-- 计量结果配置 -->
-    <div id="result-config">
-      <MeterConfigResultSetting 
-        v-model:resultTableInfo="resultTableInfo"
-        :title="'计量结果配置'"
-        :tips="''"
-        :name="'resultSetting'"
-        :tableOptions="tableOptions"
-        :paramOptions="paramOptions"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!-- 出结果判断 -->
-    <div id="check-result">
-      <MeterConfigCheckResultSetting 
-        v-model:resultCheck="resultCheck"
-        :title="'出结果判断'"
-        :tips="''"
-        :name="'checkResultSetting'"
-        :paramOptions="paramOptions"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!--参数解压-->    
-    <div id="param-uncompress">
-      <MeterConfigStartStopSetting 
-        :parameters="paramUncompress"
-        :title="'参数解压设置'"
-        :tips="'(同名参数只保留一个值)'"
-        :name="'paramUncompress'"
-        :param-options="paramOptions"
-        @add-parameter="addParameter"
-        @remove-parameter="removeParameter"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!-- 可变参数选择 -->
-    <div id="change-param">
-      <MeterConfigChangeParamSetting 
-        v-model:changeParam="changeParam"
-        :title="'可修改参数选择'"
-        :tips="''"
-        :name="'changeParamSetting'"
-        :paramOptions="paramOptions"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!-- 二次计量 -->
-    <div id="secondary-measurement">
-      <MeterConfigEmphasisPlanSetting 
-        v-model:emphasisPlan="emphasisPlan"
-        :title="'二次计量'"
-        :tips="''"
-        :name="'emphasisPlanSetting'"
-        :paramOptions="paramOptions"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!-- 扩展信息 -->
-    <div id="extend-info">
-      <MeterConfigExtendConfigSetting 
-        v-model:extendConfig="extendConfig"
-        :title="'扩展信息'"
-        :tips="''"
-        :name="'extendConfigSetting'"
-        :modulesChoose="modulesChoose"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!-- 循环计量信息 -->
-    <div id="loop-meter-info">
-      <MeterConfigLoopMeterSetting 
-        v-model:loopMeterInfo="loopMeterInfo"
-        :title="'循环计量信息'"
-        :tips="''"
-        :name="'loopMeterSetting'"
-        :paramOptions="paramOptions"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!-- 计量井人工状态检查 -->
-    <div id="check-manual-status">
-      <MeterConfigCheckMmanualStatusSetting 
-        v-model:checkMeasureStatusBase="checkMeasureStatusBase"
-        :title="'计量井人工状态检查'"
-        :tips="''"
-        :name="'checkMeasureStatusSetting'"
-        :paramOptions="paramOptions"
-        @update-measure-status="updateMeasureStatus"
-        @save-config="saveConfig"
-      />
-    </div>
-    <!-- 就地远程组件 -->
-    <div id="long-range">
-      <MeterConfigLongRangeSetting 
-        v-model:config="longRangeConfig"
-        :title="'就地远程组件'"
-        :tips="''"
-        :name="'longRangeSetting'"
-        :paramOptions="paramOptions"
-        @update-long-range="updateLongRange"
-        @save-config="saveConfig"
-      />
-    </div>
-
-    <!-- 设备启动预检查 -->
-    <div id="device-check">
-      <MeterConfigDeviceCheckSetting
-        v-model:deviceCheck="deviceCheck"
-        :title="'设备启动预检查'"
-        :tips="''"
-        :name="'deviceCheckSetting'"
-        :stationOptions="allStations"
-        :paramOptions="paramOptions"
-        @save-config="saveConfig"
-      />
+        <!-- 右下：保存结果 JSON 预览 -->
+        <section class="json-panel">
+          <div class="json-panel__head">
+            <span class="json-panel__title">配置 JSON 预览</span>
+            <div class="json-panel__actions">
+              <el-button size="small" text @click="copyConfigJson">
+                <el-icon style="margin-right: 4px"><DocumentCopy /></el-icon>复制
+              </el-button>
+            </div>
+          </div>
+          <div class="json-panel__scroll">
+            <pre class="json-panel__pre">{{ configJsonPreview }}</pre>
+          </div>
+        </section>
     </div>
 
   </div>
@@ -357,7 +371,10 @@
 </template>
 
 <script>
-import { Setting, Collection, Plus, Check ,RefreshRight, Top} from '@element-plus/icons-vue'
+import { Setting, Collection, Plus, Check ,RefreshRight, DocumentCopy, ArrowRight,
+  VideoPlay, CircleCheck, VideoPause, CircleClose, Grid, Odometer, Stopwatch,
+  Notebook, SetUp, DataAnalysis, Finished, FolderOpened, EditPen, CopyDocument,
+  InfoFilled, Timer, View, Compass, Aim } from '@element-plus/icons-vue'
 import MeterConfigStartStopSetting from './MeterConfigChild/MeterConfigStartStopSetting.vue'
 import MeterConfigDeviceStatusSetting from './MeterConfigChild/MeterConfigDeviceStatusSetting.vue'
 import MeterConfigMeterTongDaoSetting from './MeterConfigChild/MeterConfigMeterTongDaoSetting.vue'
@@ -385,7 +402,27 @@ export default {
     Plus,
     Check,
     RefreshRight,
-    Top,
+    DocumentCopy,
+    ArrowRight,
+    VideoPlay,
+    CircleCheck,
+    VideoPause,
+    CircleClose,
+    Grid,
+    Odometer,
+    Stopwatch,
+    Notebook,
+    SetUp,
+    DataAnalysis,
+    Finished,
+    FolderOpened,
+    EditPen,
+    CopyDocument,
+    InfoFilled,
+    Timer,
+    View,
+    Compass,
+    Aim,
     MeterConfigStartStopSetting,
     MeterConfigDeviceStatusSetting,
     MeterConfigMeterTongDaoSetting,
@@ -416,28 +453,28 @@ export default {
   },
   data() {
     return {
-      // 快速导航菜单配置
-      activeId: '',
+      // 左侧菜单 - 当前激活的配置项
+      activeSection: 'start-parameters',
       navItems: [
-        { id: 'start-parameters', title: '启动设备参数设置' },
-        { id: 'check-start-parameters', title: '启动检查参数设置' },
-        { id: 'stop-parameters', title: '停止设备参数设置' },
-        { id: 'check-stop-parameters', title: '停止检查参数设置' },
-        { id: 'device-status-config', title: '设备状态枚举配置' },
-        { id: 'wn-channel-number', title: '当前计量通道号' },
-        { id: 'wm-channel-number', title: '上次计量通道号' },
-        { id: 'plan-data-config', title: '计划数据配置' },
-        { id: 'init-device-setting', title: '初始化设备数据设置' },
-        { id: 'result-config', title: '计量结果配置' },
-        { id: 'check-result', title: '出结果判断' },
-        { id: 'param-uncompress', title: '参数解压设置' },
-        { id: 'change-param', title: '可修改参数选择' },
-        { id: 'secondary-measurement', title: '二次计量' },
-        { id: 'extend-info', title: '扩展信息' },
-        { id: 'loop-meter-info', title: '循环计量信息' },
-        { id: 'check-manual-status', title: '计量井人工状态检查' },
-        { id: 'long-range', title: '就地远程组件' },
-        { id: 'device-check', title: '设备启动预检查' },
+        { id: 'start-parameters', title: '启动设备参数设置', icon: 'VideoPlay', color: '#d97706', bg: 'rgba(217,119,6,.12)' },
+        { id: 'check-start-parameters', title: '启动检查参数设置', icon: 'CircleCheck', color: '#0d9488', bg: 'rgba(13,148,136,.12)' },
+        { id: 'stop-parameters', title: '停止设备参数设置', icon: 'VideoPause', color: '#dc2626', bg: 'rgba(220,38,38,.12)' },
+        { id: 'check-stop-parameters', title: '停止检查参数设置', icon: 'CircleClose', color: '#ea580c', bg: 'rgba(234,88,12,.12)' },
+        { id: 'device-status-config', title: '设备状态枚举配置', icon: 'Grid', color: '#7c3aed', bg: 'rgba(124,58,237,.12)' },
+        { id: 'wn-channel-number', title: '当前计量通道号', icon: 'Odometer', color: '#2563eb', bg: 'rgba(37,99,235,.12)' },
+        { id: 'wm-channel-number', title: '上次计量通道号', icon: 'Stopwatch', color: '#4f46e5', bg: 'rgba(79,70,229,.12)' },
+        { id: 'plan-data-config', title: '计划数据配置', icon: 'Notebook', color: '#16a34a', bg: 'rgba(22,163,74,.12)' },
+        { id: 'init-device-setting', title: '初始化设备数据设置', icon: 'SetUp', color: '#0891b2', bg: 'rgba(8,145,178,.12)' },
+        { id: 'result-config', title: '计量结果配置', icon: 'DataAnalysis', color: '#db2777', bg: 'rgba(219,39,119,.12)' },
+        { id: 'check-result', title: '出结果判断', icon: 'Finished', color: '#65a30d', bg: 'rgba(101,163,13,.12)' },
+        { id: 'param-uncompress', title: '参数解压设置', icon: 'FolderOpened', color: '#b45309', bg: 'rgba(180,83,9,.12)' },
+        { id: 'change-param', title: '可修改参数选择', icon: 'EditPen', color: '#9333ea', bg: 'rgba(147,51,234,.12)' },
+        { id: 'secondary-measurement', title: '二次计量', icon: 'CopyDocument', color: '#0284c7', bg: 'rgba(2,132,199,.12)' },
+        { id: 'extend-info', title: '扩展信息', icon: 'InfoFilled', color: '#0f766e', bg: 'rgba(15,118,110,.12)' },
+        { id: 'loop-meter-info', title: '循环计量信息', icon: 'Timer', color: '#c026d3', bg: 'rgba(192,38,211,.12)' },
+        { id: 'check-manual-status', title: '计量井人工状态检查', icon: 'View', color: '#b91c1c', bg: 'rgba(185,28,28,.12)' },
+        { id: 'long-range', title: '就地远程组件', icon: 'Compass', color: '#0369a1', bg: 'rgba(3,105,161,.12)' },
+        { id: 'device-check', title: '设备启动预检查', icon: 'Aim', color: '#a16207', bg: 'rgba(161,98,7,.12)' },
       ],
       PromiseWrite: getAuthPermission('config:write'),
       PromiseRead: getAuthPermission('config:read'),
@@ -563,6 +600,21 @@ export default {
       //全部计量配置
       allMeterConfig:[],
       allStations:[]
+    }
+  },
+  computed: {
+    // 当前激活配置项标题
+    activeSectionTitle() {
+      const item = this.navItems.find(i => i.id === this.activeSection)
+      return item ? item.title : ''
+    },
+    // 保存结果 JSON 预览（实时跟随编辑）
+    configJsonPreview() {
+      try {
+        return JSON.stringify(this.baseData.config ?? {}, null, 2)
+      } catch (e) {
+        return '{}'
+      }
     }
   },
   mounted() {
@@ -1167,36 +1219,32 @@ export default {
       }
     },
 
-    // 快速导航 - 滚动到指定部分
-    scrollToSection(id) {
-      this.activeId = id
-      const element = document.getElementById(id)
-      if (element) {
-        const container = document.querySelector('.config-content')
-        if (container) {
-          const rect = element.getBoundingClientRect()
-          const containerRect = container.getBoundingClientRect()
-          const scrollTop = container.scrollTop + rect.top - containerRect.top - 20
-          container.scrollTo({
-            top: scrollTop,
-            behavior: 'smooth'
-          })
-        } else {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
-      }
+    // 左侧菜单 - 切换当前配置项
+    selectSection(id) {
+      this.activeSection = id
     },
 
-    // 快速导航 - 返回顶部
-    scrollToTop() {
-      const container = document.querySelector('.config-content')
-      if (container) {
-        container.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        })
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+    // 复制配置 JSON 到剪贴板
+    async copyConfigJson() {
+      const text = this.configJsonPreview
+      try {
+        await navigator.clipboard.writeText(text)
+        this.$message.success('JSON 已复制')
+      } catch (e) {
+        // 剪贴板 API 不可用（非安全上下文）时回退到 textarea 方案
+        const ta = document.createElement('textarea')
+        ta.value = text
+        ta.style.position = 'fixed'
+        ta.style.opacity = '0'
+        document.body.appendChild(ta)
+        ta.select()
+        try {
+          document.execCommand('copy')
+          this.$message.success('JSON 已复制')
+        } catch (err) {
+          this.$message.error('复制失败')
+        }
+        document.body.removeChild(ta)
       }
     },
 
@@ -1206,89 +1254,8 @@ export default {
 
 <style scoped>
 .meter-config {
-  padding: 0 0 calc(80px + var(--space-7)) 0;
+  padding: 0 0 var(--space-7) 0;
   background: transparent;
-}
-
-/* —— 快速导航：固定悬浮底部 —— */
-.quick-nav {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
-  background: var(--bg-surface);
-  border-top: 1px solid var(--ink-1);
-  padding: var(--space-3) var(--space-7);
-  box-shadow: 0 -4px 24px rgba(28, 25, 23, 0.08);
-}
-
-.nav-content {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  max-width: 1280px;
-  margin: 0 auto;
-}
-
-.nav-title {
-  font-family: var(--font-serif);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--ink-3);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.nav-scroll-wrap {
-  flex: 2;
-  overflow: visible;
-}
-
-.nav-links {
-  height: auto;
-  display: flex;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-  padding-bottom: 2px;
-}
-
-.nav-item {
-  padding: var(--space-1) var(--space-3);
-  background: transparent;
-  border: 1px solid var(--border-hair);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-serif);
-  font-size: 0.8125rem;
-  color: var(--ink-3);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all var(--duration) var(--ease);
-}
-
-.nav-item:hover {
-  border-color: var(--ink-1);
-  color: var(--ink-1);
-  background: var(--bg-subtle);
-}
-
-.nav-active {
-  background: var(--ink-1);
-  color: var(--bg-surface);
-  border-color: var(--ink-1);
-}
-
-.back-top-btn {
-  color: var(--ink-3);
-  font-size: 1.125rem;
-  transition: all var(--duration) var(--ease);
-  flex-shrink: 0;
-}
-
-.back-top-btn:hover {
-  color: var(--ink-1);
 }
 
 /* —— 页面标题 —— */
@@ -1355,5 +1322,270 @@ export default {
 
 .station-select {
   width: 400px;
+}
+
+/* ============================================================
+   工作区：左菜单 / 中间配置项 / 右侧 JSON 预览
+   ============================================================ */
+.config-workspace {
+  display: grid;
+  /* 10% : 70% : 20%（按扣除 gap 后的可用宽度分配） */
+  grid-template-columns: 1.5fr 6.5fr 2fr;
+  gap: var(--space-5);
+  align-items: stretch;
+  height: 890px;
+}
+
+/* —— 左侧菜单 —— */
+.side-menu {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hair);
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+}
+
+.side-menu__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--border-hair);
+  background: var(--bg-subtle);
+  flex-shrink: 0;
+}
+
+.side-menu__title {
+  font-family: var(--font-serif);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.side-menu__count {
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.625rem;
+  color: var(--ink-3);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hair);
+  border-radius: 999px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+
+.side-menu__scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.side-menu__list {
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.side-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 8px var(--space-3);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--duration) var(--ease);
+}
+
+.side-menu__item:hover {
+  background: var(--bg-subtle);
+}
+
+/* 激活项：暖奶油底 + 琥珀描边（仿参考图） */
+.side-menu__item.is-active {
+  background: #f6e9d4;
+  border-color: #e2cda6;
+}
+
+/* 彩色图标方块 */
+.side-menu__icon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  transition: all var(--duration) var(--ease);
+}
+
+/* 激活时图标反白填充 */
+.side-menu__item.is-active .side-menu__icon {
+  background: var(--item-color) !important;
+  color: #fff !important;
+}
+
+.side-menu__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.side-menu__label {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-1);
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.side-menu__sub {
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 9.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.side-menu__item.is-active .side-menu__label {
+  color: #7c4a03;
+}
+
+.side-menu__item.is-active .side-menu__sub {
+  color: #a8752c;
+}
+
+.side-menu__chev {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #b45309;
+}
+
+/* —— 中间：配置项面板（内部滚动） —— */
+.section-panel {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hair);
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+}
+
+.section-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-hair);
+  background: var(--bg-subtle);
+  flex-shrink: 0;
+}
+
+.section-panel__title {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink-1);
+}
+
+.section-panel__tag {
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-3);
+  border: 1px solid var(--border-hair);
+  border-radius: 3px;
+  padding: 2px 6px;
+  background: var(--bg-surface);
+}
+
+.section-panel__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.section-panel__body {
+  padding: var(--space-4);
+}
+
+/* 隐藏未激活的 section，同时避免占位间隙 */
+.section-panel__body > div[v-show],
+.section-panel__body > div[style*="display: none"] {
+  margin: 0;
+}
+
+/* —— 右侧：JSON 预览 —— */
+.json-panel {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #beb7b6;
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+}
+
+.json-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid #292524;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.json-panel__title {
+  font-family: var(--font-serif);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #a8a29e;
+}
+
+.json-panel__actions :deep(.el-button) {
+  color: #251d17;
+}
+
+.json-panel__actions :deep(.el-button):hover {
+  color: #3ec2ff;
+}
+
+.json-panel__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.json-panel__pre {
+  margin: 0;
+  padding: var(--space-4);
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: #3a37f0;
+  white-space: pre;
+  tab-size: 2;
 }
 </style>

@@ -75,3 +75,11 @@ export function getErrorLog() {
 export function clearErrorLog() {
   return post('/tmms_config/clear_error_log', {})
 }
+
+/**
+ * 获取可用于人工状态检查的函数列表
+ * @returns {Promise<Array>} [{ name, func, desp }]
+ */
+export function getCheckCanMeasure() {
+  return get('/tmms_config/get_check_can_measure')
+}

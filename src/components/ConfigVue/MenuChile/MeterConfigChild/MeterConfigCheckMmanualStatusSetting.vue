@@ -78,15 +78,43 @@
           <el-select v-model="addForm.data_type" placeholder="请选择字段类型" style="width: 260px">
             <el-option label="布尔" value="bool" />
             <el-option label="字符串" value="string" />
+            <el-option label="函数" value="func" />
+            <el-option label="LIKE" value="LIKE" />
           </el-select>
         </el-form-item>
 
         <el-form-item label="one-for-one">
-          <el-input v-model="addForm.one_for_one" placeholder="请输入值，多个用逗号分隔" style="width: 260px" />
+          <el-select
+            v-if="addForm.data_type === 'func'"
+            v-model="addForm.one_for_one"
+            placeholder="请选择函数"
+            filterable
+            clearable
+            style="width: 260px"
+          >
+            <el-option v-for="f in funcList" :key="f.func" :label="f.name" :value="f.func">
+              <span style="float: left">{{ f.name }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ f.func }}</span>
+            </el-option>
+          </el-select>
+          <el-input v-else v-model="addForm.one_for_one" :placeholder="valueInputPlaceholder" style="width: 260px" />
         </el-form-item>
 
         <el-form-item label="one-for-all">
-          <el-input v-model="addForm.one_for_all" placeholder="请输入值，多个用逗号分隔" style="width: 260px" />
+          <el-select
+            v-if="addForm.data_type === 'func'"
+            v-model="addForm.one_for_all"
+            placeholder="请选择函数"
+            filterable
+            clearable
+            style="width: 260px"
+          >
+            <el-option v-for="f in funcList" :key="f.func" :label="f.name" :value="f.func">
+              <span style="float: left">{{ f.name }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ f.func }}</span>
+            </el-option>
+          </el-select>
+          <el-input v-else v-model="addForm.one_for_all" :placeholder="valueInputPlaceholder" style="width: 260px" />
         </el-form-item>
       </el-form>
     </div>
@@ -103,6 +131,7 @@
 <script>
 import { Tools, Plus, Delete } from '@element-plus/icons-vue'
 import SaveConfigButton from '@/components/ConfigVue/MenuChile/MeterConfigChild/Common/SaveConfigButton.vue'
+import { getCheckCanMeasure } from '@/api/configUtils/measureController'
 
 export default {
   name: 'MeterConfigCheckMmanualStatusSetting',
@@ -141,6 +170,7 @@ export default {
       localCheckMeasureStatusBase: {},
       localStationCheck: [],
       localWellCheck: [],
+      funcList: [], // 字段类型为 func 时可选的函数列表 [{ name, func, desp }]
       dialogVisible: false,
       // 新增表单数据
       addForm: {
@@ -152,8 +182,17 @@ export default {
       currentType: '' // 记录当前是stationCheck还是wellCheck
     }
   },
+  computed: {
+    // LIKE 类型下 "," 属于检查内容而非分隔符，提示语需与逗号分隔的类型区分
+    valueInputPlaceholder() {
+      return this.addForm.data_type === 'LIKE'
+        ? '请输入检查内容（逗号属于内容，不做分隔）'
+        : '请输入值，多个用逗号分隔'
+    }
+  },
   mounted() {
     this.initLocalData()
+    this.loadFuncList()
   },
   watch: {
     checkMeasureStatusBase: {
@@ -203,22 +242,41 @@ export default {
       }
       this.dialogVisible = true
     },
+    // 拉取可用于人工状态检查的函数列表（字段类型为 func 时使用）
+    async loadFuncList() {
+      try {
+        const res = await getCheckCanMeasure()
+        this.funcList = Array.isArray(res) ? res : []
+      } catch (e) {
+        this.$message.error(`获取函数列表失败：${e.message || e}`)
+      }
+    },
+    // 值解析：LIKE 类型不做逗号分割，整体作为一个值；其余类型按逗号分割为多值
+    splitValues(dataType, raw) {
+      const str = raw || ''
+      if (dataType === 'LIKE') {
+        return str ? [str] : []
+      }
+      return str.split(',').filter(i => i)
+    },
     //生产localCheckMeasureStatusBase
     createLocalCheckMeasureStatusBase(){
       const station = this.localStationCheck.reduce((acc, item) => {
+        const dataType = item.data_type || ''
         acc[item.column] = {
-          data_type: item.data_type || '',
+          data_type: dataType,
           // 空值保护，防止 undefined.split 报错
-          one_for_one: (item.one_for_one || '').split(',').filter(i => i),
-          one_for_all: (item.one_for_all || '').split(',').filter(i => i),
+          one_for_one: this.splitValues(dataType, item.one_for_one),
+          one_for_all: this.splitValues(dataType, item.one_for_all),
         }
         return acc
       }, {}) // 初始值必须是 {}
       const well = this.localWellCheck.reduce((acc, item) => {
+        const dataType = item.data_type || ''
         acc[item.column] = {
-          data_type: item.data_type || '',
-          one_for_one: (item.one_for_one || '').split(',').filter(i => i),
-          one_for_all: (item.one_for_all || '').split(',').filter(i => i),
+          data_type: dataType,
+          one_for_one: this.splitValues(dataType, item.one_for_one),
+          one_for_all: this.splitValues(dataType, item.one_for_all),
         }
         return acc
       }, {})
