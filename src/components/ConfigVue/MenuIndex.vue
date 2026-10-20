@@ -80,6 +80,9 @@
           <el-menu-item index="/custom-submenu/history-data-splitpanes" @click="handleJumpHtml('history-data-splitpanes')">
             <span class="config-menu__item">结果监控</span>
           </el-menu-item>
+          <el-menu-item index="/custom-submenu/user-log" @click="handleJumpHtml('user-log')">
+            <span class="config-menu__item">用户日志</span>
+          </el-menu-item>
           <el-menu-item index="/custom-submenu/behavior-tree-manage" @click="handleJumpHtml('behavior-tree-manage')">
             <span class="config-menu__item">行为树管理</span>
           </el-menu-item>
