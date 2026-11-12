@@ -581,7 +581,7 @@
 
 <script>
 import { getAllStations, restartMeasureProcessOne, restartMeasureProcessAll, checkStationMeterConfig, clearScadaCache, getStationProcessInfo, getErrorLog, clearErrorLog } from '@/api/configUtils/measureController'
-import { getMeterLogs } from '@/api/configUtils/config'
+import { getMeterLogs, clearMeterLogs } from '@/api/configUtils/config'
 import { RefreshRight, View, Warning, Search, RefreshLeft, Download, Loading, CircleClose } from '@element-plus/icons-vue'
 
 export default {
@@ -665,6 +665,16 @@ export default {
       if (this.currentOp === 'view_error_logs') return this.errorLogHasSearched
       return false
     },
+    currentStationId() {
+      const stationMap = {
+        restart_one: this.restartStationId,
+        check_config: this.checkStationId,
+        process_info: this.processStationId,
+        view_logs: this.logStationId,
+        view_error_logs: this.errorLogFilter
+      }
+      return stationMap[this.currentOp] || ''
+    },
     resultStatusText() {
       if (this.currentOp === 'restart_one' && this.restartOneResult.length) return `OK · ${this.restartOneResult.length} RECORD`
       if (this.currentOp === 'restart_all' && this.restartAllResult.length) return `OK · ${this.restartAllResult.length} RECORDS`
@@ -737,7 +747,8 @@ export default {
         this.$message.error('获取站列表失败')
       }
     },
-    clearResult() {
+    async clearResult() {
+      const stationId = this.currentStationId
       this.restartOneResult = []
       this.restartAllResult = []
       this.checkResultData = null
@@ -752,6 +763,13 @@ export default {
       this.errorLogData = []
       this.errorLogCollapse = {}
       this.errorLogFilter = ''
+      if (!stationId) return
+      try {
+        await clearMeterLogs(stationId)
+        this.$message.success('已清除该站后端日志缓存')
+      } catch (e) {
+        this.$message.error('清除后端日志缓存失败')
+      }
     },
     async handleLogSearch() {
       if (!this.logStationId) return

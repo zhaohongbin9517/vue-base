@@ -205,6 +205,15 @@ export function getMeterLogs(stationId) {
 }
 
 /**
+ * 清除计量站日志缓存
+ * @param {string} stationId - 站id
+ * @returns {Promise} 清除结果
+ */
+export function clearMeterLogs(stationId) {
+  return post('/tmms_config/clear_meter_logs', { station_id: stationId })
+}
+
+/**
  * 获取计量点配置基础信息（tag_type下拉选项等）
  * @returns {Promise<Array>}
  */
