@@ -18,6 +18,8 @@ import WebWsConfig from '../components/ConfigVue/MenuChile/WebWsConfig.vue'
 import WebTempConfig from '../components/ConfigVue/MenuChile/WebTempConfig.vue'
 import MeterTagConfig from '../components/ConfigVue/MenuChile/MeterTagConfig.vue'
 import MeasureControllerOp from '../components/ConfigVue/MenuChile/MeasureControllerOp.vue'
+import DataPermissionConfig from '../components/ConfigVue/MenuChile/DataPermissionConfig.vue'
+import DataUpdateOverview from '../components/ConfigVue/MenuChile/DataUpdateOverview.vue'
 
 // 用户中心路由
 import UserCenterMenu from '../components/UserCenter/UserMenu.vue'
@@ -130,6 +132,16 @@ const routes = [
             path: 'controller-op',
             name: 'ControllerOp',
             component: MeasureControllerOp
+          },
+          {
+            path: 'data-update',
+            name: 'DataUpdate',
+            component: DataUpdateOverview
+          },
+          {
+            path: 'data-permission',
+            name: 'DataPermission',
+            component: DataPermissionConfig
           }
         ]
       },

@@ -19,19 +19,19 @@
         <div class="mc-aside__label">操作指令</div>
         <nav class="mc-nav">
           <button
-            v-for="op in operations"
-            :key="op.key"
+            v-for="item in navItems"
+            :key="item.key"
             class="mc-nav__item"
-            :class="{ 'mc-nav__item--active': currentOp === op.key }"
-            :style="currentOp === op.key ? { '--accent': op.color, '--accent-soft': op.soft } : {}"
-            @click="currentOp = op.key"
+            :class="{ 'mc-nav__item--active': activeNavKey === item.key }"
+            :style="activeNavKey === item.key ? { '--accent': navAccent(item), '--accent-soft': navSoft(item) } : {}"
+            @click="handleNavClick(item)"
           >
-            <span class="mc-nav__icon" :style="{ '--accent': op.color }">{{ op.icon }}</span>
+            <span class="mc-nav__icon" :style="{ '--accent': navAccent(item) }">{{ item.icon }}</span>
             <span class="mc-nav__text">
-              <span class="mc-nav__name">{{ op.name }}</span>
-              <span class="mc-nav__desc">{{ op.desc }}</span>
+              <span class="mc-nav__name">{{ item.name }}</span>
+              <span class="mc-nav__desc">{{ item.desc }}</span>
             </span>
-            <span class="mc-nav__arrow" v-if="currentOp === op.key">▸</span>
+            <span class="mc-nav__arrow" v-if="activeNavKey === item.key">▸</span>
           </button>
         </nav>
         <div class="mc-aside__footer">
@@ -44,32 +44,62 @@
       <section class="mc-main">
         <!-- 右上：指令配置区 -->
         <div class="mc-config">
-          <div class="mc-config__bar">
+          <!-- 站点工具：顶部共享站点选择 + 页签 -->
+          <div v-if="isToolOp" class="mc-tool-head">
+            <div class="mc-tool-head__row">
+              <label class="mc-field__label">当前站点</label>
+              <el-select
+                v-model="stationId"
+                filterable
+                clearable
+                placeholder="搜索或选择计量站"
+                class="mc-tool-head__select"
+              >
+                <el-option v-for="s in stationOptions" :key="s" :label="s" :value="s" />
+              </el-select>
+              <span class="mc-tool-head__state" :class="{ 'is-empty': !stationId }">
+                {{ stationId ? `已选站点：${stationId}` : '未选择站点，各页签操作按钮不可用' }}
+              </span>
+              <span class="mc-config__path">/measure_controller/{{ activeOp.endpoint }}</span>
+            </div>
+            <div class="mc-tabs">
+              <button
+                v-for="tab in toolTabs"
+                :key="tab.key"
+                class="mc-tabs__item"
+                :class="{ 'mc-tabs__item--active': currentOp === tab.key }"
+                :style="currentOp === tab.key ? { '--accent': tab.color, '--accent-soft': tab.soft } : {}"
+                @click="selectToolTab(tab.key)"
+              >
+                <span class="mc-tabs__icon">{{ tab.icon }}</span>
+                <span class="mc-tabs__name">{{ tab.name }}</span>
+                <span class="mc-tabs__desc">{{ tab.desc }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 其他指令：原有标题条 -->
+          <div v-else class="mc-config__bar">
             <span class="mc-config__chip" :style="{ background: activeOp.color }">{{ activeOp.tag }}</span>
             <h2 class="mc-config__title">{{ activeOp.name }}</h2>
             <span class="mc-config__path">/measure_controller/{{ activeOp.endpoint }}</span>
           </div>
 
           <div class="mc-config__form">
+            <!-- 站点工具未选站提示 -->
+            <div v-if="isToolOp && !stationId" class="mc-field mc-field--notice">
+              <el-icon class="mc-field__icon"><Warning /></el-icon>
+              <span>请先在上方选择计量站，选择后再执行当前页签的操作。</span>
+            </div>
+
             <!-- 重启单个 -->
             <template v-if="currentOp === 'restart_one'">
-              <div class="mc-field">
-                <label class="mc-field__label">目标站</label>
-                <el-select
-                  v-model="restartStationId"
-                  filterable
-                  placeholder="搜索或选择计量站"
-                  class="mc-field__input"
-                >
-                  <el-option v-for="s in stationOptions" :key="s" :label="s" :value="s" />
-                </el-select>
-              </div>
               <div class="mc-config__action">
                 <el-button
                   type="warning"
                   :icon="RefreshRight"
                   :loading="restartOneLoading"
-                  :disabled="!restartStationId"
+                  :disabled="!stationId"
                   @click="handleRestartOne"
                   class="mc-btn mc-btn--warn"
                 >
@@ -99,17 +129,6 @@
 
             <!-- 配置检查 -->
             <template v-if="currentOp === 'check_config'">
-              <div class="mc-field">
-                <label class="mc-field__label">检查站</label>
-                <el-select
-                  v-model="checkStationId"
-                  filterable
-                  placeholder="搜索或选择计量站"
-                  class="mc-field__input"
-                >
-                  <el-option v-for="s in stationOptions" :key="s" :label="s" :value="s" />
-                </el-select>
-              </div>
               <div class="mc-field mc-field--col">
                 <label class="mc-field__label">检测项</label>
                 <div class="mc-check-items">
@@ -124,7 +143,7 @@
                   type="primary"
                   :icon="View"
                   :loading="checkLoading"
-                  :disabled="!checkStationId || checkItems.length === 0"
+                  :disabled="!stationId || checkItems.length === 0"
                   @click="handleCheckConfig"
                   class="mc-btn mc-btn--info"
                 >
@@ -154,23 +173,12 @@
 
             <!-- 获取进程信息 -->
             <template v-if="currentOp === 'process_info'">
-              <div class="mc-field">
-                <label class="mc-field__label">目标站</label>
-                <el-select
-                  v-model="processStationId"
-                  filterable
-                  placeholder="搜索或选择计量站"
-                  class="mc-field__input"
-                >
-                  <el-option v-for="s in stationOptions" :key="s" :label="s" :value="s" />
-                </el-select>
-              </div>
               <div class="mc-config__action">
                 <el-button
                   type="primary"
                   :icon="View"
                   :loading="processInfoLoading"
-                  :disabled="!processStationId"
+                  :disabled="!stationId"
                   @click="handleProcessInfo"
                   class="mc-btn mc-btn--info"
                 >
@@ -181,23 +189,12 @@
 
             <!-- 日志查看 -->
             <template v-if="currentOp === 'view_logs'">
-              <div class="mc-field">
-                <label class="mc-field__label">目标站</label>
-                <el-select
-                  v-model="logStationId"
-                  filterable
-                  placeholder="搜索或选择计量站"
-                  class="mc-field__input"
-                >
-                  <el-option v-for="s in stationOptions" :key="s" :label="s" :value="s" />
-                </el-select>
-              </div>
               <div class="mc-config__action">
                 <el-button
                   type="primary"
                   :icon="Search"
                   :loading="logLoading"
-                  :disabled="!logStationId"
+                  :disabled="!stationId"
                   @click="handleLogSearch"
                   class="mc-btn mc-btn--info"
                 >
@@ -470,7 +467,7 @@
                   <span>{{ logErrorMsg }}</span>
                 </div>
                 <div v-else-if="!logHasSearched" class="mc-log-state">
-                  <span>请选择站后点击「搜索日志」</span>
+                  <span>请先在顶部选择站点，再点击「搜索日志」</span>
                 </div>
                 <div v-else-if="logAllLogs.length === 0" class="mc-log-state">
                   <el-icon><CircleClose /></el-icon>
@@ -584,28 +581,30 @@ import { getAllStations, restartMeasureProcessOne, restartMeasureProcessAll, che
 import { getMeterLogs, clearMeterLogs } from '@/api/configUtils/config'
 import { RefreshRight, View, Warning, Search, RefreshLeft, Download, Loading, CircleClose } from '@element-plus/icons-vue'
 
+/* 合并到「站点工具」界面、共用顶部站点选择的四个页签 */
+const TOOL_KEYS = ['restart_one', 'check_config', 'process_info', 'view_logs']
+
 export default {
   name: 'MeasureControllerOp',
   components: { RefreshRight, View, Warning, Search, RefreshLeft, Download, Loading, CircleClose },
   data() {
     return {
       stationOptions: [],
+      /* 站点工具四个页签共用同一个选中站点 */
+      stationId: '',
+      toolTab: 'restart_one',
       currentOp: 'restart_one',
-      restartStationId: '',
       restartOneLoading: false,
       restartOneResult: [],
       restartAllLoading: false,
       restartAllResult: [],
-      checkStationId: '',
       checkLoading: false,
       checkResultData: null,
       clearCacheLoading: false,
       clearCacheResult: '',
-      processStationId: '',
       processInfoLoading: false,
       processInfoData: null,
       alarmCollapse: { chang_alarm: false, alarm: false },
-      logStationId: '',
       logLoading: false,
       logLoadingMore: false,
       logHasSearched: false,
@@ -648,6 +647,20 @@ export default {
     activeOp() {
       return this.operations.find(o => o.key === this.currentOp)
     },
+    /* 合并后的站点工具：四个页签共用顶部选中的站点 */
+    isToolOp() {
+      return TOOL_KEYS.includes(this.currentOp)
+    },
+    toolTabs() {
+      return this.operations.filter(o => TOOL_KEYS.includes(o.key))
+    },
+    navItems() {
+      const toolGroup = { key: 'station_tools', name: '站点工具', desc: '重启·检查·进程·日志', icon: '⌘', color: '#b45309', soft: 'rgba(180,83,9,.12)' }
+      return [toolGroup, ...this.operations.filter(o => !TOOL_KEYS.includes(o.key))]
+    },
+    activeNavKey() {
+      return this.isToolOp ? 'station_tools' : this.currentOp
+    },
     activeColor() {
       const map = { restart_one: 'amber', restart_all: 'red', check_config: 'cyan', clear_cache: 'purple', process_info: 'green', view_logs: 'cyan', view_error_logs: 'red' }
       return map[this.currentOp] || 'cyan'
@@ -666,14 +679,9 @@ export default {
       return false
     },
     currentStationId() {
-      const stationMap = {
-        restart_one: this.restartStationId,
-        check_config: this.checkStationId,
-        process_info: this.processStationId,
-        view_logs: this.logStationId,
-        view_error_logs: this.errorLogFilter
-      }
-      return stationMap[this.currentOp] || ''
+      if (this.isToolOp) return this.stationId
+      if (this.currentOp === 'view_error_logs') return this.errorLogFilter
+      return ''
     },
     resultStatusText() {
       if (this.currentOp === 'restart_one' && this.restartOneResult.length) return `OK · ${this.restartOneResult.length} RECORD`
@@ -738,6 +746,25 @@ export default {
     this.loadStations()
   },
   methods: {
+    selectToolTab(key) {
+      this.currentOp = key
+      this.toolTab = key
+    },
+    handleNavClick(item) {
+      if (item.key === 'station_tools') {
+        this.currentOp = this.toolTab
+        return
+      }
+      this.currentOp = item.key
+    },
+    navAccent(item) {
+      if (item.key === 'station_tools' && this.isToolOp && this.activeOp) return this.activeOp.color
+      return item.color
+    },
+    navSoft(item) {
+      if (item.key === 'station_tools' && this.isToolOp && this.activeOp) return this.activeOp.soft
+      return item.soft
+    },
     async loadStations() {
       try {
         const res = await getAllStations()
@@ -772,7 +799,7 @@ export default {
       }
     },
     async handleLogSearch() {
-      if (!this.logStationId) return
+      if (!this.stationId) return
       this.logLoading = true
       this.logErrorMsg = ''
       this.logHasSearched = true
@@ -780,7 +807,7 @@ export default {
       this.logDisplayLogs = []
       this.logCurrentEnd = 0
       try {
-        const data = await getMeterLogs(this.logStationId)
+        const data = await getMeterLogs(this.stationId)
         this.logAllLogs = Array.isArray(data) ? data : (data?.list || [])
         this.loadMoreLogs()
       } catch (err) {
@@ -808,7 +835,6 @@ export default {
       }
     },
     handleLogClear() {
-      this.logStationId = ''
       this.logAllLogs = []
       this.logDisplayLogs = []
       this.logHasSearched = false
@@ -825,7 +851,7 @@ export default {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `${this.logStationId}_log_${Date.now()}.txt`
+      a.download = `${this.stationId}_log_${Date.now()}.txt`
       a.click()
       URL.revokeObjectURL(url)
     },
@@ -896,11 +922,11 @@ export default {
       }
     },
     async handleProcessInfo() {
-      if (!this.processStationId) return
+      if (!this.stationId) return
       this.processInfoLoading = true
       this.processInfoData = null
       try {
-        const res = await getStationProcessInfo(this.processStationId)
+        const res = await getStationProcessInfo(this.stationId)
         this.processInfoData = res || { alive: false, msg: '无返回数据' }
       } catch (e) {
         this.$message.error(`获取失败：${e.message || e}`)
@@ -915,14 +941,14 @@ export default {
       this.checkAllItems = val.length === this.checkItemOptions.length
     },
     async handleRestartOne() {
-      if (!this.restartStationId) return
+      if (!this.stationId) return
       try {
-        await this.$confirm(`确认重启计量站「${this.restartStationId}」？`, '提示', { type: 'warning' })
+        await this.$confirm(`确认重启计量站「${this.stationId}」？`, '提示', { type: 'warning' })
       } catch { return }
       this.restartOneLoading = true
       this.restartOneResult = []
       try {
-        const res = await restartMeasureProcessOne(this.restartStationId)
+        const res = await restartMeasureProcessOne(this.stationId)
         const list = Array.isArray(res) ? res : []
         this.restartOneResult = list.map(item => ({
           station_id: item.station_id || '',
@@ -956,11 +982,11 @@ export default {
       }
     },
     async handleCheckConfig() {
-      if (!this.checkStationId || this.checkItems.length === 0) return
+      if (!this.stationId || this.checkItems.length === 0) return
       this.checkLoading = true
       this.checkResultData = null
       try {
-        const res = await checkStationMeterConfig(this.checkStationId, this.checkItems)
+        const res = await checkStationMeterConfig(this.stationId, this.checkItems)
         this.checkResultData = res || {}
       } catch (e) {
         this.$message.error(`检查失败：${e.message || e}`)
@@ -1125,6 +1151,45 @@ export default {
 }
 .mc-config__title { font-size: 16px; font-weight: 700; margin: 0; color: var(--ink-1); letter-spacing: .5px; }
 .mc-config__path { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin-left: auto; }
+
+/* === 站点工具：顶部共享站点选择 + 页签 === */
+.mc-tool-head { display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px; }
+.mc-tool-head__row { display: flex; align-items: center; gap: 14px; }
+.mc-tool-head__select { width: 300px; flex-shrink: 0; }
+.mc-tool-head__select :deep(.el-select__wrapper) {
+  border-radius: 4px; box-shadow: 0 0 0 1px #d9cbaa inset;
+  background: #fffdf6;
+}
+.mc-tool-head__select :deep(.el-select__wrapper.is-focused) {
+  box-shadow: 0 0 0 2px var(--amber) inset;
+}
+.mc-tool-head__state {
+  font-family: var(--mono); font-size: 12px; color: var(--ink-2);
+  letter-spacing: .5px; padding: 2px 10px; border-radius: 3px;
+  background: var(--line-soft); border: 1px solid var(--line);
+}
+.mc-tool-head__state.is-empty { color: var(--red); border-color: #e5c3b6; background: #fbf0da; }
+.mc-tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--line); }
+.mc-tabs__item {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: -1px; padding: 9px 16px 10px;
+  border: 1px solid transparent; border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background: transparent; cursor: pointer; position: relative;
+  font-family: inherit; transition: all .15s ease;
+}
+.mc-tabs__item:hover { background: #f3ecda; border-color: var(--line-soft); }
+.mc-tabs__item--active {
+  background: var(--panel); border-color: var(--line);
+}
+.mc-tabs__item--active::after {
+  content: ''; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px;
+  background: var(--accent, var(--amber)); border-radius: 2px;
+}
+.mc-tabs__icon { font-size: 14px; font-weight: 700; color: var(--accent, var(--ink-3)); }
+.mc-tabs__name { font-size: 13px; font-weight: 600; color: var(--ink-1); }
+.mc-tabs__desc { font-size: 11px; color: var(--ink-3); }
+
 .mc-config__form { display: flex; flex-direction: column; gap: 16px; }
 .mc-field { display: flex; align-items: center; gap: 16px; }
 .mc-field__label {

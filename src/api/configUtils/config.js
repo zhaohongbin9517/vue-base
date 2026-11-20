@@ -214,6 +214,18 @@ export function clearMeterLogs(stationId) {
 }
 
 /**
+ * 获取采集单元的数据更新状态
+ * @param {string} [stationId] - 站/控制器 id；不传则返回全厂所有站
+ * @returns {Promise<Array>} [{ controller_id, da_unit, sample_period, last_update_time, elapsed, expired }]
+ */
+export function getMeterDataUpdate(stationId) {
+  if (stationId) {
+    return get('/tmms_config/get_meter_data_update', { station_id: stationId })
+  }
+  return get('/tmms_config/get_meter_data_update')
+}
+
+/**
  * 获取计量点配置基础信息（tag_type下拉选项等）
  * @returns {Promise<Array>}
  */

@@ -966,7 +966,7 @@ export default {
           if(this.baseData.config.plan_table.column.length === 0) return {result:false,error:'计划下发数据列不能为空'}
           break
         case "initDeviceSetting":
-          this.baseData.config.init_device = this.initDeviceMappings.filter(item => item.code_id !== '')
+          this.baseData.config.init_device = this.initDeviceMappings.filter(item => item.set !== '' && item.check !== '')
           break
         case "resultSetting":
           this.baseData.config.result = this.resultTableInfo.resultGroups.map(item => ({

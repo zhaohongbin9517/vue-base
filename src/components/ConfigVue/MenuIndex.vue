@@ -2,10 +2,6 @@
   <div class="config-layout">
     <!-- 侧边导航 -->
     <aside class="config-sider">
-      <div class="config-sider__head">
-        <span class="editorial-caption">Index</span>
-        <span class="config-sider__line"></span>
-      </div>
       <el-menu
         :default-active="$route.path"
         class="config-menu"
@@ -15,7 +11,9 @@
       >
         <el-sub-menu index="1" popper-class="editorial-submenu">
           <template #title>
+            <el-icon class="config-menu__icon"><Setting /></el-icon>
             <span class="config-menu__group">通用配置</span>
+            <span class="config-menu__count">2</span>
           </template>
           <el-menu-item index="/config/plan">
             <span class="config-menu__item">计划配置</span>
@@ -27,7 +25,9 @@
 
         <el-sub-menu index="2" popper-class="editorial-submenu">
           <template #title>
+            <el-icon class="config-menu__icon"><DataLine /></el-icon>
             <span class="config-menu__group">计量配置</span>
+            <span class="config-menu__count">4</span>
           </template>
           <el-menu-item index="/config/all-station">
             <span class="config-menu__item">计量站一览</span>
@@ -45,7 +45,9 @@
 
         <el-sub-menu index="3" popper-class="editorial-submenu">
           <template #title>
+            <el-icon class="config-menu__icon"><Monitor /></el-icon>
             <span class="config-menu__group">Web 配置</span>
+            <span class="config-menu__count">4</span>
           </template>
           <el-menu-item index="/config/measure-web-ws">
             <span class="config-menu__item">WS 配置</span>
@@ -66,7 +68,9 @@
 
         <el-sub-menu index="4" popper-class="editorial-submenu">
           <template #title>
+            <el-icon class="config-menu__icon"><Compass /></el-icon>
             <span class="config-menu__group">导航</span>
+            <span class="config-menu__count">6</span>
           </template>
           <el-menu-item index="/custom-submenu/measure-manage" @click="handleJumpHtml('measure-manage')">
             <span class="config-menu__item">计量站监控</span>
@@ -88,12 +92,36 @@
           </el-menu-item>
         </el-sub-menu>
 
+        <el-sub-menu index="5" popper-class="editorial-submenu">
+          <template #title>
+            <el-icon class="config-menu__icon"><Lock /></el-icon>
+            <span class="config-menu__group">权限配置</span>
+            <span class="config-menu__count">1</span>
+          </template>
+          <el-menu-item index="/config/data-permission">
+            <span class="config-menu__item">数据权限</span>
+          </el-menu-item>
+        </el-sub-menu>
+
         <el-sub-menu index="6" popper-class="editorial-submenu">
           <template #title>
+            <el-icon class="config-menu__icon"><SetUp /></el-icon>
             <span class="config-menu__group">计量站控制</span>
+            <span class="config-menu__count">1</span>
           </template>
           <el-menu-item index="/config/controller-op">
             <span class="config-menu__item">操作</span>
+          </el-menu-item>
+        </el-sub-menu>
+
+        <el-sub-menu index="7" popper-class="editorial-submenu">
+          <template #title>
+            <el-icon class="config-menu__icon"><TrendCharts /></el-icon>
+            <span class="config-menu__group">数据监控</span>
+            <span class="config-menu__count">1</span>
+          </template>
+          <el-menu-item index="/config/data-update">
+            <span class="config-menu__item">数据更新总览</span>
           </el-menu-item>
         </el-sub-menu>
       </el-menu>
@@ -109,9 +137,11 @@
 <script>
 import { getAuthToken, getAuthUser, getAuthAlias, getAuthPermissionKeys } from '@/api/userUtils/auth'
 import { getWebPort } from '@/api/configUtils/config'
+import { Setting, DataLine, Monitor, Compass, Lock, SetUp, TrendCharts } from '@element-plus/icons-vue'
 
 export default {
   name: 'MenuIndex',
+  components: { Setting, DataLine, Monitor, Compass, Lock, SetUp, TrendCharts },
   data() {
     return {
       webPort: '',
@@ -189,95 +219,155 @@ export default {
 
 /* ============ 侧边导航 ============ */
 .config-sider {
-  width: 220px;
+  width: 208px;
   flex-shrink: 0;
-  background: var(--bg-surface);
-  border-right: 1px solid var(--border-hair);
-  padding: var(--space-5) 0;
+  background: #ffffff;
+  border-right: 1px solid #eceef1;
+  padding: 14px 0;
   overflow-y: auto;
-}
-
-.config-sider__head {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: 0 var(--space-5) var(--space-4);
-}
-.config-sider__line {
-  flex: 1;
-  height: 1px;
-  background: var(--border-hair);
 }
 
 .config-menu {
   border-right: none !important;
-  padding: 0 var(--space-2);
+  padding: 0 10px;
+  --el-menu-bg-color: transparent;
+  --el-menu-hover-bg-color: transparent;
+  --el-menu-text-color: #3f4650;
+  --el-menu-active-color: #1f2329;
 }
 
 /* 菜单分组标题 */
+.config-menu :deep(.el-sub-menu) {
+  margin-bottom: 6px;
+}
 .config-menu :deep(.el-sub-menu__title) {
-  font-family: var(--font-serif);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 8px !important;
+  border-radius: 6px;
+  color: #1f2329;
+  font-family: inherit;
+  font-size: 14px;
   font-weight: 600;
-  height: 40px;
-  line-height: 40px;
-  padding-left: var(--space-4) !important;
+  letter-spacing: 0;
+  transition: background 0.15s ease;
 }
 .config-menu :deep(.el-sub-menu__title:hover) {
-  background: transparent;
-  color: var(--ink-1);
+  background: #f7f8fa;
+  color: #1f2329;
+}
+.config-menu__icon {
+  font-size: 15px;
+  color: #4b5563;
+  margin-right: 8px;
 }
 .config-menu__group {
-  font-family: var(--font-serif);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: inherit;
+  color: #1f2329;
+  font-family: inherit;
+  font-size: 14px;
   font-weight: 600;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.config-menu__count {
+  margin-left: auto;
+  min-width: 20px;
+  height: 20px;
+  line-height: 20px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: #f2f3f5;
+  color: #9aa1ab;
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+}
+.config-menu :deep(.el-sub-menu__icon-arrow) {
+  position: static;
+  top: auto;
+  right: auto;
+  margin: 0 0 0 8px;
+  font-size: 12px;
+  color: #aab0b9;
 }
 
-/* 菜单项 */
-.config-menu :deep(.el-menu-item) {
-  font-family: var(--font-serif);
-  color: var(--ink-3);
-  height: 38px;
-  line-height: 38px;
-  padding-left: var(--space-5) !important;
-  border-radius: 0;
-  transition: all var(--duration) var(--ease);
-}
-.config-menu :deep(.el-menu-item:hover) {
-  background: transparent;
-  color: var(--ink-1);
-}
-.config-menu :deep(.el-menu-item.is-active) {
-  background: transparent;
-  color: var(--ink-1);
-  font-weight: 600;
+/* 分组标题选中态：组内有子项激活时 */
+.config-menu :deep(.el-sub-menu.is-active > .el-sub-menu__title) {
   position: relative;
+  background: #eef5ff;
 }
-.config-menu :deep(.el-menu-item.is-active)::before {
+.config-menu :deep(.el-sub-menu.is-active > .el-sub-menu__title)::before {
   content: '';
   position: absolute;
-  left: var(--space-3);
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 2px;
-  height: 50%;
-  background: var(--ink-1);
+  width: 3px;
+  height: 20px;
+  border-radius: 2px;
+  background: #2f7df6;
 }
-.config-menu__item {
-  font-family: var(--font-serif);
-  font-size: 0.875rem;
-  color: inherit;
+.config-menu :deep(.el-sub-menu.is-active > .el-sub-menu__title .config-menu__icon),
+.config-menu :deep(.el-sub-menu.is-active > .el-sub-menu__title .config-menu__group) {
+  color: #1a73e8;
+}
+.config-menu :deep(.el-sub-menu.is-active > .el-sub-menu__title .config-menu__count) {
+  background: #dbe9ff;
+  color: #2f7df6;
+}
+.config-menu :deep(.el-sub-menu.is-active > .el-sub-menu__title .el-sub-menu__icon-arrow) {
+  color: #5b8de0;
 }
 
 /* 展开子菜单容器 */
 .config-menu :deep(.el-menu--inline) {
+  position: relative;
   background: transparent !important;
+  padding: 4px 0 2px;
+}
+
+/* 菜单项：左边缘与分组标题文字起始位置对齐 */
+.config-menu :deep(.el-menu-item) {
+  height: 36px;
+  line-height: 34px;
+  margin: 0 0 6px 15px;
+  padding: 0 12px !important;
+  background: #f8f9fa;
+  border: 1px solid #eef0f3;
+  border-radius: 6px;
+  color: #3f4650;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.config-menu :deep(.el-menu-item:last-child) {
+  margin-bottom: 0;
+}
+.config-menu :deep(.el-menu-item:hover) {
+  background: #f2f4f7;
+  border-color: #e3e7ec;
+  color: #1f2329;
+}
+.config-menu :deep(.el-menu-item.is-active) {
+  background: #e8f1fe;
+  border-color: #a9caf7;
+  color: #1a73e8;
+  font-weight: 600;
+}
+.config-menu :deep(.el-menu-item.is-active) .config-menu__item {
+  color: #1a73e8;
+}
+/* 隐藏全局菜单的左侧高亮竖条，选中态由蓝色卡片描边表达 */
+.config-menu :deep(.el-menu-item.is-active)::before {
+  display: none;
+}
+.config-menu__item {
+  font-family: inherit;
+  font-size: 13px;
+  color: inherit;
 }
 
 /* ============ 内容区 ============ */

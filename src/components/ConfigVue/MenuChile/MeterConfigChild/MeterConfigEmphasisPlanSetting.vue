@@ -202,8 +202,8 @@ export default {
   },
   methods: {
     codeIdIsValidParam(codeId) {
-      // 如果没有选择参数，无效
-      if (!codeId || this.paramOptions.length === 0)  return false
+      // 未选择参数时按无效标红，与其它配置子组件保持一致
+      if (!codeId || this.paramOptions.length === 0)  return true
       // 检查选择的参数是否在选项中
       return !this.paramOptions.some(option => option.code_id === codeId)
     },

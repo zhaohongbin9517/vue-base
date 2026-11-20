@@ -169,6 +169,47 @@
 import { Tools, Document, Edit } from '@element-plus/icons-vue'
 import SaveConfigButton from '@/components/ConfigVue/MenuChile/MeterConfigChild/Common/SaveConfigButton.vue'
 
+// 就地远程默认结构，与父组件 MeterConfig.vue 的 longRangeConfig 保持一致
+const defaultLongRangeConfig = () => ({
+  show: {
+    enable: false,
+    code_id: '',
+    values: {
+      long_range: 1,
+      locally: 0
+    }
+  },
+  set: {
+    enable: false,
+    isCheck: false,
+    code_id: '',
+    values: {
+      long_range: 1,
+      locally: 0
+    }
+  },
+  check: {
+    enable: false,
+    code_id: '',
+    value: 0
+  }
+})
+
+// 兼容历史配置缺少 show/check/values 的情况，避免页面渲染报错
+const mergeLongRangeConfig = (config) => {
+  const base = defaultLongRangeConfig()
+  const src = config || {}
+  const show = src.show || {}
+  const set = src.set || {}
+  return {
+    ...base,
+    ...src,
+    show: { ...base.show, ...show, values: { ...base.show.values, ...(show.values || {}) } },
+    set: { ...base.set, ...set, values: { ...base.set.values, ...(set.values || {}) } },
+    check: { ...base.check, ...(src.check || {}) }
+  }
+}
+
 export default {
   name: 'MeterConfigLongRangeSetting',
   components: {
@@ -180,22 +221,7 @@ export default {
   props: {
     config: {
       type: Object,
-      default: () => ({
-        check: {
-          enable: true,
-          code_id: '',
-          value: 1
-        },
-        set: {
-          enable: false,
-          isCheck: true,
-          code_id: '',
-          values: {
-            long_range: 1,
-            locally: 0
-          }
-        }
-      })
+      default: defaultLongRangeConfig
     },
     title: {
       type: String,
@@ -216,17 +242,17 @@ export default {
   },
   data() {
     return {
-      localConfig: JSON.parse(JSON.stringify(this.config))
+      localConfig: mergeLongRangeConfig(this.config)
     }
   },
   mounted() {
-    this.localConfig = JSON.parse(JSON.stringify(this.config))
+    this.localConfig = mergeLongRangeConfig(this.config)
   },
   watch: {
     config: {
       handler(newVal) {
          // 父组件配置更新时，同步更新本地配置
-        this.localConfig = JSON.parse(JSON.stringify(newVal))
+        this.localConfig = mergeLongRangeConfig(newVal)
       },
       deep: true
     }
